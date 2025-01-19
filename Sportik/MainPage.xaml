@@ -8,7 +8,6 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:navigation="using:Sportik.ViewModels.Navigation"
-    xmlns:behaviors="using:Sportik.Behaviors"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -17,10 +16,10 @@
     </Page.DataContext>
 
     <Grid>
-        <NavigationView IsPaneOpen="True"
+        <NavigationView Name="PagesNavigationView"
+                        IsPaneOpen="True"
                         PaneDisplayMode="Left"
                         IsBackButtonVisible="Collapsed"
-                        behaviors:NavigationViewCollapseBehavior.CollapseThreshold="850"
                         MenuItemsSource="{Binding Options}"
                         SelectedItem="{Binding SelectedMenuItem}">
 

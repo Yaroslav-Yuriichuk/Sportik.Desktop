@@ -1,5 +1,7 @@
 ﻿using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Behaviors;
 using Sportik.Services.Navigation;
 using Sportik.ViewModels.Navigation;
 
@@ -7,6 +9,8 @@ namespace Sportik
 {
     internal sealed partial class MainPage : Page
     {
+        private NavigationViewCollapseBehavior _navigationViewCollapseBehavior;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -17,6 +21,22 @@ namespace Sportik
             }
 
             DataContext = new NavigationViewModel();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            _navigationViewCollapseBehavior?.Dispose();
+            _navigationViewCollapseBehavior = new NavigationViewCollapseBehavior(PagesNavigationView, 850);
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            _navigationViewCollapseBehavior?.Dispose();
+            _navigationViewCollapseBehavior = null;
         }
     }
 }

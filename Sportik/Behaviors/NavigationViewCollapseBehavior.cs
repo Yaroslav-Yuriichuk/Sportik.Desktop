@@ -1,42 +1,42 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Sportik.Behaviors
 {
-    internal sealed class NavigationViewCollapseBehavior : DependencyObject
+    internal sealed class NavigationViewCollapseBehavior : IDisposable
     {
-        public static double GetCollapseThreshold(DependencyObject obj)
+        private readonly NavigationView _navigationView;
+        private readonly double _collapseThreshold;
+
+        public NavigationViewCollapseBehavior(NavigationView navigationView, double collapseThreshold)
         {
-            return (double)obj.GetValue(CollapseThresholdProperty);
+            _navigationView = navigationView;
+            _collapseThreshold = collapseThreshold;
+
+            UpdatePaneDisplayMode(Window.Current.Bounds.Width);
+            Window.Current.SizeChanged += UpdatePaneDisplayMode;
         }
 
-        public static void SetCollapseThreshold(DependencyObject obj, double value)
+        public void Dispose()
         {
-            obj.SetValue(CollapseThresholdProperty, value);
+            Window.Current.SizeChanged -= UpdatePaneDisplayMode;
         }
 
-        public static readonly DependencyProperty CollapseThresholdProperty =
-            DependencyProperty.RegisterAttached(
-                "CollapseThreshold",
-                typeof(double),
-                typeof(NavigationViewCollapseBehavior),
-                new PropertyMetadata(700, OnThresholdChanged));
-
-        private static void OnThresholdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void UpdatePaneDisplayMode(object sender, WindowSizeChangedEventArgs args)
         {
-            if (d is NavigationView navigationView)
-            {
-                Window.Current.SizeChanged += (s, args) =>
-                {
-                    double windowWidth = args.Size.Width;
+            double windowWidth = args.Size.Width;
+            UpdatePaneDisplayMode(windowWidth);
+        }
 
-                    navigationView.PaneDisplayMode = windowWidth >= GetCollapseThreshold(navigationView)
-                        ? NavigationViewPaneDisplayMode.Left
-                        : NavigationViewPaneDisplayMode.LeftCompact;
+        private void UpdatePaneDisplayMode(double windowWidth)
+        {
+            _navigationView.PaneDisplayMode = windowWidth >= _collapseThreshold
+                ? NavigationViewPaneDisplayMode.Left
+                : NavigationViewPaneDisplayMode.LeftCompact;
 
-                    navigationView.IsPaneToggleButtonVisible = windowWidth >= GetCollapseThreshold(navigationView);
-                };
-            }
+            _navigationView.IsPaneToggleButtonVisible = windowWidth >= _collapseThreshold;
         }
     }
 }

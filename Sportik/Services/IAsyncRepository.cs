@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Sportik.Services
 {
-    internal interface IRepository<T>
+    internal interface IAsyncRepository<T>
     {
         Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
@@ -14,7 +14,7 @@ namespace Sportik.Services
         
         Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default);
         
-        Task<T> DeleteAsync(int id, CancellationToken cancellationToken = default);
+        Task<T> DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
         
         Task<T> DeleteAsync(T entity, CancellationToken cancellationToken = default);
     }

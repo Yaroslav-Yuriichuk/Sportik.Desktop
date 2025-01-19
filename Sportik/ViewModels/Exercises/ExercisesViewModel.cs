@@ -22,29 +22,11 @@ namespace Sportik.ViewModels.Exercises
         }
 
         private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
-        private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
         public ExercisesViewModel()
         {
-            /*IEnumerable<Exercise> exercises = new Exercise[]
-            {
-                new Exercise()
-                {
-                    Kind = ExerciseKind.PushUps,
-                    Name = "Push ups"
-                },
-                new Exercise()
-                {
-                    Kind = ExerciseKind.PullUps,
-                    Name = "Pull ups"
-                },
-            };
-
-            Exercises = new ObservableCollection<ExerciseViewModel>(
-                exercises.Select(exercise => new ExerciseViewModel(exercise)));*/
-
             _ = LoadExercisesAsync(_loadCts.Token);
         }
 
@@ -60,7 +42,7 @@ namespace Sportik.ViewModels.Exercises
 
         private async Task LoadExercisesAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<Exercise> exercises = await ExercisesService.GetExercisesAsync(cancellationToken);
+            IEnumerable<Exercise> exercises = await ExercisesService.GetAllExercisesAsync(cancellationToken);
 
             Exercises = new ObservableCollection<ExerciseViewModel>(
                 exercises.Select(exercise => new ExerciseViewModel(exercise)));

@@ -1,16 +1,58 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Timers;
 
 namespace Sportik.Core
 {
     internal sealed class DefaultTimer : ITimer, IDisposable
     {
-        public DateTime StartTime { get; private set; } = DateTime.MinValue;
-        public DateTime PauseTime { get; private set; } = DateTime.MinValue;
-        public DateTime ResumeTime { get; private set; } = DateTime.MinValue;
-        public DateTime StopTime { get; private set; } = DateTime.MinValue;
-        
-        public TimeSpan Interval { get; }
+        public TimeSpan Interval
+        {
+            get => _originalInterval;
+            set
+            {
+                TimeSpan elapsedTime = ElapsedTime;
+
+                if (IsRunning)
+                {
+                    _timer.Stop();
+                    _originalInterval = value;
+
+                    _timer.Interval = elapsedTime < value
+                        ? value.TotalMilliseconds - elapsedTime.TotalMilliseconds
+                        : value.TotalMilliseconds;
+
+                    if (elapsedTime < value || Loop)
+                    {
+                        _timer.Start();
+                    }
+
+                    if (elapsedTime >= value)
+                    {
+                        _callback?.Invoke(this, EventArgs.Empty);
+                        Elapsed?.Invoke(this, EventArgs.Empty);
+                    }
+
+                    return;
+                }
+
+                if (IsPaused)
+                {
+                    _originalInterval = value;
+
+                    if (elapsedTime >= value)
+                    {
+                        _callback?.Invoke(this, EventArgs.Empty);
+                        Elapsed?.Invoke(this, EventArgs.Empty);
+                    }
+
+                    return;
+                }
+
+                _originalInterval = value;
+            }
+        }
+
         public TimeSpan ElapsedTime => _accumulatedElapsedTime + (IsRunning ? DateTime.Now - _lastStartTime : TimeSpan.Zero);
 
         public bool IsRunning { get; private set; }
@@ -22,9 +64,12 @@ namespace Sportik.Core
             set => _timer.AutoReset = value;
         }
 
+        public event EventHandler Elapsed;
+
         private readonly Timer _timer;
         private readonly EventHandler _callback;
 
+        private TimeSpan _originalInterval;
         private DateTime _lastStartTime;
         private TimeSpan _accumulatedElapsedTime;
 
@@ -33,24 +78,45 @@ namespace Sportik.Core
             _timer = new Timer(interval.TotalMilliseconds);
             _timer.Elapsed += InvokeCallback;
 
-            Interval = interval;
             _callback = callback;
+            _originalInterval = interval;
+
+            Reset();
         }
 
         public void Dispose()
         {
+            Reset();
+
             _timer.Elapsed -= InvokeCallback;
             _timer.Dispose();
         }
         
         public void Start()
         {
-            if (!IsRunning && !IsPaused)
+            if (IsPaused)
             {
-                StartTime = DateTime.Now;
-                _lastStartTime = StartTime;
+                Reset();
+
+                _lastStartTime = DateTime.Now;
 
                 IsRunning = true;
+                IsPaused = false;
+
+                _timer.Interval = _originalInterval.TotalMilliseconds;
+                _timer.Start();
+
+                return;
+            }
+
+            if (!IsRunning)
+            {
+                _lastStartTime = DateTime.Now;
+
+                IsRunning = true;
+                IsPaused = false;
+
+                _timer.Interval = _originalInterval.TotalMilliseconds;
 
                 _timer.Start();
             }
@@ -60,8 +126,7 @@ namespace Sportik.Core
         {
             if (IsRunning && !IsPaused)
             {
-                PauseTime = DateTime.Now;
-                _accumulatedElapsedTime += PauseTime - _lastStartTime;
+                _accumulatedElapsedTime += DateTime.Now - _lastStartTime;
 
                 IsRunning = false;
                 IsPaused = true;
@@ -74,8 +139,7 @@ namespace Sportik.Core
         {
             if (!IsRunning && IsPaused)
             {
-                ResumeTime = DateTime.Now;
-                _lastStartTime = ResumeTime;
+                _lastStartTime = DateTime.Now;
 
                 IsRunning = true;
                 IsPaused = false;
@@ -89,27 +153,43 @@ namespace Sportik.Core
 
         public void Stop()
         {
-            if (IsRunning && !IsPaused)
+            if (IsPaused)
             {
-                StopTime = DateTime.Now;
-                IsRunning = false;
-
                 _timer.Stop();
+                Reset();
+
+                return;
             }
+
+            if (IsRunning)
+            {
+                _timer.Stop();
+                Reset();
+            }
+        }
+
+        public void Reset()
+        {
+            IsRunning = false;
+            IsPaused = false;
+
+            _accumulatedElapsedTime = TimeSpan.Zero;
+            _lastStartTime = DateTime.MinValue;
         }
 
         private void InvokeCallback(object sender, ElapsedEventArgs e)
         {
             if (Loop)
             {
-                _timer.Interval = Interval.TotalMilliseconds;
+                _timer.Interval = _originalInterval.TotalMilliseconds;
             }
             else
             {
                 Stop();
             }
-
-            _callback?.Invoke(this, null);
+            
+            _callback?.Invoke(this, EventArgs.Empty);
+            Elapsed?.Invoke(this, EventArgs.Empty);
         }
     }
 }

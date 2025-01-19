@@ -14,7 +14,7 @@
     </Page.DataContext>
 
     <Page.Resources>
-        <converters:TimeSpanToStringConverter x:Name="TimeSpanToStringConverter" />
+        <converters:TimeSpanToLongHoursMinutesStringConverter x:Name="TimeSpanToStringConverter" />
     </Page.Resources>
 
     <Grid>
@@ -31,7 +31,7 @@
 
         <ListView Grid.Row="1"
           IsItemClickEnabled="True"
-          SelectionMode="Single"
+          SelectionMode="None"
           HorizontalAlignment="Stretch"
           HorizontalContentAlignment="Stretch"
           Margin="15"
@@ -57,7 +57,7 @@
                             </Grid.ColumnDefinitions>
 
                             <SymbolIcon Grid.Column="0"
-                                Symbol="Save"
+                                Symbol="World"
                                 Width="27"
                                 Height="27" />
 

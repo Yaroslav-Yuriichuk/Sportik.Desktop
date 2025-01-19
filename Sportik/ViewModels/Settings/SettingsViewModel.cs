@@ -27,20 +27,6 @@ namespace Sportik.ViewModels.Settings
 
         public SettingsViewModel()
         {
-            /*IEnumerable<ExerciseSettings> exerciseSettings = new ExerciseSettings[]
-            {
-                new ExerciseSettings()
-                {
-                    Exercise = new Exercise { Name = "Push ups" },
-                    TimeBetweenSets = TimeSpan.FromMinutes(15),
-                    ExecutionTime = TimeSpan.FromMinutes(3),
-                    TargetRepetitions = 25,
-                },
-            };
-
-            ExerciseSettings = new ObservableCollection<ExerciseSettingsViewModel>(
-                exerciseSettings.Select(settings => new ExerciseSettingsViewModel(settings)));*/
-
             _ = LoadExerciseSettingsAsync(_loadCts.Token);
         }
 
@@ -56,7 +42,7 @@ namespace Sportik.ViewModels.Settings
 
         private async Task LoadExerciseSettingsAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<ExerciseSettings> exerciseSettings = await ExerciseSettingsService.GetExerciseSettingsAsync(cancellationToken);
+            IEnumerable<ExerciseSettings> exerciseSettings = await ExerciseSettingsService.GetAllExerciseSettingsAsync(cancellationToken);
 
             ExerciseSettings = new ObservableCollection<ExerciseSettingsViewModel>(
                 exerciseSettings.Select(settings => new ExerciseSettingsViewModel(settings)));

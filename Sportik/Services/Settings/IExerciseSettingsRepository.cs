@@ -5,8 +5,10 @@ using System.Threading;
 
 namespace Sportik.Services.Settings
 {
-    internal interface IExerciseSettingsRepository : IRepository<ExerciseSettings>
+    internal interface IExerciseSettingsRepository : ISyncRepository<ExerciseSettings>, IAsyncRepository<ExerciseSettings>
     {
+        ExerciseSettings GetByKind(ExerciseKind exerciseKind);
+
         Task<ExerciseSettings> GetByKindAsync(ExerciseKind exerciseKind, CancellationToken cancellationToken = default);
     }
 }

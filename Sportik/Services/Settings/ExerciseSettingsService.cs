@@ -3,21 +3,29 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Models;
 using Sportik.Models.Settings;
+using Sportik.Services.Events;
 
 namespace Sportik.Services.Settings
 {
     internal sealed class ExerciseSettingsService : IExerciseSettingsService
     {
         private readonly IExerciseSettingsRepository _exerciseSettingsRepository;
+        private readonly IEventsService _eventsService;
 
-        public ExerciseSettingsService(IExerciseSettingsRepository exerciseSettingsRepository)
+        public ExerciseSettingsService(IExerciseSettingsRepository exerciseSettingsRepository, IEventsService eventsService)
         {
             _exerciseSettingsRepository = exerciseSettingsRepository;
+            _eventsService = eventsService;
         }
 
-        public async Task<IEnumerable<ExerciseSettings>> GetExerciseSettingsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ExerciseSettings>> GetAllExerciseSettingsAsync(CancellationToken cancellationToken = default)
         {
             return await _exerciseSettingsRepository.GetAllAsync(cancellationToken);
+        }
+
+        public ExerciseSettings GetExerciseSettings(Exercise exercise)
+        {
+            return _exerciseSettingsRepository.GetByKind(exercise.Kind);
         }
 
         public async Task<ExerciseSettings> GetExerciseSettingsAsync(Exercise exercise, CancellationToken cancellationToken)
@@ -29,20 +37,6 @@ namespace Sportik.Services.Settings
             CancellationToken cancellationToken)
         {
             ExerciseSettings exerciseSettings = await _exerciseSettingsRepository.GetByKindAsync(exercise.Kind, cancellationToken);
-
-            if (exerciseSettings == null)
-            {
-                exerciseSettings = new ExerciseSettings
-                {
-                    Exercise = exercise,
-                    IsEnabled = exerciseSettingsDelta.IsEnabled,
-                    TargetRepetitions = exerciseSettingsDelta.TargetRepetitions,
-                    TimeBetweenSets = exerciseSettingsDelta.TimeBetweenSets,
-                    ExecutionTime = exerciseSettingsDelta.ExecutionTime,
-                };
-
-                return await _exerciseSettingsRepository.AddAsync(exerciseSettings, cancellationToken);
-            }
 
             if ((exerciseSettingsDelta.Change & ExerciseSettingsChange.IsEnabled) == ExerciseSettingsChange.IsEnabled)
             {
@@ -64,7 +58,24 @@ namespace Sportik.Services.Settings
                 exerciseSettings.ExecutionTime = exerciseSettingsDelta.ExecutionTime;
             }
 
-            return await _exerciseSettingsRepository.UpdateAsync(exerciseSettings, cancellationToken);
+            exerciseSettings = await _exerciseSettingsRepository.UpdateAsync(exerciseSettings, cancellationToken);
+
+            if ((exerciseSettingsDelta.Change & ExerciseSettingsChange.IsEnabled) == ExerciseSettingsChange.IsEnabled)
+            {
+                _eventsService.RaiseEvent(new ExerciseIsEnabledChangedEventArgs(exerciseSettings.Exercise, exerciseSettings.IsEnabled));
+            }
+
+            if ((exerciseSettingsDelta.Change & ExerciseSettingsChange.TimeBetweenSets) == ExerciseSettingsChange.TimeBetweenSets)
+            {
+                _eventsService.RaiseEvent(new ExerciseTimeBetweenSetsChangedEventArgs(exerciseSettings.Exercise, exerciseSettings.TimeBetweenSets));
+            }
+
+            if ((exerciseSettingsDelta.Change & ExerciseSettingsChange.ExecutionTime) == ExerciseSettingsChange.ExecutionTime)
+            {
+                _eventsService.RaiseEvent(new ExerciseExecutionTimeChangedEventArgs(exerciseSettings.Exercise, exerciseSettings.ExecutionTime));
+            }
+
+            return exerciseSettings;
         }
     }
 }

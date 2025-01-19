@@ -1,7 +1,7 @@
 ﻿namespace Sportik.Core
 {
-    internal interface IStatesContext
+    internal interface IStatesContext<in TState>
     {
-        void Switch(IState state);
+        void Switch(TState state);
     }
 }

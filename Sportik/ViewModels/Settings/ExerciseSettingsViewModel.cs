@@ -28,7 +28,7 @@ namespace Sportik.ViewModels.Settings
             {
                 if (SetField(ref _targetRepetitionsOptions, value))
                 {
-                    SelectedTargetRepetitionsOption = _targetRepetitionsOptions[0];
+                    SetField(ref _selectedTargetRepetitionsOption, value[0]);
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace Sportik.ViewModels.Settings
             {
                 if (SetField(ref _timeBetweenSetsOptions, value))
                 {
-                    SelectedTimeBetweenSetsOption = _timeBetweenSetsOptions[0];
+                    SetField(ref _selectedTimeBetweenSetsOption, value[0]);
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace Sportik.ViewModels.Settings
             {
                 if (SetField(ref _executionTimeOptions, value))
                 {
-                    SelectedExecutionTimeOption = _executionTimeOptions[0];
+                    SetField(ref _selectedExecutionTimeOption, value[0]);
                 }
             }
         }
@@ -121,30 +121,51 @@ namespace Sportik.ViewModels.Settings
         public ExerciseSettingsViewModel(ExerciseSettings exerciseSettings)
         {
             _exerciseSettings = exerciseSettings;
+
             Name = exerciseSettings.Exercise.Name;
 
             TargetRepetitionsOptions = new ObservableCollection<IntOption>
             {
+                new IntOption { IntValue = 5 },
+                new IntOption { IntValue = 7 },
                 new IntOption { IntValue = 10 },
+                new IntOption { IntValue = 12 },
                 new IntOption { IntValue = 15 },
+                new IntOption { IntValue = 18 },
                 new IntOption { IntValue = 20 },
+                new IntOption { IntValue = 21 },
+                new IntOption { IntValue = 22 },
                 new IntOption { IntValue = 25 },
                 new IntOption { IntValue = 30 },
+                new IntOption { IntValue = 35 },
+                new IntOption { IntValue = 40 },
+                new IntOption { IntValue = 45 },
+                new IntOption { IntValue = 50 },
             };
 
-            SelectedTargetRepetitionsOption = TargetRepetitionsOptions.FirstOrDefault(o => o.IntValue == exerciseSettings.TargetRepetitions)
-                                            ?? TargetRepetitionsOptions[0];
+            IntOption selectedTargetRepetitionsOption = TargetRepetitionsOptions.FirstOrDefault(o => o.IntValue == exerciseSettings.TargetRepetitions)
+                                                        ?? TargetRepetitionsOptions[0];
+
+            SetField(ref _selectedTargetRepetitionsOption, selectedTargetRepetitionsOption);
 
             TimeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>
             {
+                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(3) },
+                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(5) },
+                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(10) },
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(15) },
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(20) },
+                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(25) },
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(30) },
+                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(35) },
+                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(40) },
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(45) },
             };
 
-            SelectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpan == exerciseSettings.TimeBetweenSets) 
-                                      ?? TimeBetweenSetsOptions[0];
+            TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpan == exerciseSettings.TimeBetweenSets) 
+                                                           ?? TimeBetweenSetsOptions[0];
+
+            SetField(ref _selectedTimeBetweenSetsOption, selectedTimeBetweenSetsOption);
 
             ExecutionTimeOptions = new ObservableCollection<TimeSpanOption>
             {
@@ -155,8 +176,10 @@ namespace Sportik.ViewModels.Settings
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(5) },
             };
 
-            SelectedExecutionTimeOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpan == exerciseSettings.ExecutionTime)
-                                      ?? ExecutionTimeOptions[0];
+            TimeSpanOption selectedExecutionTimeOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpan == exerciseSettings.ExecutionTime)
+                                                         ?? ExecutionTimeOptions[0];
+
+            SetField(ref _selectedExecutionTimeOption, selectedExecutionTimeOption);
         }
 
         public void Dispose()
@@ -166,25 +189,13 @@ namespace Sportik.ViewModels.Settings
 
         private async Task UpdateExerciseSettingsAsync(CancellationToken cancellationToken)
         {
-            ExerciseSettingsDelta exerciseSettingsDelta = new ExerciseSettingsDelta();
-
-            if (SelectedTargetRepetitionsOption != null)
+            ExerciseSettingsDelta exerciseSettingsDelta = new ExerciseSettingsDelta()
             {
-                exerciseSettingsDelta.Change |= ExerciseSettingsChange.TargetRepetitions;
-                exerciseSettingsDelta.TargetRepetitions = SelectedTargetRepetitionsOption.IntValue;
-            }
-
-            if (SelectedTimeBetweenSetsOption != null)
-            {
-                exerciseSettingsDelta.Change |= ExerciseSettingsChange.TimeBetweenSets;
-                exerciseSettingsDelta.TimeBetweenSets = SelectedTimeBetweenSetsOption.TimeSpan;
-            }
-
-            if (SelectedExecutionTimeOption != null)
-            {
-                exerciseSettingsDelta.Change |= ExerciseSettingsChange.ExecutionTime;
-                exerciseSettingsDelta.ExecutionTime = SelectedExecutionTimeOption.TimeSpan;
-            }
+                Change = ExerciseSettingsChange.TargetRepetitions | ExerciseSettingsChange.TimeBetweenSets | ExerciseSettingsChange.ExecutionTime,
+                TargetRepetitions = SelectedTargetRepetitionsOption.IntValue,
+                TimeBetweenSets = SelectedTimeBetweenSetsOption.TimeSpan,
+                ExecutionTime = SelectedExecutionTimeOption.TimeSpan,
+            };
 
             await ExerciseSettingsService.UpdateExerciseSettingsAsync(exerciseSettingsDelta, _exerciseSettings.Exercise, cancellationToken);
         }

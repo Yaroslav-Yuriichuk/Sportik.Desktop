@@ -10,6 +10,8 @@ namespace Sportik.Services.Statistics
     {
         Task<IEnumerable<WeekStatistics>> GetWeekStatisticsAsync(CancellationToken cancellationToken = default);
 
+        DayStatistics AddExerciseStatisticsDelta(ExerciseStatisticsDelta exerciseStatisticsDelta, DateTime date);
+        
         Task<DayStatistics> AddExerciseStatisticsDeltaAsync(ExerciseStatisticsDelta exerciseStatisticsDelta, DateTime date, CancellationToken cancellationToken = default);
     }
 }

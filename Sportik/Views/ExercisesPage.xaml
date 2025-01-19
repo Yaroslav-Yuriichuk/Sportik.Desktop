@@ -5,12 +5,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:exercisesviewmodels="using:Sportik.ViewModels.Exercises"
+    xmlns:converters="using:Sportik.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
         <exercisesviewmodels:ExercisesViewModel />
     </Page.DataContext>
+
+    <Page.Resources>
+        <converters:TimeSpanToLongHoursMinutesSecondsStringConverter x:Name="TimeSpanToLongHoursMinutesSecondsStringConverter" />
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+    </Page.Resources>
 
     <Grid>
 
@@ -26,7 +32,7 @@
 
         <ListView Grid.Row="1"
                   IsItemClickEnabled="True"
-                  SelectionMode="Single"
+                  SelectionMode="None"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Stretch"
                   Margin="15"
@@ -52,7 +58,7 @@
                             </Grid.ColumnDefinitions>
 
                             <SymbolIcon Grid.Column="0"
-                                        Symbol="Save"
+                                        Symbol="World"
                                         Width="27"
                                         Height="27" />
 
@@ -68,11 +74,38 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right"
                                     Margin="15 0 15 15"
-                                    Visibility="Visible">
+                                    Visibility="{Binding IsInWaitingState, Converter={StaticResource BoolToVisibilityConverter}}">
 
-                            <Button Content="Mark as completed" />
+                            <TextBlock Margin="0 0 10 0"
+                                       VerticalAlignment="Center">
+                                <Run Text="Next reminder in"></Run>
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock" />
 
                         </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 15 15"
+                                    Visibility="{Binding IsInExecutingState, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                            <TextBlock Margin="0 0 10 0"
+                                       VerticalAlignment="Center">
+                                <Run Text="Only"></Run>
+                                <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                                <Run Text="left to complete"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock"
+                                        Margin="0 0 10 0"/>
+
+                            <Button Content="Mark as completed"
+                                    Command="{Binding CompleteCommand}"/>
+
+                        </StackPanel>
+
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

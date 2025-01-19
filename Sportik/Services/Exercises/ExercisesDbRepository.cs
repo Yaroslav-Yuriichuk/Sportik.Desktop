@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,20 @@ namespace Sportik.Services.Exercises
             _dbContext = dbContext;
         }
 
+        public Exercise GetById(int id)
+        {
+            return _dbContext.Exercises
+                .Include(exercise => exercise.ExerciseSettings)
+                .FirstOrDefault(exercise => exercise.Id == id);
+        }
+
+        public IEnumerable<Exercise> GetAll()
+        {
+            return _dbContext.Exercises
+                .Include(exercise => exercise.ExerciseSettings)
+                .ToList();
+        }
+
         public async Task<Exercise> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Exercises
@@ -30,10 +45,26 @@ namespace Sportik.Services.Exercises
                 .ToListAsync(cancellationToken);
         }
 
+        public Exercise Add(Exercise entity)
+        {
+            _dbContext.Exercises.Add(entity);
+            _dbContext.SaveChanges();
+
+            return entity;
+        }
+
         public async Task<Exercise> AddAsync(Exercise entity, CancellationToken cancellationToken = default)
         {
             await _dbContext.Exercises.AddAsync(entity, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return entity;
+        }
+
+        public Exercise Update(Exercise entity)
+        {
+            _dbContext.Exercises.Update(entity);
+            _dbContext.SaveChanges();
 
             return entity;
         }
@@ -46,7 +77,28 @@ namespace Sportik.Services.Exercises
             return entity;
         }
 
-        public async Task<Exercise> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public Exercise DeleteById(int id)
+        {
+            Exercise entity = GetById(id);
+
+            if (entity != null)
+            {
+                _dbContext.Exercises.Remove(entity);
+                _dbContext.SaveChanges();
+            }
+
+            return entity;
+        }
+
+        public Exercise Delete(Exercise entity)
+        {
+            _dbContext.Exercises.Remove(entity);
+            _dbContext.SaveChanges();
+
+            return entity;
+        }
+
+        public async Task<Exercise> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             Exercise entity = await GetByIdAsync(id, cancellationToken);
 
@@ -65,6 +117,13 @@ namespace Sportik.Services.Exercises
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return entity;
+        }
+
+        public Exercise GetByKind(ExerciseKind exerciseKind)
+        {
+            return _dbContext.Exercises
+                .Include(exercise => exercise.ExerciseSettings)
+                .FirstOrDefault(exercise => exercise.Kind == exerciseKind);
         }
 
         public async Task<Exercise> GetByKindAsync(ExerciseKind exerciseKind, CancellationToken cancellationToken = default)

@@ -5,8 +5,10 @@ using Sportik.Models.Statistics;
 
 namespace Sportik.Services.Statistics
 {
-    internal interface IDayStatisticsRepository : IRepository<DayStatistics>
+    internal interface IDayStatisticsRepository : ISyncRepository<DayStatistics>, IAsyncRepository<DayStatistics>
     {
+        DayStatistics GetByDate(DateTime date);
+
         Task<DayStatistics> GetByDateAsync(DateTime date, CancellationToken cancellationToken = default);
     }
 }

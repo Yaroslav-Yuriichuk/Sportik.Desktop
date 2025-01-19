@@ -7,6 +7,8 @@ namespace Sportik.Services.Exercises
 {
     internal interface IExercisesService
     {
-        Task<IEnumerable<Exercise>> GetExercisesAsync(CancellationToken cancellationToken = default);
+        IEnumerable<Exercise> GetAllExercises();
+
+        Task<IEnumerable<Exercise>> GetAllExercisesAsync(CancellationToken cancellationToken = default);
     }
 }

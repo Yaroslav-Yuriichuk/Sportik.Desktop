@@ -4,15 +4,7 @@ namespace Sportik.Core
 {
     internal interface ITimer
     {
-        TimeSpan Interval { get; }
-
-        DateTime StartTime { get; }
-
-        DateTime PauseTime { get; }
-
-        DateTime ResumeTime { get; }
-
-        DateTime StopTime { get; }
+        TimeSpan Interval { get; set; }
 
         TimeSpan ElapsedTime { get; }
 
@@ -22,6 +14,8 @@ namespace Sportik.Core
 
         bool Loop { get; set; }
 
+        event EventHandler Elapsed;
+
         void Start();
 
         void Pause();
@@ -29,5 +23,7 @@ namespace Sportik.Core
         void Resume();
 
         void Stop();
+
+        void Reset();
     }
 }

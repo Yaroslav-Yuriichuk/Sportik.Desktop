@@ -2,5 +2,5 @@
 
 namespace Sportik.Services.Statistics
 {
-    internal interface IExerciseStatisticsRepository : IRepository<ExerciseStatistics> { }
+    internal interface IExerciseStatisticsRepository : ISyncRepository<ExerciseStatistics>, IAsyncRepository<ExerciseStatistics> { }
 }

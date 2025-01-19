@@ -2,7 +2,11 @@
 {
     internal enum ExerciseKind
     {
-        PushUps,
-        PullUps,
+        TraditionalPushUps,
+        WideGripPushUps,
+        CloseGripPushUps,
+        NeutralGripPullUps,
+        WideGripPullUps,
+        CloseGripPullUps,
     }
 }

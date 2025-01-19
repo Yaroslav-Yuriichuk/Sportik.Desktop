@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Models;
@@ -15,7 +14,12 @@ namespace Sportik.Services.Exercises
             _exercisesRepository = exercisesRepository;
         }
 
-        public async Task<IEnumerable<Exercise>> GetExercisesAsync(CancellationToken cancellationToken = default)
+        public IEnumerable<Exercise> GetAllExercises()
+        {
+            return _exercisesRepository.GetAll();
+        }
+
+        public async Task<IEnumerable<Exercise>> GetAllExercisesAsync(CancellationToken cancellationToken = default)
         {
             return await _exercisesRepository.GetAllAsync(cancellationToken);
         }

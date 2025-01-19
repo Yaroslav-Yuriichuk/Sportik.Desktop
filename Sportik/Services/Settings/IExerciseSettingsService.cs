@@ -8,7 +8,9 @@ namespace Sportik.Services.Settings
 {
     internal interface IExerciseSettingsService
     {
-        Task<IEnumerable<ExerciseSettings>> GetExerciseSettingsAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<ExerciseSettings>> GetAllExerciseSettingsAsync(CancellationToken cancellationToken = default);
+
+        ExerciseSettings GetExerciseSettings(Exercise exercise);
 
         Task<ExerciseSettings> GetExerciseSettingsAsync(Exercise exercise, CancellationToken cancellationToken = default);
 

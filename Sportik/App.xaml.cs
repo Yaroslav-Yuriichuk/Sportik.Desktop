@@ -24,7 +24,9 @@ namespace Sportik
         public App()
         {
             this.InitializeComponent();
+
             this.Suspending += OnSuspending;
+            this.Resuming += OnResuming;
 
             ConfigureServices();
             ConfigureDatabase();
@@ -70,6 +72,14 @@ namespace Sportik
             reminderService.Stop();
 
             deferral.Complete();
+        }
+
+        private void OnResuming(object sender, object e)
+        {
+            IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
+            IExercisesService exercisesService = ServiceProvider.GetService<IExercisesService>();
+
+            reminderService.Start(exercisesService.GetAllExercises());
         }
 
         private void ConfigureServices()

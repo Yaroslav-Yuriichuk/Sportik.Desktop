@@ -7,9 +7,9 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="0673a919-54fc-4f4c-a08f-54aa3a790e94"
+    Name="YYuriichuk.Sportik"
     Publisher="CN=Yaroslav Yuriichuk"
-    Version="1.0.1.0" />
+    Version="1.0.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="0673a919-54fc-4f4c-a08f-54aa3a790e94" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

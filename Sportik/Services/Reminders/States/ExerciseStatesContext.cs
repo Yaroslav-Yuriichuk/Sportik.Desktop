@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Core;
 using Sportik.Models;
@@ -38,7 +37,7 @@ namespace Sportik.Services.Reminders.States
 
         public void Dispose()
         {
-            CurrentState?.Exit();
+            Switch(null);
         }
 
         public void Switch(ExerciseState state)

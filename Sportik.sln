@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportik", "Sportik\Sportik.csproj", "{178E3990-11F3-42E3-AD0E-988EBBB3004C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportik.UWP", "Sportik.UWP\Sportik.UWP.csproj", "{178E3990-11F3-42E3-AD0E-988EBBB3004C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

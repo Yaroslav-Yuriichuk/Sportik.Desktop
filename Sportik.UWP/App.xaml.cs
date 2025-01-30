@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,8 @@ namespace Sportik.UWP
 
             ConfigureServices();
             ConfigureDatabase();
+
+            ApplicationLanguages.PrimaryLanguageOverride = "en-US";
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs e)

@@ -2,8 +2,8 @@
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.UWP.Behaviors;
-using Sportik.UWP.Services.Navigation;
 using Sportik.UWP.ViewModels.Navigation;
+using Sportik.UWP.Services;
 
 namespace Sportik.UWP
 {

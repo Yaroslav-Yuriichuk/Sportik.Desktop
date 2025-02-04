@@ -1,6 +1,6 @@
 ﻿using System;
 using Windows.UI.Xaml.Data;
-using Sportik.UWP.Helpers;
+using Sportik.Core.Helpers;
 
 namespace Sportik.UWP.Converters
 {

@@ -3,15 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Automation.Events;
+using Sportik.Automation.Services;
+using Sportik.Automation.States;
+using Sportik.Core.Helpers;
+using Sportik.Core.Models;
+using Sportik.Core.Models.Settings;
+using Sportik.Core.Models.Statistics;
+using Sportik.Core.Services.Interfaces;
 using Sportik.UWP.Core;
 using Sportik.UWP.Helpers;
-using Sportik.UWP.Models;
-using Sportik.UWP.Models.Settings;
-using Sportik.UWP.Models.Statistics;
-using Sportik.UWP.Services.Events;
-using Sportik.UWP.Services.Reminders;
-using Sportik.UWP.Services.Settings;
-using Sportik.UWP.Services.Statistics;
 
 namespace Sportik.UWP.ViewModels.Exercises
 {
@@ -142,7 +143,7 @@ namespace Sportik.UWP.ViewModels.Exercises
                 ExecutionTime = timer.Interval - timer.ElapsedTime;
             }
 
-            EventsService.Event += EventsService_Event;
+            EventsService.AddListener<ExerciseStateChangedEventArgs>(EventsService_Event);
         }
 
         public void Dispose()
@@ -152,7 +153,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             _exerciseReminderUpdateTimer.Stop();
             _exerciseExecutionUpdateTimer.Stop();
 
-            EventsService.Event -= EventsService_Event;
+            EventsService.RemoveListener<ExerciseStateChangedEventArgs>(EventsService_Event);
         }
 
         private async Task UpdateExerciseSettingsAsync(CancellationToken cancellationToken)
@@ -166,59 +167,61 @@ namespace Sportik.UWP.ViewModels.Exercises
             await ExerciseSettingsService.UpdateExerciseSettingsAsync(exerciseSettingsDelta, _exercise, cancellationToken);
         }
 
-        private void EventsService_Event(EventArgs args)
+        private void EventsService_Event(ExerciseStateChangedEventArgs args)
         {
-            if (args is ExerciseStateChangedEventArgs stateChangedEventArgs && CompareHelper.EqualById(_exercise, stateChangedEventArgs.Exercise))
+            if (!CompareHelper.EqualById(_exercise, args.Exercise))
             {
-                _ = UIThreadHelper.RunOnUIThreadAsync(() =>
-                {
-                    ExerciseStateKind previousState = stateChangedEventArgs.PreviousState;
-
-                    switch (previousState)
-                    {
-                        case ExerciseStateKind.Unknown:
-                        case ExerciseStateKind.Disabled:
-                            break;
-                        case ExerciseStateKind.Waiting:
-                            _exerciseReminderUpdateTimer.Stop();
-                            IsInWaitingState = false;
-                            break;
-                        case ExerciseStateKind.Executing:
-                            _exerciseExecutionUpdateTimer.Stop();
-                            IsInExecutingState = false;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
-                    ExerciseStateKind currentState = stateChangedEventArgs.CurrentState;
-
-                    switch (currentState)
-                    {
-                        case ExerciseStateKind.Unknown:
-                        case ExerciseStateKind.Disabled:
-                            break;
-                        case ExerciseStateKind.Waiting:
-                            IsInWaitingState = true;
-                            _exerciseReminderUpdateTimer.Start();
-                            break;
-                        case ExerciseStateKind.Executing:
-                            IsInExecutingState = true;
-                            _exerciseExecutionUpdateTimer.Start();
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
-                    ITimer timer = ExerciseTimersService.GetTimer(_exercise);
-
-                    if (timer != null)
-                    {
-                        ReminderTime = timer.Interval - timer.ElapsedTime;
-                        ExecutionTime = timer.Interval - timer.ElapsedTime;
-                    }
-                });
+                return;
             }
+
+            _ = UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                ExerciseStateKind previousState = args.PreviousState;
+
+                switch (previousState)
+                {
+                    case ExerciseStateKind.Unknown:
+                    case ExerciseStateKind.Disabled:
+                        break;
+                    case ExerciseStateKind.Waiting:
+                        _exerciseReminderUpdateTimer.Stop();
+                        IsInWaitingState = false;
+                        break;
+                    case ExerciseStateKind.Executing:
+                        _exerciseExecutionUpdateTimer.Stop();
+                        IsInExecutingState = false;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                ExerciseStateKind currentState = args.CurrentState;
+
+                switch (currentState)
+                {
+                    case ExerciseStateKind.Unknown:
+                    case ExerciseStateKind.Disabled:
+                        break;
+                    case ExerciseStateKind.Waiting:
+                        IsInWaitingState = true;
+                        _exerciseReminderUpdateTimer.Start();
+                        break;
+                    case ExerciseStateKind.Executing:
+                        IsInExecutingState = true;
+                        _exerciseExecutionUpdateTimer.Start();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                ITimer timer = ExerciseTimersService.GetTimer(_exercise);
+
+                if (timer != null)
+                {
+                    ReminderTime = timer.Interval - timer.ElapsedTime;
+                    ExecutionTime = timer.Interval - timer.ElapsedTime;
+                }
+            });
         }
 
         private void UpdateReminderTime(object sender, EventArgs e)

@@ -25,7 +25,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm|arm64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>82F0C2E6840B7CB17F262BFFDC5FF6A6A8196E0F</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>329ECBBEF467FE630AAD7FD554636D62E187FEE2</PackageCertificateThumbprint>
     <PackageCertificateKeyFile />
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <AppxPackageDir>C:\Users\mrslu\Documents\Personal\UWP\Sportik\Releases\</AppxPackageDir>
@@ -136,64 +136,12 @@
     <Compile Include="Converters\DateTimeToDayNameConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesSecondsStringConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesStringConverter.cs" />
-    <Compile Include="Data\Database\AppDbContext.cs" />
-    <Compile Include="Helpers\CalendarHelper.cs" />
-    <Compile Include="Core\DefaultTimer.cs" />
-    <Compile Include="Helpers\CompareHelper.cs" />
-    <Compile Include="Helpers\DefaultTimerBuilder.cs" />
-    <Compile Include="Core\IState.cs" />
-    <Compile Include="Core\IStatesContext.cs" />
-    <Compile Include="Core\ITimer.cs" />
     <Compile Include="Helpers\UIThreadHelper.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\ExerciseKind.cs" />
-    <Compile Include="Models\Notifications\ReminderNotification.cs" />
-    <Compile Include="Models\Settings\ExerciseSettings.cs" />
-    <Compile Include="Models\Settings\ExerciseSettingsDelta.cs" />
-    <Compile Include="Models\Statistics\DayStatistics.cs" />
-    <Compile Include="Models\Statistics\ExerciseStatistics.cs" />
-    <Compile Include="Models\Statistics\ExerciseStatisticsDelta.cs" />
-    <Compile Include="Models\Statistics\WeekStatistics.cs" />
-    <Compile Include="Services\Events\EventsService.cs" />
-    <Compile Include="Services\Events\IEventsService.cs" />
-    <Compile Include="Services\Exercises\ExercisesDbRepository.cs" />
-    <Compile Include="Services\Exercises\ExercisesService.cs" />
-    <Compile Include="Services\Exercises\IExercisesRepository.cs" />
-    <Compile Include="Services\Exercises\IExercisesService.cs" />
-    <Compile Include="Services\IAsyncRepository.cs" />
-    <Compile Include="Services\ISyncRepository.cs" />
-    <Compile Include="Services\Navigation\FrameNavigationService.cs" />
-    <Compile Include="Services\Navigation\INavigationService.cs" />
-    <Compile Include="Models\Exercise.cs" />
-    <Compile Include="Services\Reminders\ExerciseTimersService.cs" />
-    <Compile Include="Services\Reminders\IExerciseTimersService.cs" />
-    <Compile Include="Services\Notifications\INotificationService.cs" />
-    <Compile Include="Services\Notifications\ToastNotificationService.cs" />
-    <Compile Include="Services\Reminders\ExerciseStateKind.cs" />
-    <Compile Include="Services\Reminders\ExerciseStateChangedEventArgs.cs" />
-    <Compile Include="Services\Reminders\IReminderService.cs" />
-    <Compile Include="Services\Reminders\ReminderService.cs" />
-    <Compile Include="Services\Reminders\States\DisabledExerciseState.cs" />
-    <Compile Include="Services\Reminders\States\ExecutingExerciseState.cs" />
-    <Compile Include="Services\Reminders\States\ExerciseStatesContext.cs" />
-    <Compile Include="Services\Reminders\States\ExerciseState.cs" />
-    <Compile Include="Services\Reminders\States\WaitingExerciseState.cs" />
-    <Compile Include="Services\Settings\ExerciseExecutionTimeChangedEventArgs.cs" />
-    <Compile Include="Services\Settings\ExerciseIsEnabledChangedEventArgs.cs" />
-    <Compile Include="Services\Settings\ExerciseSettingsDbRepository.cs" />
-    <Compile Include="Services\Settings\ExerciseSettingsService.cs" />
-    <Compile Include="Services\Settings\ExerciseTimeBetweenSetsChangedEventArgs.cs" />
-    <Compile Include="Services\Settings\IExerciseSettingsRepository.cs" />
-    <Compile Include="Services\Settings\IExerciseSettingsService.cs" />
-    <Compile Include="Services\Statistics\DayStatisticsDbRepository.cs" />
-    <Compile Include="Services\Statistics\ExerciseStatisticsDbRepository.cs" />
-    <Compile Include="Services\Statistics\ExerciseStatisticsDeltaAddedEventArgs.cs" />
-    <Compile Include="Services\Statistics\IDayStatisticsRepository.cs" />
-    <Compile Include="Services\Statistics\IExerciseStatisticsRepository.cs" />
-    <Compile Include="Services\Statistics\IExerciseStatisticsService.cs" />
-    <Compile Include="Services\Statistics\ExerciseStatisticsService.cs" />
+    <Compile Include="Services\INavigationService.cs" />
+    <Compile Include="Services\FrameNavigationService.cs" />
     <Compile Include="ViewModels\Exercises\ExerciseViewModel.cs" />
     <Compile Include="ViewModels\IntOption.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
@@ -321,8 +269,28 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Sportik.UWP_TemporaryKey.pfx" />
     <None Include="Sportik_TemporaryKey.pfx" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sportik.Automation\Sportik.Automation.csproj">
+      <Project>{f20ae7f9-ff8e-4117-8bab-1cfd84a5f21f}</Project>
+      <Name>Sportik.Automation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sportik.Core\Sportik.Core.csproj">
+      <Project>{233acd8f-307a-4d29-85c3-5e5322a2e52c}</Project>
+      <Name>Sportik.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sportik.Data\Sportik.Data.csproj">
+      <Project>{8724db54-7473-4d61-8d39-31851b6e605b}</Project>
+      <Name>Sportik.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sportik.Notification\Sportik.Notification.csproj">
+      <Project>{ebd98160-dfe8-4e2f-8b01-2683ed6920f2}</Project>
+      <Name>Sportik.Notification</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

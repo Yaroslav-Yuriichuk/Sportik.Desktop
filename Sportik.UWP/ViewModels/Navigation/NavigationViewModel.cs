@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.UWP.Services.Navigation;
 using Sportik.UWP.Views;
+using Sportik.UWP.Services;
 
 namespace Sportik.UWP.ViewModels.Navigation
 {

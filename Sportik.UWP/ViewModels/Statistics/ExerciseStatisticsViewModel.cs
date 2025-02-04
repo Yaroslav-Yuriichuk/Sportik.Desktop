@@ -1,4 +1,4 @@
-﻿using Sportik.UWP.Models.Statistics;
+﻿using Sportik.Core.Models.Statistics;
 
 namespace Sportik.UWP.ViewModels.Statistics
 {

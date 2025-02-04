@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using Sportik.UWP.Models.Statistics;
+using Sportik.Core.Models.Statistics;
 
 namespace Sportik.UWP.ViewModels.Statistics
 {

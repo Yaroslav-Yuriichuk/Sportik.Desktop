@@ -3,15 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Automation.Events;
+using Sportik.Automation.Services;
+using Sportik.Automation.States;
+using Sportik.Core.Helpers;
+using Sportik.Core.Models;
+using Sportik.Core.Models.Settings;
+using Sportik.Core.Models.Statistics;
+using Sportik.Core.Services.Interfaces;
 using Sportik.UWP.Core;
 using Sportik.UWP.Helpers;
-using Sportik.UWP.Models;
-using Sportik.UWP.Models.Settings;
-using Sportik.UWP.Models.Statistics;
-using Sportik.UWP.Services.Events;
-using Sportik.UWP.Services.Reminders;
-using Sportik.UWP.Services.Settings;
-using Sportik.UWP.Services.Statistics;
 
 namespace Sportik.UWP.ViewModels.Exercises
 {

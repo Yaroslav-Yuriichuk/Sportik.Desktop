@@ -1,11 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Sportik.UWP.Services.Statistics;
-using Sportik.UWP.Models.Statistics;
+using Sportik.Core.Models.Statistics;
 
 namespace Sportik.UWP.ViewModels.Statistics
 {

@@ -5,16 +5,17 @@ using Windows.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.UWP.Data.Database;
-using Sportik.UWP.Models;
-using Sportik.UWP.Models.Settings;
-using Sportik.UWP.Services.Events;
-using Sportik.UWP.Services.Exercises;
-using Sportik.UWP.Services.Navigation;
-using Sportik.UWP.Services.Notifications;
-using Sportik.UWP.Services.Reminders;
-using Sportik.UWP.Services.Settings;
-using Sportik.UWP.Services.Statistics;
+using Sportik.Core.Models;
+using Sportik.Core.Repositories.Interfaces;
+using Sportik.Core.Services.Interfaces;
+using Sportik.Data.Database;
+using Sportik.Data.Repositories.Implementations;
+using Sportik.Data.Services.Implementations;
+using Sportik.Core.Models.Settings;
+using Sportik.Notification.Services;
+using Sportik.Core.Services.Implementations;
+using Sportik.UWP.Services;
+using Sportik.Automation.Services;
 
 namespace Sportik.UWP
 {

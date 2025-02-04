@@ -5,9 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.UWP.Services.Settings;
-using Sportik.UWP.Models;
-using Sportik.UWP.Services.Exercises;
+using Sportik.Core.Models;
+using Sportik.Core.Services.Interfaces;
 
 namespace Sportik.UWP.ViewModels.Exercises
 {

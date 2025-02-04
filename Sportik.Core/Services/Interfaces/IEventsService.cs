@@ -4,8 +4,10 @@ namespace Sportik.Core.Services.Interfaces
 {
     public interface IEventsService
     {
-        event Action<EventArgs> Event;
+        void AddListener<TEventArgs>(Action<TEventArgs> callback) where TEventArgs : EventArgs;
 
-        void RaiseEvent(EventArgs args);
+        void RemoveListener<TEventArgs>(Action<TEventArgs> callback) where TEventArgs : EventArgs;
+
+        void RaiseEvent<TEventArgs>(TEventArgs args) where TEventArgs : EventArgs;
     }
 }

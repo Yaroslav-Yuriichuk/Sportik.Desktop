@@ -19,22 +19,19 @@ namespace Sportik.UWP.Services.Reminders.States
 
         public override void Enter()
         {
-            _eventsService.Event += EventsService_Event;
+            _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
         }
 
         public override void Exit()
         {
-            _eventsService.Event -= EventsService_Event;
+            _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
         }
 
-        private void EventsService_Event(EventArgs args)
+        private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (args is ExerciseIsEnabledChangedEventArgs changedEventArgs)
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && args.IsEnabled)
             {
-                if (CompareHelper.EqualById(Context.Exercise, changedEventArgs.Exercise) && changedEventArgs.IsEnabled)
-                {
-                    Context.Switch(Context.WaitingExerciseState);
-                }
+                Context.Switch(Context.WaitingExerciseState);
             }
         }
     }

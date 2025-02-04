@@ -26,7 +26,9 @@ namespace Sportik.UWP.Services.Reminders.States
 
         public override void Enter()
         {
-            _eventsService.Event += EventsService_Event;
+            _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
 
@@ -43,7 +45,9 @@ namespace Sportik.UWP.Services.Reminders.States
 
         public override void Exit()
         {
-            _eventsService.Event -= EventsService_Event;
+            _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
 
@@ -55,31 +59,28 @@ namespace Sportik.UWP.Services.Reminders.States
             }
         }
 
-        private void EventsService_Event(EventArgs args)
+        private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (args is ExerciseIsEnabledChangedEventArgs isEnabledChangedEventArgs)
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && !args.IsEnabled)
             {
-                if (CompareHelper.EqualById(Context.Exercise, isEnabledChangedEventArgs.Exercise) && !isEnabledChangedEventArgs.IsEnabled)
-                {
-                    Context.Switch(Context.DisabledExerciseState);
-                }
+                Context.Switch(Context.DisabledExerciseState);
             }
+        }
 
-            if (args is ExerciseExecutionTimeChangedEventArgs executionTimeChangedEventArgs)
+        private void EventsService_Event(ExerciseExecutionTimeChangedEventArgs args)
+        {
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                if (CompareHelper.EqualById(Context.Exercise, executionTimeChangedEventArgs.Exercise))
-                {
-                    ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
-                    timer.Interval = executionTimeChangedEventArgs.ExecutionTime;
-                }
+                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
+                timer.Interval = args.ExecutionTime;
             }
+        }
 
-            if (args is ExerciseStatisticsDeltaAddedEventArgs statisticsDeltaAddedEventArgs)
+        private void EventsService_Event(ExerciseStatisticsDeltaAddedEventArgs args)
+        {
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                if (CompareHelper.EqualById(Context.Exercise, statisticsDeltaAddedEventArgs.Exercise))
-                {
-                    Context.Switch(Context.WaitingExerciseState);
-                }
+                Context.Switch(Context.WaitingExerciseState);
             }
         }
 

@@ -31,7 +31,8 @@ namespace Sportik.UWP.Services.Reminders.States
 
         public override void Enter()
         {
-            _eventsService.Event += EventsService_Event;
+            _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
 
@@ -52,7 +53,8 @@ namespace Sportik.UWP.Services.Reminders.States
 
         public override void Exit()
         {
-            _eventsService.Event -= EventsService_Event;
+            _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
 
@@ -64,23 +66,20 @@ namespace Sportik.UWP.Services.Reminders.States
             }
         }
 
-        private void EventsService_Event(EventArgs args)
+        private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (args is ExerciseIsEnabledChangedEventArgs isEnabledChangedEventArgs)
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && !args.IsEnabled)
             {
-                if (CompareHelper.EqualById(Context.Exercise, isEnabledChangedEventArgs.Exercise) && !isEnabledChangedEventArgs.IsEnabled)
-                {
-                    Context.Switch(Context.DisabledExerciseState);
-                }
+                Context.Switch(Context.DisabledExerciseState);
             }
+        }
 
-            if (args is ExerciseTimeBetweenSetsChangedEventArgs timeBetweenSetsChangedEventArgs)
+        private void EventsService_Event(ExerciseTimeBetweenSetsChangedEventArgs args)
+        {
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                if (CompareHelper.EqualById(Context.Exercise, timeBetweenSetsChangedEventArgs.Exercise))
-                {
-                    ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
-                    timer.Interval = timeBetweenSetsChangedEventArgs.TimeBetweenSets;
-                }
+                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
+                timer.Interval = args.TimeBetweenSets;
             }
         }
 

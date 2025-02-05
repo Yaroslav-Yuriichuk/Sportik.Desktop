@@ -99,10 +99,13 @@ namespace Sportik.UWP
             serviceCollection.AddTransient<IExerciseStatisticsService, ExerciseStatisticsService>();
             serviceCollection.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
             serviceCollection.AddTransient<INotificationService, ToastNotificationService>();
+            
             serviceCollection.AddSingleton<IEventsService, EventsService>();
             serviceCollection.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
             serviceCollection.AddSingleton<INavigationService, FrameNavigationService>();
             serviceCollection.AddSingleton<IReminderService, ReminderService>();
+            serviceCollection.AddSingleton<Func<IExerciseSettingsService>>(sp => () => sp.GetService<IExerciseSettingsService>());
+            serviceCollection.AddSingleton<Func<INotificationService>>(sp => () => sp.GetService<INotificationService>());
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }

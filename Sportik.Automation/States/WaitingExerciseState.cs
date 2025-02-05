@@ -15,29 +15,31 @@ namespace Sportik.UWP.Services.Reminders.States
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
-        private readonly IExerciseSettingsService _exerciseSettingsService;
-        private readonly INotificationService _notificationService;
+        private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
+        private readonly Func<INotificationService> _notificationServiceFactory;
 
         public override ExerciseStateKind Kind => ExerciseStateKind.Waiting;
 
         public WaitingExerciseState(ExerciseStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            IExerciseSettingsService exerciseSettingsService, INotificationService notificationService) : base(context)
+            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
-            _exerciseSettingsService = exerciseSettingsService;
-            _notificationService = notificationService;
+            _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
+            _notificationServiceFactory = notificationServiceFactory;
         }
 
         public override void Enter()
         {
+            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
 
             timer.Loop = false;
-            timer.Interval = _exerciseSettingsService.GetExerciseSettings(Context.Exercise).TimeBetweenSets;
+            timer.Interval = exerciseSettingsService.GetExerciseSettings(Context.Exercise).TimeBetweenSets;
 
             timer.Elapsed += Timer_Elapsed;
 
@@ -85,9 +87,12 @@ namespace Sportik.UWP.Services.Reminders.States
 
         private void Timer_Elapsed(object sender, EventArgs e)
         {
-            ExerciseSettings exerciseSettings = _exerciseSettingsService.GetExerciseSettings(Context.Exercise);
+            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+            INotificationService notificationService = _notificationServiceFactory();
 
-            _notificationService.ShowReminder(new ReminderNotification()
+            ExerciseSettings exerciseSettings = exerciseSettingsService.GetExerciseSettings(Context.Exercise);
+
+            notificationService.ShowReminder(Context.Exercise, new ReminderNotification()
             {
                 Title = $"{Context.Exercise.Name} reminder!",
                 Texts = new []

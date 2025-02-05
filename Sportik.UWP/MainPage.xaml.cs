@@ -19,13 +19,18 @@ namespace Sportik.UWP
             {
                 frameNavigationService.Initialize(PagesFrame);
             }
-
-            DataContext = new NavigationViewModel();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            if (DataContext is NavigationViewModel navigationViewModel)
+            {
+                navigationViewModel.Dispose();
+            }
+
+            DataContext = new NavigationViewModel();
 
             _navigationViewCollapseBehavior?.Dispose();
             _navigationViewCollapseBehavior = new NavigationViewCollapseBehavior(PagesNavigationView, 850);
@@ -34,6 +39,11 @@ namespace Sportik.UWP
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
+
+            if (DataContext is NavigationViewModel navigationViewModel)
+            {
+                navigationViewModel.Dispose();
+            }
 
             _navigationViewCollapseBehavior?.Dispose();
             _navigationViewCollapseBehavior = null;

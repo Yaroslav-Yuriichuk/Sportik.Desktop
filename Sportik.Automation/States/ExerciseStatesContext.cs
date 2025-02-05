@@ -14,8 +14,8 @@ namespace Sportik.UWP.Services.Reminders.States
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
-        private readonly IExerciseSettingsService _exerciseSettingsService;
-        private readonly INotificationService _notificationService;
+        private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
+        private readonly Func<INotificationService> _notificationServiceFactory;
 
         public Exercise Exercise { get; }
 
@@ -28,16 +28,16 @@ namespace Sportik.UWP.Services.Reminders.States
         public ExerciseState CurrentState { get; private set; }
 
         public ExerciseStatesContext(Exercise exercise, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            IExerciseSettingsService exerciseSettingsService, INotificationService notificationService)
+            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
-            _exerciseSettingsService = exerciseSettingsService;
-            _notificationService = notificationService;
+            _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
+            _notificationServiceFactory = notificationServiceFactory;
 
             DisabledExerciseState = new DisabledExerciseState(this, _eventsService);
-            WaitingExerciseState = new WaitingExerciseState(this, _eventsService, _exerciseTimersService, _exerciseSettingsService, _notificationService);
-            ExecutingExerciseState = new ExecutingExerciseState(this, _eventsService, _exerciseTimersService, _exerciseSettingsService);
+            WaitingExerciseState = new WaitingExerciseState(this, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory);
+            ExecutingExerciseState = new ExecutingExerciseState(this, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory);
 
             Exercise = exercise;
             ExerciseState state = Exercise.ExerciseSettings.IsEnabled

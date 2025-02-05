@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Sportik.Automation.States;
 using Sportik.Core.Models;
@@ -14,16 +15,16 @@ namespace Sportik.Automation.Services
 
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
-        private readonly IExerciseSettingsService _exerciseSettingsService;
-        private readonly INotificationService _notificationService;
+        private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
+        private readonly Func<INotificationService> _notificationServiceFactory;
 
-        public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService, IExerciseSettingsService exerciseSettingsService,
-            INotificationService notificationService)
+        public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
-            _exerciseSettingsService = exerciseSettingsService;
-            _notificationService = notificationService;
+            _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
+            _notificationServiceFactory = notificationServiceFactory;
         }
 
         public void Start(IEnumerable<Exercise> exercises)
@@ -34,7 +35,7 @@ namespace Sportik.Automation.Services
             }
 
             _contexts = exercises
-                .Select(exercise => new ExerciseStatesContext(exercise, _eventsService, _exerciseTimersService, _exerciseSettingsService, _notificationService))
+                .Select(exercise => new ExerciseStatesContext(exercise, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory))
                 .ToArray();
         }
 

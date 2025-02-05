@@ -20,8 +20,8 @@
                         IsPaneOpen="True"
                         PaneDisplayMode="Left"
                         IsBackButtonVisible="Collapsed"
-                        MenuItemsSource="{Binding Options}"
-                        SelectedItem="{Binding SelectedMenuItem}">
+                        MenuItemsSource="{Binding MenuItemOptions}"
+                        SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}">
 
             <NavigationView.MenuItemTemplate>
                 <DataTemplate x:DataType="navigation:NavigationOption">

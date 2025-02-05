@@ -5,14 +5,18 @@ using Windows.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.UWP.Views;
 using Sportik.UWP.Services;
+using Sportik.Core.Services.Interfaces;
+using Sportik.Notification.Events;
+using System.Linq;
+using Sportik.UWP.Helpers;
 
 namespace Sportik.UWP.ViewModels.Navigation
 {
-    internal sealed class NavigationViewModel : ViewModel
+    internal sealed class NavigationViewModel : ViewModel, IDisposable
     {
         private ObservableCollection<NavigationOption> _options;
         
-        public ObservableCollection<NavigationOption> Options
+        public ObservableCollection<NavigationOption> MenuItemOptions
         {
             get => _options;
             set
@@ -36,16 +40,24 @@ namespace Sportik.UWP.ViewModels.Navigation
         public ICommand SelectionChangedCommand { get; }
 
         private INavigationService NavigationService => App.ServiceProvider.GetService<INavigationService>();
+        private IEventsService EventsService => App.ServiceProvider.GetService<IEventsService>();
 
         public NavigationViewModel()
         {
-            Options = new ObservableCollection<NavigationOption>()
+            SelectionChangedCommand = new RelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
+
+            MenuItemOptions = new ObservableCollection<NavigationOption>()
             {
                 new NavigationOption { Name = "Exercises", Icon = Symbol.AllApps, PageType = typeof(ExercisesPage), },
                 new NavigationOption { Name = "Statistics", Icon = Symbol.ViewAll, PageType = typeof(StatisticsPage), },
             };
 
-            SelectionChangedCommand = new RelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
+            EventsService.AddListener<ReminderNotificationAcceptedEventArgs>(EventsService_Event);
+        }
+
+        public void Dispose()
+        {
+            EventsService.RemoveListener<ReminderNotificationAcceptedEventArgs>(EventsService_Event);
         }
 
         private void HandleSelection(NavigationViewSelectionChangedEventArgs args)
@@ -59,6 +71,19 @@ namespace Sportik.UWP.ViewModels.Navigation
             if (args.SelectedItem is NavigationOption menuItem)
             {
                 NavigationService.Navigate(menuItem.PageType);
+            }
+        }
+
+        private void EventsService_Event(ReminderNotificationAcceptedEventArgs args)
+        {
+            NavigationOption option = MenuItemOptions.FirstOrDefault(o => o.PageType == typeof(ExercisesPage));
+
+            if (option != null && SelectedMenuItem != option)
+            {
+                _ = UIThreadHelper.RunOnUIThreadAsync(() =>
+                {
+                    SelectedMenuItem = option;
+                });
             }
         }
     }

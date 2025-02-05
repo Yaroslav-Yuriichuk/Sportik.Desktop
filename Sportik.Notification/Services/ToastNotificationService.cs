@@ -1,14 +1,23 @@
 ﻿using System;
-using System.Diagnostics;
 using Windows.UI.Notifications;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Sportik.Notification.Models;
+using Sportik.Core.Models;
+using Sportik.Core.Services.Interfaces;
+using Sportik.Notification.Events;
 
 namespace Sportik.Notification.Services
 {
     public sealed class ToastNotificationService : INotificationService
     {
-        public void ShowReminder(ReminderNotification reminderNotification)
+        private readonly IEventsService _eventsService;
+
+        public ToastNotificationService(IEventsService eventsService)
+        {
+            _eventsService = eventsService;
+        }
+
+        public void ShowReminder(Exercise exercise, ReminderNotification reminderNotification)
         {
             ToastContentBuilder builder = new ToastContentBuilder()
                 .AddText(reminderNotification.Title)
@@ -16,7 +25,9 @@ namespace Sportik.Notification.Services
                 .AddButton(new ToastButton()
                     .SetContent("View")
                     .AddArgument("view"))
-                .AddButton(new ToastButtonDismiss());
+                .AddButton(new ToastButton()
+                    .SetContent("Skip")
+                    .AddArgument("dismiss"));
 
             ToastNotification toast = new ToastNotification(builder.GetToastContent().GetXml())
             {
@@ -27,11 +38,23 @@ namespace Sportik.Notification.Services
             {
                 if (args is ToastActivatedEventArgs toastArgs)
                 {
-                    Debug.WriteLine($"User clicked on {toastArgs.Arguments}");
+                    switch (toastArgs.Arguments)
+                    {
+                        case "view":
+                            _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exercise));
+                            break;
+                        case "dismiss":
+                            _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exercise));
+                            break;
+                        default:
+                            break;
+                    }
                 }
             };
 
             ToastNotificationManager.CreateToastNotifier().Show(toast);
+
+            _eventsService.RaiseEvent(new ReminderNotificationShownEventArgs(exercise));
         }
     }
 }

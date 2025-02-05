@@ -150,6 +150,7 @@ namespace Sportik.UWP.ViewModels.Settings
 
             TimeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>
             {
+                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(1) },
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(3) },
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(5) },
                 new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(10) },

@@ -1,7 +1,6 @@
 ﻿using System;
-using Sportik.UWP.Core;
 
-namespace Sportik.UWP.Helpers
+namespace Sportik.Core.Timers
 {
     public class DefaultTimerBuilder
     {

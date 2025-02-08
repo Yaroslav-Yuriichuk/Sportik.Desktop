@@ -142,7 +142,7 @@
     </Compile>
     <Compile Include="Services\INavigationService.cs" />
     <Compile Include="Services\FrameNavigationService.cs" />
-    <Compile Include="ViewModels\Exercises\ExerciseViewModel.cs" />
+    <Compile Include="ViewModels\Exercises\ParallelExerciseViewModel.cs" />
     <Compile Include="ViewModels\IntOption.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\Settings\ExerciseSettingsViewModel.cs" />

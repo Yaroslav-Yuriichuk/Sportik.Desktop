@@ -12,9 +12,9 @@ namespace Sportik.UWP.ViewModels.Exercises
 {
     internal class ExercisesViewModel : ViewModel, IDisposable
     {
-        private ObservableCollection<ExerciseViewModel> _exercises;
+        private ObservableCollection<ParallelExerciseViewModel> _exercises;
 
-        public ObservableCollection<ExerciseViewModel> Exercises
+        public ObservableCollection<ParallelExerciseViewModel> Exercises
         {
             get => _exercises;
             set => SetField(ref _exercises, value);
@@ -33,7 +33,7 @@ namespace Sportik.UWP.ViewModels.Exercises
         {
             _loadCts.Cancel();
 
-            foreach (ExerciseViewModel exerciseViewModel in Exercises)
+            foreach (ParallelExerciseViewModel exerciseViewModel in Exercises)
             {
                 exerciseViewModel.Dispose();
             }
@@ -43,8 +43,8 @@ namespace Sportik.UWP.ViewModels.Exercises
         {
             IEnumerable<Exercise> exercises = await ExercisesService.GetAllExercisesAsync(cancellationToken);
 
-            Exercises = new ObservableCollection<ExerciseViewModel>(
-                exercises.Select(exercise => new ExerciseViewModel(exercise)));
+            Exercises = new ObservableCollection<ParallelExerciseViewModel>(
+                exercises.Select(exercise => new ParallelExerciseViewModel(exercise)));
         }
     }
 }

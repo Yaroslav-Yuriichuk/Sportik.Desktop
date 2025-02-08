@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Automation.Events;
+using Sportik.Automation.Models;
 using Sportik.Automation.Services;
 using Sportik.Automation.States;
 using Sportik.Core.Helpers;
@@ -11,12 +12,12 @@ using Sportik.Core.Models;
 using Sportik.Core.Models.Settings;
 using Sportik.Core.Models.Statistics;
 using Sportik.Core.Services.Interfaces;
-using Sportik.UWP.Core;
+using Sportik.Core.Timers;
 using Sportik.UWP.Helpers;
 
 namespace Sportik.UWP.ViewModels.Exercises
 {
-    internal sealed class ExerciseViewModel : ViewModel, IDisposable
+    internal sealed class ParallelExerciseViewModel : ViewModel, IDisposable
     {
         private string _name;
 
@@ -91,7 +92,7 @@ namespace Sportik.UWP.ViewModels.Exercises
         private readonly ITimer _exerciseReminderUpdateTimer;
         private readonly ITimer _exerciseExecutionUpdateTimer;
 
-        public ExerciseViewModel(Exercise exercise)
+        public ParallelExerciseViewModel(Exercise exercise)
         {
             _exercise = exercise;
 
@@ -112,21 +113,21 @@ namespace Sportik.UWP.ViewModels.Exercises
                 .SetLoop()
                 .Build();
 
-            ExerciseStateKind state = ReminderService.GetExerciseState(exercise);
+            ParallelExerciseState state = ReminderService.GetExerciseState<ParallelExerciseState>(exercise);
 
             switch (state)
             {
-                case ExerciseStateKind.Unknown:
-                case ExerciseStateKind.Disabled:
+                case ParallelExerciseState.Unknown:
+                case ParallelExerciseState.Disabled:
                     IsInWaitingState = false;
                     IsInExecutingState = false;
                     break;
-                case ExerciseStateKind.Waiting:
+                case ParallelExerciseState.Waiting:
                     IsInWaitingState = true;
                     IsInExecutingState = false;
                     _exerciseReminderUpdateTimer.Start();
                     break;
-                case ExerciseStateKind.Executing:
+                case ParallelExerciseState.Executing:
                     IsInWaitingState = false;
                     IsInExecutingState = true;
                     _exerciseExecutionUpdateTimer.Start();
@@ -135,7 +136,7 @@ namespace Sportik.UWP.ViewModels.Exercises
                     throw new ArgumentOutOfRangeException();
             }
 
-            ITimer timer = ExerciseTimersService.GetTimer(_exercise);
+            ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
 
             if (timer != null)
             {
@@ -143,7 +144,7 @@ namespace Sportik.UWP.ViewModels.Exercises
                 ExecutionTime = timer.Interval - timer.ElapsedTime;
             }
 
-            EventsService.AddListener<ExerciseStateChangedEventArgs>(EventsService_Event);
+            EventsService.AddListener<ParallelExerciseStateChangedEventArgs>(EventsService_Event);
         }
 
         public void Dispose()
@@ -153,7 +154,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             _exerciseReminderUpdateTimer.Stop();
             _exerciseExecutionUpdateTimer.Stop();
 
-            EventsService.RemoveListener<ExerciseStateChangedEventArgs>(EventsService_Event);
+            EventsService.RemoveListener<ParallelExerciseStateChangedEventArgs>(EventsService_Event);
         }
 
         private async Task UpdateExerciseSettingsAsync(CancellationToken cancellationToken)
@@ -167,7 +168,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             await ExerciseSettingsService.UpdateExerciseSettingsAsync(exerciseSettingsDelta, _exercise, cancellationToken);
         }
 
-        private void EventsService_Event(ExerciseStateChangedEventArgs args)
+        private void EventsService_Event(ParallelExerciseStateChangedEventArgs args)
         {
             if (!CompareHelper.EqualById(_exercise, args.Exercise))
             {
@@ -176,18 +177,18 @@ namespace Sportik.UWP.ViewModels.Exercises
 
             _ = UIThreadHelper.RunOnUIThreadAsync(() =>
             {
-                ExerciseStateKind previousState = args.PreviousState;
+                ParallelExerciseState previousState = args.PreviousState;
 
                 switch (previousState)
                 {
-                    case ExerciseStateKind.Unknown:
-                    case ExerciseStateKind.Disabled:
+                    case ParallelExerciseState.Unknown:
+                    case ParallelExerciseState.Disabled:
                         break;
-                    case ExerciseStateKind.Waiting:
+                    case ParallelExerciseState.Waiting:
                         _exerciseReminderUpdateTimer.Stop();
                         IsInWaitingState = false;
                         break;
-                    case ExerciseStateKind.Executing:
+                    case ParallelExerciseState.Executing:
                         _exerciseExecutionUpdateTimer.Stop();
                         IsInExecutingState = false;
                         break;
@@ -195,18 +196,18 @@ namespace Sportik.UWP.ViewModels.Exercises
                         throw new ArgumentOutOfRangeException();
                 }
 
-                ExerciseStateKind currentState = args.CurrentState;
+                ParallelExerciseState currentState = args.CurrentState;
 
                 switch (currentState)
                 {
-                    case ExerciseStateKind.Unknown:
-                    case ExerciseStateKind.Disabled:
+                    case ParallelExerciseState.Unknown:
+                    case ParallelExerciseState.Disabled:
                         break;
-                    case ExerciseStateKind.Waiting:
+                    case ParallelExerciseState.Waiting:
                         IsInWaitingState = true;
                         _exerciseReminderUpdateTimer.Start();
                         break;
-                    case ExerciseStateKind.Executing:
+                    case ParallelExerciseState.Executing:
                         IsInExecutingState = true;
                         _exerciseExecutionUpdateTimer.Start();
                         break;
@@ -214,7 +215,7 @@ namespace Sportik.UWP.ViewModels.Exercises
                         throw new ArgumentOutOfRangeException();
                 }
 
-                ITimer timer = ExerciseTimersService.GetTimer(_exercise);
+                ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
 
                 if (timer != null)
                 {
@@ -228,7 +229,7 @@ namespace Sportik.UWP.ViewModels.Exercises
         {
             _ = UIThreadHelper.RunOnUIThreadAsync(() =>
             {
-                ITimer timer = ExerciseTimersService.GetTimer(_exercise);
+                ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
 
                 if (timer != null)
                 {
@@ -241,7 +242,7 @@ namespace Sportik.UWP.ViewModels.Exercises
         {
             _ = UIThreadHelper.RunOnUIThreadAsync(() =>
             {
-                ITimer timer = ExerciseTimersService.GetTimer(_exercise);
+                ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
 
                 if (timer != null)
                 {

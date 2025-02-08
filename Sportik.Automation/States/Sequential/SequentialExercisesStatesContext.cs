@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Sportik.Automation.Services;
+using Sportik.Core.Helpers;
+using Sportik.Core.Models;
+using Sportik.Core.Services.Interfaces;
+using Sportik.Core.StateMachine;
+using Sportik.Notification.Services;
+
+namespace Sportik.Automation.States.Sequential
+{
+    internal sealed class SequentialExercisesStatesContext : IStatesContext<SequentialExerciseState>, IDisposable
+    {
+        private readonly Func<Exercise, SequentialExercisesStatesContext> _getContextCallback;
+        private readonly IEventsService _eventsService;
+
+        public IEnumerable<Exercise> Exercises { get; }
+        public Exercise Exercise { get; }
+
+        public SequentialExerciseState DisabledExerciseState { get; }
+        public SequentialExerciseState WaitingExerciseState { get; }
+        public SequentialExerciseState ExecutingExerciseState { get; }
+        public SequentialExerciseState QueuedExerciseState { get; }
+
+        public SequentialExerciseState CurrentState { get; private set; }
+
+        public SequentialExercisesStatesContext(IEnumerable<Exercise> exercises, Exercise exercise, Func<Exercise, SequentialExercisesStatesContext> getContextCallback,
+            IEventsService eventsService, IExerciseTimersService exerciseTimersService, Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
+        {
+            _getContextCallback = getContextCallback;
+            _eventsService = eventsService;
+
+            Exercises = exercises;
+            Exercise = exercise;
+
+            DisabledExerciseState = new DisabledSequentialExerciseState(this, eventsService, exerciseSettingsServiceFactory);
+            WaitingExerciseState = new WaitingSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
+            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory);
+            QueuedExerciseState = new QueuedSequentialExerciseState(this, eventsService);
+
+            Core.Models.Exercise firstEnabledExercise = Exercises.FirstOrDefault(e => e.ExerciseSettings.IsEnabled);
+
+            if (firstEnabledExercise != null)
+            {
+                SequentialExerciseState state = CompareHelper.EqualById(firstEnabledExercise, Exercise)
+                    ? WaitingExerciseState
+                    : QueuedExerciseState;
+
+                Switch(state);
+            }
+            else
+            {
+                Switch(DisabledExerciseState);
+            }
+        }
+
+        public void Switch(SequentialExerciseState state)
+        {
+            CurrentState?.Exit();
+            CurrentState = state;
+            CurrentState?.Enter();
+        }
+
+        public void Dispose()
+        {
+            Switch(null);
+        }
+
+        public SequentialExercisesStatesContext GetContext(Exercise exercise)
+        {
+            return _getContextCallback(exercise);
+        }
+    }
+}

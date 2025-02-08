@@ -1,18 +1,16 @@
-﻿using System;
-using Sportik.Automation.States;
-using Sportik.Core.Events;
+﻿using Sportik.Core.Events;
 using Sportik.Core.Helpers;
 using Sportik.Core.Services.Interfaces;
 
-namespace Sportik.UWP.Services.Reminders.States
+namespace Sportik.Automation.States.Sequential
 {
-    internal class DisabledExerciseState : ExerciseState
+    internal sealed class QueuedSequentialExerciseState : SequentialExerciseState
     {
         private readonly IEventsService _eventsService;
 
-        public override ExerciseStateKind Kind => ExerciseStateKind.Disabled;
+        public override States.SequentialExerciseState ExerciseState => States.SequentialExerciseState.Queued;
 
-        public DisabledExerciseState(ExerciseStatesContext context, IEventsService eventsService) : base(context)
+        public QueuedSequentialExerciseState(SequentialExercisesStatesContext context, IEventsService eventsService) : base(context)
         {
             _eventsService = eventsService;
         }
@@ -29,9 +27,9 @@ namespace Sportik.UWP.Services.Reminders.States
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && args.IsEnabled)
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && !args.IsEnabled)
             {
-                Context.Switch(Context.WaitingExerciseState);
+                Context.Switch(Context.DisabledExerciseState);
             }
         }
     }

@@ -46,7 +46,7 @@
             </ListView.ItemContainerStyle>
 
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="exercisesviewmodels:ExerciseViewModel">
+                <DataTemplate x:DataType="exercisesviewmodels:ParallelExerciseViewModel">
                     <StackPanel HorizontalAlignment="Stretch">
 
                         <Grid Margin="15 15 15 15">

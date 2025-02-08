@@ -1,19 +1,25 @@
 ﻿using System.Collections.Generic;
+using Sportik.Automation.Models;
 using Sportik.Core.Models;
-using Sportik.UWP.Core;
-using Sportik.UWP.Helpers;
+using Sportik.Core.Timers;
 
 namespace Sportik.Automation.Services
 {
     public sealed class ExerciseTimersService : IExerciseTimersService
     {
-        private readonly Dictionary<int, ITimer> _timers = new Dictionary<int, ITimer>();
+        private readonly Dictionary<ReminderMode, Dictionary<int, ITimer>> _timers = new Dictionary<ReminderMode, Dictionary<int, ITimer>>();
 
-        public ITimer GetTimer(Exercise exercise)
+        public ITimer GetTimer(Exercise exercise, ReminderMode mode)
         {
             lock (_timers)
             {
-                if (_timers.TryGetValue(exercise.Id, out ITimer timer))
+                if (!_timers.TryGetValue(mode, out Dictionary<int, ITimer> timers))
+                {
+                    timers = new Dictionary<int, ITimer>();
+                    _timers.Add(mode, timers);
+                }
+
+                if (timers.TryGetValue(exercise.Id, out ITimer timer))
                 {
                     return timer;
                 }
@@ -22,7 +28,7 @@ namespace Sportik.Automation.Services
                     .SetInterval(exercise.ExerciseSettings.TimeBetweenSets)
                     .Build();
 
-                _timers.Add(exercise.Id, timer);
+                timers.Add(exercise.Id, timer);
 
                 return timer;
             }

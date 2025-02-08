@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Sportik.Automation.Models;
 using Sportik.Automation.States;
 using Sportik.Core.Models;
 using Sportik.Core.Services.Interfaces;
 using Sportik.Notification.Services;
-using Sportik.UWP.Services.Reminders.States;
 
 namespace Sportik.Automation.Services
 {
     public sealed class ReminderService : IReminderService
     {
-        private IEnumerable<ExerciseStatesContext> _contexts;
-
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
+
+        private IStatesRunner _runner;
 
         public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService,
             Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
@@ -27,43 +26,39 @@ namespace Sportik.Automation.Services
             _notificationServiceFactory = notificationServiceFactory;
         }
 
-        public void Start(IEnumerable<Exercise> exercises)
+        public ReminderMode Mode { get; private set; }
+
+        public void Start(IEnumerable<Exercise> exercises, ReminderMode mode = default)
         {
-            if (_contexts != null)
+            if (_runner != null)
             {
                 return;
             }
 
-            _contexts = exercises
-                .Select(exercise => new ExerciseStatesContext(exercise, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory))
-                .ToArray();
+            Mode = mode;
+
+            _runner = mode switch
+            {
+                ReminderMode.Sequential => new SequentialStatesRunner(exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                ReminderMode.Parallel => new ParallelStatesRunner(exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                _ => throw new ArgumentException($"Mode {mode} is not supported.")
+            };
         }
 
         public void Stop()
         {
-            if (_contexts == null)
+            if (_runner == null)
             {
                 return;
             }
 
-            foreach (ExerciseStatesContext context in _contexts)
-            {
-                context.Dispose();
-            }
-
-            _contexts = null;
+            _runner.Dispose();
+            _runner = null;
         }
 
-        public ExerciseStateKind GetExerciseState(Exercise exercise)
+        public TState GetExerciseState<TState>(Exercise exercise) where TState : Enum
         {
-            if (_contexts == null)
-            {
-                return ExerciseStateKind.Unknown;
-            }
-
-            ExerciseStatesContext context = _contexts.FirstOrDefault(c => c.Exercise.Id == exercise.Id);
-
-            return context?.CurrentState.Kind ?? ExerciseStateKind.Unknown;
+            return _runner == null ? default : _runner.GetExerciseState<TState>(exercise);
         }
     }
 }

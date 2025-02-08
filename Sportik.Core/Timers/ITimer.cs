@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sportik.UWP.Core
+namespace Sportik.Core.Timers
 {
     public interface ITimer
     {

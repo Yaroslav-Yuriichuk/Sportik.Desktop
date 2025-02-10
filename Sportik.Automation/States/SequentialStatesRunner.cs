@@ -5,6 +5,7 @@ using Sportik.Notification.Services;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Sportik.Automation.Models;
 using Sportik.Automation.States.Sequential;
 using Sportik.Core.Helpers;
 
@@ -13,6 +14,8 @@ namespace Sportik.Automation.States
     internal sealed class SequentialStatesRunner : IStatesRunner
     {
         private readonly IEnumerable<SequentialExercisesStatesContext> _contexts;
+
+        public ReminderMode Mode => ReminderMode.Sequential;
 
         public SequentialStatesRunner(IEnumerable<Exercise> exercises, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
             Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)

@@ -8,7 +8,7 @@ namespace Sportik.Automation.Services
 {
     public interface IReminderService
     {
-        ReminderMode Mode { get; }
+        ReminderMode Mode { get; set; }
 
         void Start(IEnumerable<Exercise> exercises, ReminderMode mode = default);
 

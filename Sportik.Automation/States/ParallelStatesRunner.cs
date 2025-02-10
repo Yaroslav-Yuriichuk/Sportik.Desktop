@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sportik.Automation.Models;
 using Sportik.Automation.Services;
 using Sportik.Automation.States.Parallel;
 using Sportik.Core.Models;
@@ -12,6 +13,8 @@ namespace Sportik.Automation.States
     internal sealed class ParallelStatesRunner : IStatesRunner
     {
         private readonly IEnumerable<ParallelExerciseStatesContext> _contexts;
+
+        public ReminderMode Mode => ReminderMode.Parallel;
 
         public ParallelStatesRunner(IEnumerable<Exercise> exercises, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
             Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)

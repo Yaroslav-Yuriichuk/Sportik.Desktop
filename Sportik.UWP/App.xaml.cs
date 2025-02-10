@@ -5,6 +5,7 @@ using Windows.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Automation.Models;
 using Sportik.Core.Models;
 using Sportik.Core.Repositories.Interfaces;
 using Sportik.Core.Services.Interfaces;
@@ -41,7 +42,7 @@ namespace Sportik.UWP
             IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
             IExercisesService exercisesService = ServiceProvider.GetService<IExercisesService>();
 
-            reminderService.Start(exercisesService.GetAllExercises());
+            reminderService.Start(exercisesService.GetAllExercises(), ReminderMode.Sequential);
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -104,8 +105,9 @@ namespace Sportik.UWP
             serviceCollection.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
             serviceCollection.AddSingleton<INavigationService, FrameNavigationService>();
             serviceCollection.AddSingleton<IReminderService, ReminderService>();
-            serviceCollection.AddSingleton<Func<IExerciseSettingsService>>(sp => () => sp.GetService<IExerciseSettingsService>());
-            serviceCollection.AddSingleton<Func<INotificationService>>(sp => () => sp.GetService<INotificationService>());
+            serviceCollection.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
+            serviceCollection.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);
+            serviceCollection.AddSingleton<Func<IExercisesService>>(sp => sp.GetService<IExercisesService>);
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }

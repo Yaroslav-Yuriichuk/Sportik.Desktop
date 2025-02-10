@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sportik.Automation.Events;
 using Sportik.Automation.Services;
 using Sportik.Core.Helpers;
 using Sportik.Core.Models;
@@ -39,10 +40,10 @@ namespace Sportik.Automation.States.Sequential
             ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory);
             QueuedExerciseState = new QueuedSequentialExerciseState(this, eventsService);
 
-            Core.Models.Exercise firstEnabledExercise = Exercises.FirstOrDefault(e => e.ExerciseSettings.IsEnabled);
-
-            if (firstEnabledExercise != null)
+            if (Exercise.ExerciseSettings.IsEnabled)
             {
+                Exercise firstEnabledExercise = Exercises.FirstOrDefault(e => e.ExerciseSettings.IsEnabled);
+
                 SequentialExerciseState state = CompareHelper.EqualById(firstEnabledExercise, Exercise)
                     ? WaitingExerciseState
                     : QueuedExerciseState;
@@ -57,9 +58,15 @@ namespace Sportik.Automation.States.Sequential
 
         public void Switch(SequentialExerciseState state)
         {
+            States.SequentialExerciseState previousState = CurrentState?.ExerciseState ?? States.SequentialExerciseState.Unknown;
+
             CurrentState?.Exit();
             CurrentState = state;
             CurrentState?.Enter();
+
+            States.SequentialExerciseState currentState = state?.ExerciseState ?? States.SequentialExerciseState.Unknown;
+
+            _eventsService.RaiseEvent(new SequentialExerciseStateChangedEventArgs(Exercise, previousState, currentState));
         }
 
         public void Dispose()

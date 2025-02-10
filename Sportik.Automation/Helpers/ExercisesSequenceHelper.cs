@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
 using Sportik.Core.Helpers;
 using Sportik.Core.Models;
 using Sportik.Core.Models.Settings;
-using Sportik.Core.Services.Interfaces;
 
 namespace Sportik.Automation.Helpers
 {

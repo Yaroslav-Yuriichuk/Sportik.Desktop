@@ -59,7 +59,7 @@ namespace Sportik.Automation.States.Sequential
             _eventsService.RemoveListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
-            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
+            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Sequential);
 
             timer.Elapsed -= Timer_Elapsed;
 

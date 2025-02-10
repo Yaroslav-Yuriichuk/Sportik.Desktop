@@ -10,5 +10,7 @@ namespace Sportik.Core.Services.Interfaces
         IEnumerable<Exercise> GetAllExercises();
 
         Task<IEnumerable<Exercise>> GetAllExercisesAsync(CancellationToken cancellationToken = default);
+
+        IEnumerable<Exercise> GetExercises(IEnumerable<int> exercisesIds);
     }
 }

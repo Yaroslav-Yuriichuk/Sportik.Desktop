@@ -132,6 +132,8 @@
     <Compile Include="Models\Statistics\WeekStatistics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\EventsService.cs" />
+    <Compile Include="Services\Implementations\PersistentCacheService.cs" />
+    <Compile Include="Services\Implementations\RuntimeCacheService.cs" />
     <Compile Include="Services\Interfaces\IEventsService.cs" />
     <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
     <Compile Include="Services\Interfaces\IExercisesService.cs" />
@@ -146,6 +148,8 @@
     <Compile Include="Repositories\Interfaces\IDayStatisticsRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseStatisticsRepository.cs" />
     <Compile Include="Services\Interfaces\IExerciseStatisticsService.cs" />
+    <Compile Include="Services\Interfaces\IPersistentCacheService.cs" />
+    <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
     <Compile Include="StateMachine\IState.cs" />
     <Compile Include="StateMachine\IStatesContext.cs" />
     <Compile Include="Timers\DefaultTimer.cs" />
@@ -162,6 +166,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.14</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

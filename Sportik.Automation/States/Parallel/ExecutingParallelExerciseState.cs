@@ -1,23 +1,23 @@
 ﻿using System;
-using Sportik.UWP.Core;
-using Sportik.Core.Events;
-using Sportik.Core.Services.Interfaces;
-using Sportik.Core.Helpers;
+using Sportik.Automation.Models;
 using Sportik.Automation.Services;
-using Sportik.Automation.States;
+using Sportik.Core.Events;
+using Sportik.Core.Helpers;
+using Sportik.Core.Services.Interfaces;
+using Sportik.Core.Timers;
 using Sportik.Notification.Events;
 
-namespace Sportik.UWP.Services.Reminders.States
+namespace Sportik.Automation.States.Parallel
 {
-    internal sealed class ExecutingExerciseState : ExerciseState
+    internal sealed class ExecutingParallelExerciseState : ParallelExerciseState
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
 
-        public override ExerciseStateKind Kind => ExerciseStateKind.Executing;
+        public override States.ParallelExerciseState ExerciseState => States.ParallelExerciseState.Executing;
 
-        public ExecutingExerciseState(ExerciseStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+        public ExecutingParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
             Func<IExerciseSettingsService> exerciseSettingsServiceFactory) : base(context)
         {
             _eventsService = eventsService;
@@ -34,7 +34,7 @@ namespace Sportik.UWP.Services.Reminders.States
             _eventsService.AddListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
-            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
+            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
 
             timer.Loop = false;
             timer.Interval = exerciseSettingsService.GetExerciseSettings(Context.Exercise).ExecutionTime;
@@ -54,7 +54,7 @@ namespace Sportik.UWP.Services.Reminders.States
             _eventsService.RemoveListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
-            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
+            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
 
             timer.Elapsed -= Timer_Elapsed;
 
@@ -76,7 +76,7 @@ namespace Sportik.UWP.Services.Reminders.States
         {
             if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise);
+                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
                 timer.Interval = args.ExecutionTime;
             }
         }
@@ -97,7 +97,7 @@ namespace Sportik.UWP.Services.Reminders.States
             }
         }
 
-        private void Timer_Elapsed(object sender, EventArgs e)
+        private void Timer_Elapsed(object sender, EventArgs args)
         {
             Context.Switch(Context.WaitingExerciseState);
         }

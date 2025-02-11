@@ -15,14 +15,15 @@
 
     <Page.Resources>
         <converters:TimeSpanToLongHoursMinutesSecondsStringConverter x:Name="TimeSpanToLongHoursMinutesSecondsStringConverter" />
-        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+        <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
     </Page.Resources>
 
     <Grid>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
@@ -30,13 +31,38 @@
                    FontSize="32"
                    Margin="15 15 15 0"/>
 
-        <ListView Grid.Row="1"
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="15 15 15 0">
+
+            <TextBlock Text="Mode:"
+                       Margin="0 0 15 0"
+                       VerticalAlignment="Center" />
+
+            <ComboBox MinWidth="130"
+                      Margin="0 0 15 0"
+                      ItemsSource="{Binding ReminderModeOptions}"
+                      SelectedValue="{Binding SelectedReminderModeOption, Mode=TwoWay}">
+
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+
+            </ComboBox>
+
+        </StackPanel>
+
+        <ListView Grid.Row="2"
                   IsItemClickEnabled="True"
                   SelectionMode="None"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Stretch"
                   Margin="15"
-                  ItemsSource="{Binding Exercises}">
+                  ItemsSource="{Binding ParallelExercises}"
+                  Visibility="{Binding ReminderMode, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Parallel}">
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -46,7 +72,7 @@
             </ListView.ItemContainerStyle>
 
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="exercisesviewmodels:ExerciseViewModel">
+                <DataTemplate x:DataType="exercisesviewmodels:ParallelExerciseViewModel">
                     <StackPanel HorizontalAlignment="Stretch">
 
                         <Grid Margin="15 15 15 15">
@@ -74,7 +100,7 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right"
                                     Margin="15 0 15 15"
-                                    Visibility="{Binding IsInWaitingState, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Waiting}">
 
                             <TextBlock Margin="0 0 10 0"
                                        VerticalAlignment="Center">
@@ -89,7 +115,7 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right"
                                     Margin="15 0 15 15"
-                                    Visibility="{Binding IsInExecutingState, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Executing}">
 
                             <TextBlock Margin="0 0 10 0"
                                        VerticalAlignment="Center">
@@ -103,6 +129,103 @@
 
                             <Button Content="Mark as completed"
                                     Command="{Binding CompleteCommand}"/>
+
+                        </StackPanel>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView>
+
+        <ListView Grid.Row="2"
+          IsItemClickEnabled="True"
+          SelectionMode="None"
+          HorizontalAlignment="Stretch"
+          HorizontalContentAlignment="Stretch"
+          Margin="15"
+          ItemsSource="{Binding SequentialExercises}"
+          Visibility="{Binding ReminderMode, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Sequential}">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="exercisesviewmodels:SequentialExerciseViewModel">
+                    <StackPanel HorizontalAlignment="Stretch">
+
+                        <Grid Margin="15 15 15 15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="77" />
+                            </Grid.ColumnDefinitions>
+
+                            <SymbolIcon Grid.Column="0"
+                                Symbol="World"
+                                Width="27"
+                                Height="27" />
+
+                            <TextBlock Grid.Column="1"
+                               Text="{Binding Name}"
+                               FontSize="20"
+                               Margin="15 0 0 0" />
+
+                            <ToggleSwitch Grid.Column="3"
+                                  IsOn="{Binding IsEnabled, Mode=TwoWay}" />
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="15 0 15 15"
+                            Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Waiting}">
+
+                            <TextBlock Margin="0 0 10 0"
+                               VerticalAlignment="Center">
+                                <Run Text="Next reminder in"></Run>
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock" />
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="15 0 15 15"
+                            Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Executing}">
+
+                            <TextBlock Margin="0 0 10 0"
+                               VerticalAlignment="Center">
+                        <Run Text="Only"></Run>
+                        <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                        <Run Text="left to complete"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock"
+                                Margin="0 0 10 0"/>
+
+                            <Button Content="Mark as completed"
+                            Command="{Binding CompleteCommand}"/>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 15 15"
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Queued}">
+
+                            <TextBlock Margin="0 0 10 0"
+                                       VerticalAlignment="Center">
+                                <Run Text="Queued"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock" />
 
                         </StackPanel>
 

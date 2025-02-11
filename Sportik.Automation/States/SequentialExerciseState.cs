@@ -1,10 +1,11 @@
 ﻿namespace Sportik.Automation.States
 {
-    public enum ExerciseStateKind
+    public enum SequentialExerciseState
     {
         Unknown,
         Disabled,
         Waiting,
+        Queued,
         Executing,
     }
 }

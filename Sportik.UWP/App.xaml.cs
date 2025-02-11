@@ -5,6 +5,7 @@ using Windows.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Automation.Models;
 using Sportik.Core.Models;
 using Sportik.Core.Repositories.Interfaces;
 using Sportik.Core.Services.Interfaces;
@@ -16,6 +17,7 @@ using Sportik.Notification.Services;
 using Sportik.Core.Services.Implementations;
 using Sportik.UWP.Services;
 using Sportik.Automation.Services;
+using Sportik.Models;
 
 namespace Sportik.UWP
 {
@@ -40,8 +42,16 @@ namespace Sportik.UWP
         {
             IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
             IExercisesService exercisesService = ServiceProvider.GetService<IExercisesService>();
+            IPersistentCacheService persistentCacheService = ServiceProvider.GetService<IPersistentCacheService>();
 
-            reminderService.Start(exercisesService.GetAllExercises());
+            ReminderMode reminderMode = ReminderMode.Parallel;
+
+            if (persistentCacheService.TryGet(out ReminderCache cache))
+            {
+                reminderMode = cache.Mode;
+            }
+
+            reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -73,6 +83,14 @@ namespace Sportik.UWP
             var deferral = e.SuspendingOperation.GetDeferral();
 
             IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
+            IRuntimeCacheService runtimeCacheService = ServiceProvider.GetService<IRuntimeCacheService>();
+            IPersistentCacheService persistentCacheService = ServiceProvider.GetService<IPersistentCacheService>();
+
+            ReminderCache reminderCache = new ReminderCache { Mode = reminderService.Mode, };
+
+            persistentCacheService.Set(reminderCache);
+            runtimeCacheService.Set(reminderCache);
+
             reminderService.Stop();
 
             deferral.Complete();
@@ -82,8 +100,16 @@ namespace Sportik.UWP
         {
             IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
             IExercisesService exercisesService = ServiceProvider.GetService<IExercisesService>();
+            IRuntimeCacheService runtimeCacheService = ServiceProvider.GetService<IRuntimeCacheService>();
 
-            reminderService.Start(exercisesService.GetAllExercises());
+            ReminderMode reminderMode = ReminderMode.Parallel;
+
+            if (runtimeCacheService.TryGet(out ReminderCache cache))
+            {
+                reminderMode = cache.Mode;
+            }
+
+            reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
         }
 
         private void ConfigureServices()
@@ -99,13 +125,16 @@ namespace Sportik.UWP
             serviceCollection.AddTransient<IExerciseStatisticsService, ExerciseStatisticsService>();
             serviceCollection.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
             serviceCollection.AddTransient<INotificationService, ToastNotificationService>();
-            
+
             serviceCollection.AddSingleton<IEventsService, EventsService>();
+            serviceCollection.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();
+            serviceCollection.AddSingleton<IPersistentCacheService, PersistentCacheService>();
             serviceCollection.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
             serviceCollection.AddSingleton<INavigationService, FrameNavigationService>();
             serviceCollection.AddSingleton<IReminderService, ReminderService>();
-            serviceCollection.AddSingleton<Func<IExerciseSettingsService>>(sp => () => sp.GetService<IExerciseSettingsService>());
-            serviceCollection.AddSingleton<Func<INotificationService>>(sp => () => sp.GetService<INotificationService>());
+            serviceCollection.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
+            serviceCollection.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);
+            serviceCollection.AddSingleton<Func<IExercisesService>>(sp => sp.GetService<IExercisesService>);
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }

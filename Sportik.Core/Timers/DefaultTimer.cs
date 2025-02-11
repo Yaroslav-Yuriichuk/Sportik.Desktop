@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Timers;
 
-namespace Sportik.UWP.Core
+namespace Sportik.Core.Timers
 {
     internal sealed class DefaultTimer : ITimer, IDisposable
     {
@@ -155,6 +154,9 @@ namespace Sportik.UWP.Core
         {
             if (IsPaused)
             {
+                IsRunning = false;
+                IsPaused = false;
+
                 _timer.Stop();
                 Reset();
 
@@ -163,6 +165,9 @@ namespace Sportik.UWP.Core
 
             if (IsRunning)
             {
+                IsRunning = false;
+                IsPaused = false;
+
                 _timer.Stop();
                 Reset();
             }
@@ -170,11 +175,14 @@ namespace Sportik.UWP.Core
 
         public void Reset()
         {
-            IsRunning = false;
-            IsPaused = false;
+            if (!IsRunning)
+            {
+                IsRunning = false;
+                IsPaused = false;
 
-            _accumulatedElapsedTime = TimeSpan.Zero;
-            _lastStartTime = DateTime.MinValue;
+                _accumulatedElapsedTime = TimeSpan.Zero;
+                _lastStartTime = DateTime.MinValue;
+            }
         }
 
         private void InvokeCallback(object sender, ElapsedEventArgs e)

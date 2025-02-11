@@ -1,69 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sportik.Automation.Models;
 using Sportik.Automation.States;
 using Sportik.Core.Models;
 using Sportik.Core.Services.Interfaces;
 using Sportik.Notification.Services;
-using Sportik.UWP.Services.Reminders.States;
 
 namespace Sportik.Automation.Services
 {
     public sealed class ReminderService : IReminderService
     {
-        private IEnumerable<ExerciseStatesContext> _contexts;
-
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
+        private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
+        private Exercise[] _exercises;
+
+        private IStatesRunner _runner;
+
         public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
+            Func<IExercisesService> exercisesServiceFactory, Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
+            _exercisesServiceFactory = exercisesServiceFactory;
             _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
-        public void Start(IEnumerable<Exercise> exercises)
+        public ReminderMode Mode
         {
-            if (_contexts != null)
+            get => _runner?.Mode ?? ReminderMode.Parallel;
+            set
+            {
+                if (_runner == null || _runner.Mode == value)
+                {
+                    return;
+                }
+
+                _runner.Dispose();
+
+                IExercisesService exercisesService = _exercisesServiceFactory();
+
+                IEnumerable<Exercise> exercises = exercisesService.GetExercises(_exercises.Select(e => e.Id));
+                _exercises = exercises as Exercise[] ?? exercises.ToArray();
+
+                _runner = value switch
+                {
+                    ReminderMode.Sequential => new SequentialStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                    ReminderMode.Parallel => new ParallelStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                    _ => throw new ArgumentException($"Mode {value} is not supported.")
+                };
+            }
+        }
+
+        public void Start(IEnumerable<Exercise> exercises, ReminderMode mode = default)
+        {
+            if (_runner != null)
             {
                 return;
             }
 
-            _contexts = exercises
-                .Select(exercise => new ExerciseStatesContext(exercise, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory))
-                .ToArray();
+            IExercisesService exercisesService = _exercisesServiceFactory();
+
+            exercises = exercisesService.GetExercises(exercises.Select(e => e.Id));
+            _exercises = exercises as Exercise[] ?? exercises.ToArray();
+
+            _runner = mode switch
+            {
+                ReminderMode.Sequential => new SequentialStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                ReminderMode.Parallel => new ParallelStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                _ => throw new ArgumentException($"Mode {mode} is not supported.")
+            };
         }
 
         public void Stop()
         {
-            if (_contexts == null)
+            if (_runner == null)
             {
                 return;
             }
 
-            foreach (ExerciseStatesContext context in _contexts)
-            {
-                context.Dispose();
-            }
+            _runner.Dispose();
+            _runner = null;
 
-            _contexts = null;
+            _exercises = null;
         }
 
-        public ExerciseStateKind GetExerciseState(Exercise exercise)
+        public TState GetExerciseState<TState>(Exercise exercise) where TState : Enum
         {
-            if (_contexts == null)
-            {
-                return ExerciseStateKind.Unknown;
-            }
-
-            ExerciseStatesContext context = _contexts.FirstOrDefault(c => c.Exercise.Id == exercise.Id);
-
-            return context?.CurrentState.Kind ?? ExerciseStateKind.Unknown;
+            return _runner == null ? default : _runner.GetExerciseState<TState>(exercise);
         }
     }
 }

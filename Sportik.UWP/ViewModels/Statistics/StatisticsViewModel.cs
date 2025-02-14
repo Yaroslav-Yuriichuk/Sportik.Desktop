@@ -36,7 +36,7 @@ namespace Sportik.UWP.ViewModels.Statistics
 
         private async Task LoadDayStatisticsAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<WeekStatistics> weekStatistics = await ExerciseStatisticsService.GetWeekStatisticsAsync(cancellationToken);
+            IEnumerable<WeekStatistics> weekStatistics = await ExerciseStatisticsService.GetWeekStatisticsAsync(WeekStatisticsOrder.Descending, cancellationToken);
 
             WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
                                weekStatistics.Select(statistics => new WeekStatisticsViewModel(statistics)));

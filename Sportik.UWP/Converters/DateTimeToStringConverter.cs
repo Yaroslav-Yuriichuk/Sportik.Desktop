@@ -1,16 +1,21 @@
 ﻿using System;
+using System.Globalization;
 using Windows.UI.Xaml.Data;
-using Sportik.Core.Helpers;
 
 namespace Sportik.UWP.Converters
 {
-    public sealed class DateTimeToDayNameConverter : IValueConverter
+    internal sealed class DateTimeToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is DateTime dateTime)
             {
-                return CalendarHelper.DayName(dateTime);
+                if (parameter is string format)
+                {
+                    return string.Format($"{{0:{format}}}", dateTime);
+                }
+
+                return dateTime.ToString(new CultureInfo("en-US"));
             }
 
             return string.Empty;

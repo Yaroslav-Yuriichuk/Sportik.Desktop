@@ -1,11 +1,29 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using Sportik.Core.Helpers;
 using Sportik.Core.Models.Statistics;
 
 namespace Sportik.UWP.ViewModels.Statistics
 {
     internal sealed class WeekStatisticsViewModel : ViewModel
     {
+        private DateTime _firstWeekDayDate;
+
+        public DateTime FirstWeekDayDate
+        {
+            get => _firstWeekDayDate;
+            set => SetField(ref _firstWeekDayDate, value);
+        }
+
+        private DateTime _lastWeekDayDate;
+
+        public DateTime LastWeekDayDate
+        {
+            get => _lastWeekDayDate;
+            set => SetField(ref _lastWeekDayDate, value);
+        }
+
         private ObservableCollection<DayStatisticsViewModel> _dayStatistics;
 
         public ObservableCollection<DayStatisticsViewModel> DayStatistics
@@ -18,6 +36,9 @@ namespace Sportik.UWP.ViewModels.Statistics
         {
             DayStatistics = new ObservableCollection<DayStatisticsViewModel>(
                                weekStatistics.DayStatistics.Select(statistics => new DayStatisticsViewModel(statistics)));
+
+            FirstWeekDayDate = StatisticsHelper.GetWeekFirstDayDate(weekStatistics);
+            LastWeekDayDate = StatisticsHelper.GetWeekLastDayDate(weekStatistics);
         }
     }
 }

@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Globalization;
 
 namespace Sportik.Core.Helpers
 {
     public static class CalendarHelper
     {
-        public static int WeekOfYear(DateTime date)
+        public static DateTime GetFirstDayOfWeek(DateTime date)
         {
-            Calendar calendar = CultureInfo.CurrentCulture.Calendar;
-            return calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int delta = (date.DayOfWeek - DayOfWeek.Monday + 7) % 7;
+            return date.AddDays(-delta).Date;
         }
 
-        public static string DayName(DateTime date)
+        public static DateTime GetLastDayOfWeek(DateTime date)
         {
-            return CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(date.DayOfWeek);
+            return GetFirstDayOfWeek(date).AddDays(6);
         }
     }
 }

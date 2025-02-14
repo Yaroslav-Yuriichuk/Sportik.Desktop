@@ -25,17 +25,24 @@ namespace Sportik.Data.Services.Implementations
             _eventsService = eventsService;
         }
 
-        public async Task<IEnumerable<WeekStatistics>> GetWeekStatisticsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WeekStatistics>> GetWeekStatisticsAsync(WeekStatisticsOrder order, CancellationToken cancellationToken = default)
         {
             IEnumerable<DayStatistics> dayStatistics = await _dayStatisticsRepository.GetAllAsync(cancellationToken);
 
-            return dayStatistics
+            IEnumerable<WeekStatistics> weekStatistics = dayStatistics
                 .OrderBy(statistics => statistics.Date)
-                .GroupBy(statistics => CalendarHelper.WeekOfYear(statistics.Date))
+                .GroupBy(statistics => CalendarHelper.GetFirstDayOfWeek(statistics.Date))
                 .Select(group => new WeekStatistics()
                 {
                     DayStatistics = group.ToList(),
                 });
+
+            return order switch
+            {
+                WeekStatisticsOrder.Ascending => weekStatistics.OrderBy(StatisticsHelper.GetFirstDayDate),
+                WeekStatisticsOrder.Descending => weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate),
+                _ => throw new ArgumentOutOfRangeException(nameof(order), order, null)
+            };
         }
 
         public DayStatistics AddExerciseStatisticsDelta(ExerciseStatisticsDelta exerciseStatisticsDelta, DateTime date)

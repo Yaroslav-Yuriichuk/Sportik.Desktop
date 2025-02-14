@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:statisticssviewmodels="using:Sportik.UWP.ViewModels.Statistics"
+    xmlns:statisticsviewmodels="using:Sportik.UWP.ViewModels.Statistics"
     xmlns:converters="using:Sportik.UWP.Converters"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
@@ -12,12 +12,12 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
-        <statisticssviewmodels:StatisticsViewModel />
+        <statisticsviewmodels:StatisticsViewModel />
     </Page.DataContext>
 
     <Page.Resources>
-        <converters:DateTimeToDayNameConverter x:Name="DateTimeToDayNameConverter" />
         <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
+        <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
     </Page.Resources>
 
     <Grid>
@@ -46,12 +46,15 @@
             </ListView.ItemContainerStyle>
 
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="statisticssviewmodels:WeekStatisticsViewModel">
+                <DataTemplate x:DataType="statisticsviewmodels:WeekStatisticsViewModel">
                     <StackPanel>
 
-                        <TextBlock Text="Week"
-                                   FontSize="20"
-                                   Margin="15 15 15 15"/>
+                        <TextBlock FontSize="20"
+                                   Margin="15 15 15 15">
+                            <Run Text="{Binding FirstWeekDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
+                            <Run Text="-" />
+                            <Run Text="{Binding LastWeekDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
+                        </TextBlock>
 
                         <ListView ItemsSource="{Binding DayStatistics}"
                                   IsItemClickEnabled="True"
@@ -65,7 +68,7 @@
                             </ListView.ItemContainerStyle>
 
                             <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="statisticssviewmodels:DayStatisticsViewModel">
+                                <DataTemplate x:DataType="statisticsviewmodels:DayStatisticsViewModel">
                                     <StackPanel HorizontalAlignment="Stretch">
 
                                         <StackPanel Orientation="Horizontal"
@@ -83,7 +86,7 @@
                                                         Width="20"
                                                         Height="20" />
 
-                                            <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeToDayNameConverter}}"
+                                            <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=dddd}"
                                                        FontSize="14"
                                                        Margin="10 0 0 0"/>
 
@@ -102,7 +105,7 @@
                                             </ListView.ItemContainerStyle>
 
                                             <ListView.ItemTemplate>
-                                                <DataTemplate x:DataType="statisticssviewmodels:ExerciseStatisticsViewModel">
+                                                <DataTemplate x:DataType="statisticsviewmodels:ExerciseStatisticsViewModel">
                                                     <Grid Margin="45 0 0 0">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="30"></ColumnDefinition>

@@ -8,7 +8,7 @@ namespace Sportik.Core.Services.Interfaces
 {
     public interface IExerciseStatisticsService
     {
-        Task<IEnumerable<WeekStatistics>> GetWeekStatisticsAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<WeekStatistics>> GetWeekStatisticsAsync(WeekStatisticsOrder order, CancellationToken cancellationToken = default);
 
         DayStatistics AddExerciseStatisticsDelta(ExerciseStatisticsDelta exerciseStatisticsDelta, DateTime date);
 

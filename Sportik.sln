@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportik.Notification", "Spo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportik.Automation", "Sportik.Automation\Sportik.Automation.csproj", "{F20AE7F9-FF8E-4117-8BAB-1CFD84A5F21F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportik.Sound", "Sportik.Sound\Sportik.Sound.csproj", "{7545C186-BB10-4280-89BC-056DEECDF11A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,26 @@ Global
 		{F20AE7F9-FF8E-4117-8BAB-1CFD84A5F21F}.Release|x64.Build.0 = Release|x64
 		{F20AE7F9-FF8E-4117-8BAB-1CFD84A5F21F}.Release|x86.ActiveCfg = Release|x86
 		{F20AE7F9-FF8E-4117-8BAB-1CFD84A5F21F}.Release|x86.Build.0 = Release|x86
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|ARM.Build.0 = Debug|ARM
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|ARM64.Build.0 = Debug|ARM64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|x64.ActiveCfg = Debug|x64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|x64.Build.0 = Debug|x64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|x86.ActiveCfg = Debug|x86
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Debug|x86.Build.0 = Debug|x86
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|ARM.ActiveCfg = Release|ARM
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|ARM.Build.0 = Release|ARM
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|ARM64.ActiveCfg = Release|ARM64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|ARM64.Build.0 = Release|ARM64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|x64.ActiveCfg = Release|x64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|x64.Build.0 = Release|x64
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|x86.ActiveCfg = Release|x86
+		{7545C186-BB10-4280-89BC-056DEECDF11A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

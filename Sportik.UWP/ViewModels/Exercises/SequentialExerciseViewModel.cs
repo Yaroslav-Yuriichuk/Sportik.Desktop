@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Sound.Models;
+using Sportik.Sound.Services.Implementations;
+using Sportik.Sound.Services.Interfaces;
 
 namespace Sportik.UWP.ViewModels.Exercises
 {
@@ -75,6 +78,7 @@ namespace Sportik.UWP.ViewModels.Exercises
         private IExerciseTimersService ExerciseTimersService => App.ServiceProvider.GetService<IExerciseTimersService>();
         private IEventsService EventsService => App.ServiceProvider.GetService<IEventsService>();
         private IReminderService ReminderService => App.ServiceProvider.GetService<IReminderService>();
+        private ISoundService SoundService => App.ServiceProvider.GetService<ISoundService>();
 
         private readonly Exercise _exercise;
 
@@ -260,6 +264,9 @@ namespace Sportik.UWP.ViewModels.Exercises
             };
 
             await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, DateTime.Today, cancellationToken);
+
+            SoundSource soundSource = SoundSource.Custom("Assets/Sound/Completed.mp3");
+            await SoundService.PlayAsync(soundSource, cancellationToken);
         }
     }
 }

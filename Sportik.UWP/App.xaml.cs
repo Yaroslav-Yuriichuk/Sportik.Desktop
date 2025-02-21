@@ -18,6 +18,8 @@ using Sportik.Core.Services.Implementations;
 using Sportik.UWP.Services;
 using Sportik.Automation.Services;
 using Sportik.Models;
+using Sportik.Sound.Services.Implementations;
+using Sportik.Sound.Services.Interfaces;
 
 namespace Sportik.UWP
 {
@@ -125,6 +127,7 @@ namespace Sportik.UWP
             serviceCollection.AddTransient<IExerciseStatisticsService, ExerciseStatisticsService>();
             serviceCollection.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
             serviceCollection.AddTransient<INotificationService, ToastNotificationService>();
+            serviceCollection.AddTransient<ISoundService, SoundService>();
 
             serviceCollection.AddSingleton<IEventsService, EventsService>();
             serviceCollection.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();

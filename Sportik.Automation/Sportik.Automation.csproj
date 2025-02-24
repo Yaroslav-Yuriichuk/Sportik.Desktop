@@ -130,6 +130,9 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Constants\AutomationConstants.cs" />
+    <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
     <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
     <Compile Include="Events\SequentialExerciseStateChangedEventArgs.cs" />
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
@@ -146,7 +149,8 @@
     <Compile Include="States\Parallel\ParallelExerciseState.cs" />
     <Compile Include="States\ParallelExerciseState.cs" />
     <Compile Include="States\Parallel\ParallelExerciseStatesContext.cs" />
-    <Compile Include="States\Parallel\WaitingParallelExerciseState.cs" />
+    <Compile Include="States\Parallel\WaitingBeforeForceExecutionParallelExerciseState.cs" />
+    <Compile Include="States\Parallel\WaitingWithForceExecutionParallelExerciseState.cs" />
     <Compile Include="States\SequentialExerciseState.cs" />
     <Compile Include="States\SequentialStatesRunner.cs" />
     <Compile Include="States\Sequential\DisabledSequentialExerciseState.cs" />
@@ -154,7 +158,8 @@
     <Compile Include="States\Sequential\QueuedSequentialExerciseState.cs" />
     <Compile Include="States\Sequential\SequentialExerciseState.cs" />
     <Compile Include="States\Sequential\SequentialExercisesStatesContext.cs" />
-    <Compile Include="States\Sequential\WaitingSequentialExerciseState.cs" />
+    <Compile Include="States\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
+    <Compile Include="States\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
     <EmbeddedResource Include="Properties\Sportik.Automation.rd.xml" />
   </ItemGroup>
   <ItemGroup>

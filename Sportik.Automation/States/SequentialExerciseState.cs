@@ -4,7 +4,8 @@
     {
         Unknown,
         Disabled,
-        Waiting,
+        WaitingBeforeForceExecution,
+        WaitingWithForceExecution,
         Queued,
         Executing,
     }

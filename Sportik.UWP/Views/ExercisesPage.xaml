@@ -100,7 +100,7 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right"
                                     Margin="15 0 15 15"
-                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Waiting}">
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingBeforeForceExecution}">
 
                             <TextBlock Margin="0 0 10 0"
                                        VerticalAlignment="Center">
@@ -109,6 +109,25 @@
                             </TextBlock>
 
                             <SymbolIcon Symbol="Clock" />
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 15 15"
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingWithForceExecution}">
+
+                            <TextBlock Margin="0 0 10 0"
+                                       VerticalAlignment="Center">
+                                <Run Text="Next reminder in"></Run>
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock"
+                                        Margin="0 0 10 0" />
+
+                            <Button Content="Execute"
+                                    Command="{Binding ExecuteCommand}"/>
 
                         </StackPanel>
 
@@ -183,7 +202,7 @@
                         <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             Margin="15 0 15 15"
-                            Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Waiting}">
+                            Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingBeforeForceExecution}">
 
                             <TextBlock Margin="0 0 10 0"
                                VerticalAlignment="Center">
@@ -192,6 +211,25 @@
                             </TextBlock>
 
                             <SymbolIcon Symbol="Clock" />
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 15 15"
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingWithForceExecution}">
+
+                            <TextBlock Margin="0 0 10 0"
+                                       VerticalAlignment="Center">
+                                <Run Text="Next reminder in"></Run>
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock"
+                                        Margin="0 0 10 0" />
+
+                            <Button Content="Execute"
+                                    Command="{Binding ExecuteCommand}"/>
 
                         </StackPanel>
 
@@ -211,7 +249,7 @@
                                 Margin="0 0 10 0"/>
 
                             <Button Content="Mark as completed"
-                            Command="{Binding CompleteCommand}"/>
+                                    Command="{Binding CompleteCommand}"/>
 
                         </StackPanel>
 

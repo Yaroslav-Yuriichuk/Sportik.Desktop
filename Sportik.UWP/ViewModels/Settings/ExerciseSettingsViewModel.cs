@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Automation.Constants;
 using Sportik.Core.Models.Settings;
 using Sportik.Core.Services.Interfaces;
 
@@ -124,60 +125,26 @@ namespace Sportik.UWP.ViewModels.Settings
 
             Name = exerciseSettings.Exercise.Name;
 
-            TargetRepetitionsOptions = new ObservableCollection<IntOption>
-            {
-                new IntOption { IntValue = 5 },
-                new IntOption { IntValue = 7 },
-                new IntOption { IntValue = 10 },
-                new IntOption { IntValue = 12 },
-                new IntOption { IntValue = 15 },
-                new IntOption { IntValue = 18 },
-                new IntOption { IntValue = 20 },
-                new IntOption { IntValue = 21 },
-                new IntOption { IntValue = 22 },
-                new IntOption { IntValue = 25 },
-                new IntOption { IntValue = 30 },
-                new IntOption { IntValue = 35 },
-                new IntOption { IntValue = 40 },
-                new IntOption { IntValue = 45 },
-                new IntOption { IntValue = 50 },
-            };
+            TargetRepetitionsOptions = new ObservableCollection<IntOption>(
+                AutomationConstants.TargetRepetitions.Select(repetitions => new IntOption(repetitions)));
 
             IntOption selectedTargetRepetitionsOption = TargetRepetitionsOptions.FirstOrDefault(o => o.IntValue == exerciseSettings.TargetRepetitions)
                                                         ?? TargetRepetitionsOptions[0];
 
             SetField(ref _selectedTargetRepetitionsOption, selectedTargetRepetitionsOption);
 
-            TimeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>
-            {
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(1) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(3) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(5) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(10) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(15) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(20) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(25) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(30) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(35) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(40) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(45) },
-            };
+            TimeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>(
+                AutomationConstants.TimesBetweenSets.Select(time => new TimeSpanOption(time)));
 
-            TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpan == exerciseSettings.TimeBetweenSets) 
+            TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpanValue == exerciseSettings.TimeBetweenSets) 
                                                            ?? TimeBetweenSetsOptions[0];
 
             SetField(ref _selectedTimeBetweenSetsOption, selectedTimeBetweenSetsOption);
 
-            ExecutionTimeOptions = new ObservableCollection<TimeSpanOption>
-            {
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(1) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(2) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(3) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(4) },
-                new TimeSpanOption { TimeSpan = TimeSpan.FromMinutes(5) },
-            };
+            ExecutionTimeOptions = new ObservableCollection<TimeSpanOption>(
+                AutomationConstants.ExecutionTimes.Select(time => new TimeSpanOption(time)));
 
-            TimeSpanOption selectedExecutionTimeOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpan == exerciseSettings.ExecutionTime)
+            TimeSpanOption selectedExecutionTimeOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpanValue == exerciseSettings.ExecutionTime)
                                                          ?? ExecutionTimeOptions[0];
 
             SetField(ref _selectedExecutionTimeOption, selectedExecutionTimeOption);
@@ -194,8 +161,8 @@ namespace Sportik.UWP.ViewModels.Settings
             {
                 Change = ExerciseSettingsChange.TargetRepetitions | ExerciseSettingsChange.TimeBetweenSets | ExerciseSettingsChange.ExecutionTime,
                 TargetRepetitions = SelectedTargetRepetitionsOption.IntValue,
-                TimeBetweenSets = SelectedTimeBetweenSetsOption.TimeSpan,
-                ExecutionTime = SelectedExecutionTimeOption.TimeSpan,
+                TimeBetweenSets = SelectedTimeBetweenSetsOption.TimeSpanValue,
+                ExecutionTime = SelectedExecutionTimeOption.TimeSpanValue,
             };
 
             await ExerciseSettingsService.UpdateExerciseSettingsAsync(exerciseSettingsDelta, _exerciseSettings.Exercise, cancellationToken);

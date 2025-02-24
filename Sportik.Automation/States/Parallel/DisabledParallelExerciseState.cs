@@ -29,7 +29,7 @@ namespace Sportik.Automation.States.Parallel
         {
             if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && args.IsEnabled)
             {
-                Context.Switch(Context.WaitingExerciseState);
+                Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
             }
         }
     }

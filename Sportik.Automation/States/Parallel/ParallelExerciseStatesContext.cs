@@ -15,8 +15,10 @@ namespace Sportik.Automation.States.Parallel
         public Exercise Exercise { get; }
 
         public ParallelExerciseState DisabledExerciseState { get; }
+        
+        public ParallelExerciseState WaitingBeforeForceExecutionExerciseState { get; }
 
-        public ParallelExerciseState WaitingExerciseState { get; }
+        public ParallelExerciseState WaitingWithForceExecutionExerciseState { get; }
 
         public ParallelExerciseState ExecutingExerciseState { get; }
 
@@ -28,13 +30,14 @@ namespace Sportik.Automation.States.Parallel
             _eventsService = eventsService;
 
             DisabledExerciseState = new DisabledParallelExerciseState(this, _eventsService);
-            WaitingExerciseState = new WaitingParallelExerciseState(this, _eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
+            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
+            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
             ExecutingExerciseState = new ExecutingParallelExerciseState(this, _eventsService, exerciseTimersService, exerciseSettingsServiceFactory);
 
             Exercise = exercise;
 
             ParallelExerciseState state = Exercise.ExerciseSettings.IsEnabled
-                ? WaitingExerciseState
+                ? WaitingBeforeForceExecutionExerciseState
                 : DisabledExerciseState;
 
             Switch(state);

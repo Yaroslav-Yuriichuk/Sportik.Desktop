@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sportik.Automation.Constants;
 using Sportik.Automation.Helpers;
 using Sportik.Automation.Models;
 using Sportik.Automation.Services;
@@ -15,16 +16,18 @@ using Sportik.Notification.Services;
 
 namespace Sportik.Automation.States.Sequential
 {
-    internal sealed class WaitingSequentialExerciseState : SequentialExerciseState
+    internal sealed class WaitingBeforeForceExecutionSequentialExerciseState : SequentialExerciseState
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
-        public override States.SequentialExerciseState ExerciseState => States.SequentialExerciseState.Waiting;
+        public override States.SequentialExerciseState ExerciseState => States.SequentialExerciseState.WaitingBeforeForceExecution;
 
-        public WaitingSequentialExerciseState(SequentialExercisesStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+        private ITimer _forceExecutionTimer;
+
+        public WaitingBeforeForceExecutionSequentialExerciseState(SequentialExercisesStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
             Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
@@ -55,6 +58,13 @@ namespace Sportik.Automation.States.Sequential
             {
                 timer.Start();
             }
+
+            _forceExecutionTimer = new DefaultTimerBuilder()
+                .SetInterval(AutomationConstants.TimeBeforeForceExecution)
+                .SetCallback(ForceExecutionTimer_Elapsed)
+                .Build();
+
+            _forceExecutionTimer.Start();
         }
 
         public override void Exit()
@@ -70,6 +80,8 @@ namespace Sportik.Automation.States.Sequential
             {
                 timer.Pause();
             }
+
+            _forceExecutionTimer.Stop();
         }
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
@@ -86,7 +98,7 @@ namespace Sportik.Automation.States.Sequential
                 if (nextExercise != null)
                 {
                     SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
-                    nextExerciseContext.Switch(nextExerciseContext.WaitingExerciseState);
+                    nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
                 }
             }
         }
@@ -119,6 +131,11 @@ namespace Sportik.Automation.States.Sequential
             });
 
             Context.Switch(Context.ExecutingExerciseState);
+        }
+
+        private void ForceExecutionTimer_Elapsed(object sender, EventArgs e)
+        {
+            Context.Switch(Context.WaitingWithForceExecutionExerciseState);
         }
     }
 }

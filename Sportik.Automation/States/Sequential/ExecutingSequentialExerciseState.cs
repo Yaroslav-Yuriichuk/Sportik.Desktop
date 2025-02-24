@@ -11,6 +11,7 @@ using Sportik.Core.Models.Settings;
 using Sportik.Core.Services.Interfaces;
 using Sportik.Core.Timers;
 using Sportik.Notification.Events;
+using Sportik.Automation.Events;
 
 namespace Sportik.Automation.States.Sequential
 {
@@ -36,7 +37,7 @@ namespace Sportik.Automation.States.Sequential
 
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
-            _eventsService.AddListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Sequential);
@@ -56,7 +57,7 @@ namespace Sportik.Automation.States.Sequential
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
-            _eventsService.RemoveListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Sequential);
@@ -83,7 +84,7 @@ namespace Sportik.Automation.States.Sequential
                 if (nextExercise != null)
                 {
                     SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
-                    nextExerciseContext.Switch(nextExerciseContext.WaitingExerciseState);
+                    nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
                 }
             }
         }
@@ -97,7 +98,7 @@ namespace Sportik.Automation.States.Sequential
             }
         }
 
-        private void EventsService_Event(ExerciseStatisticsDeltaAddedEventArgs args)
+        private void EventsService_Event(ExerciseCompleteRequestedEventArgs args)
         {
             if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
@@ -111,11 +112,11 @@ namespace Sportik.Automation.States.Sequential
                     Context.Switch(Context.QueuedExerciseState);
 
                     SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
-                    nextExerciseContext.Switch(nextExerciseContext.WaitingExerciseState);
+                    nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
                 }
                 else
                 {
-                    Context.Switch(Context.WaitingExerciseState);
+                    Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
                 }
             }
         }
@@ -134,11 +135,11 @@ namespace Sportik.Automation.States.Sequential
                     Context.Switch(Context.QueuedExerciseState);
 
                     SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
-                    nextExerciseContext.Switch(nextExerciseContext.WaitingExerciseState);
+                    nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
                 }
                 else
                 {
-                    Context.Switch(Context.WaitingExerciseState);
+                    Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
                 }
             }
         }
@@ -155,11 +156,11 @@ namespace Sportik.Automation.States.Sequential
                 Context.Switch(Context.QueuedExerciseState);
 
                 SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
-                nextExerciseContext.Switch(nextExerciseContext.WaitingExerciseState);
+                nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
             }
             else
             {
-                Context.Switch(Context.WaitingExerciseState);
+                Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
             }
         }
     }

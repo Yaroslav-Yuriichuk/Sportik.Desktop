@@ -1,4 +1,5 @@
 ﻿using System;
+using Sportik.Automation.Events;
 using Sportik.Automation.Models;
 using Sportik.Automation.Services;
 using Sportik.Core.Events;
@@ -11,16 +12,16 @@ using Sportik.Notification.Services;
 
 namespace Sportik.Automation.States.Parallel
 {
-    internal sealed class WaitingParallelExerciseState : ParallelExerciseState
+    internal sealed class WaitingWithForceExecutionParallelExerciseState : ParallelExerciseState
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
-        public override States.ParallelExerciseState ExerciseState => States.ParallelExerciseState.Waiting;
+        public override States.ParallelExerciseState ExerciseState => States.ParallelExerciseState.WaitingWithForceExecution;
 
-        public WaitingParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+        public WaitingWithForceExecutionParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
             Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
@@ -35,6 +36,7 @@ namespace Sportik.Automation.States.Parallel
 
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseForceExecutionRequestedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
 
@@ -57,6 +59,7 @@ namespace Sportik.Automation.States.Parallel
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseForceExecutionRequestedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
 
@@ -82,6 +85,14 @@ namespace Sportik.Automation.States.Parallel
             {
                 ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
                 timer.Interval = args.TimeBetweenSets;
+            }
+        }
+
+        private void EventsService_Event(ExerciseForceExecutionRequestedEventArgs args)
+        {
+            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
+            {
+                Context.Switch(Context.ExecutingExerciseState);
             }
         }
 

@@ -15,7 +15,6 @@ using System.Threading;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Sound.Models;
-using Sportik.Sound.Services.Implementations;
 using Sportik.Sound.Services.Interfaces;
 
 namespace Sportik.UWP.ViewModels.Exercises
@@ -71,7 +70,8 @@ namespace Sportik.UWP.ViewModels.Exercises
             set => SetField(ref _state, value);
         }
 
-        public ICommand CompleteCommand { get; private set; }
+        public ICommand CompleteCommand { get; }
+        public ICommand ExecuteCommand { get; }
 
         private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetService<IExerciseStatisticsService>();
@@ -96,6 +96,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             SetField(ref _isEnabled, exercise.ExerciseSettings.IsEnabled);
 
             CompleteCommand = new RelayCommand<object>(CompleteExercise);
+            ExecuteCommand = new RelayCommand<object>(ExecuteExercise);
 
             _exerciseReminderUpdateTimer = new DefaultTimerBuilder()
                 .SetInterval(TimeSpan.FromSeconds(0.5))
@@ -117,7 +118,8 @@ namespace Sportik.UWP.ViewModels.Exercises
                 case SequentialExerciseState.Disabled:
                 case SequentialExerciseState.Queued:
                     break;
-                case SequentialExerciseState.Waiting:
+                case SequentialExerciseState.WaitingBeforeForceExecution:
+                case SequentialExerciseState.WaitingWithForceExecution:
                     _exerciseReminderUpdateTimer.Start();
                     break;
                 case SequentialExerciseState.Executing:
@@ -178,7 +180,8 @@ namespace Sportik.UWP.ViewModels.Exercises
                     case SequentialExerciseState.Disabled:
                     case SequentialExerciseState.Queued:
                         break;
-                    case SequentialExerciseState.Waiting:
+                    case SequentialExerciseState.WaitingBeforeForceExecution:
+                    case SequentialExerciseState.WaitingWithForceExecution:
                         _exerciseReminderUpdateTimer.Stop();
                         break;
                     case SequentialExerciseState.Executing:
@@ -196,7 +199,8 @@ namespace Sportik.UWP.ViewModels.Exercises
                     case SequentialExerciseState.Disabled:
                     case SequentialExerciseState.Queued:
                         break;
-                    case SequentialExerciseState.Waiting:
+                    case SequentialExerciseState.WaitingBeforeForceExecution:
+                    case SequentialExerciseState.WaitingWithForceExecution:
                         _exerciseReminderUpdateTimer.Start();
                         break;
                     case SequentialExerciseState.Executing:
@@ -252,11 +256,16 @@ namespace Sportik.UWP.ViewModels.Exercises
             _ = CompleteExerciseAsync(_completeCts.Token);
         }
 
+        private void ExecuteExercise(object parameter)
+        {
+            EventsService.RaiseEvent(new ExerciseForceExecutionRequestedEventArgs(_exercise));
+        }
+
         private async Task CompleteExerciseAsync(CancellationToken cancellationToken)
         {
             ExerciseSettings exerciseSettings = await ExerciseSettingsService.GetExerciseSettingsAsync(_exercise, cancellationToken);
 
-            ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta()
+            ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta
             {
                 Exercise = _exercise,
                 Sets = 1,
@@ -264,6 +273,8 @@ namespace Sportik.UWP.ViewModels.Exercises
             };
 
             await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, DateTime.Today, cancellationToken);
+
+            EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(_exercise));
 
             SoundSource soundSource = SoundSource.Custom("Assets/Sound/Completed.mp3");
             await SoundService.PlayAsync(soundSource, cancellationToken);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Sportik.Core.Events;
 using Sportik.Core.Helpers;
 using Sportik.Core.Models.Statistics;
 using Sportik.Core.Repositories.Interfaces;
@@ -15,14 +14,11 @@ namespace Sportik.Data.Services.Implementations
     {
         private readonly IExerciseStatisticsRepository _exerciseStatisticsRepository;
         private readonly IDayStatisticsRepository _dayStatisticsRepository;
-        private readonly IEventsService _eventsService;
 
-        public ExerciseStatisticsService(IExerciseStatisticsRepository exerciseStatisticsRepository, IDayStatisticsRepository dayStatisticsRepository,
-            IEventsService eventsService)
+        public ExerciseStatisticsService(IExerciseStatisticsRepository exerciseStatisticsRepository, IDayStatisticsRepository dayStatisticsRepository)
         {
             _exerciseStatisticsRepository = exerciseStatisticsRepository;
             _dayStatisticsRepository = dayStatisticsRepository;
-            _eventsService = eventsService;
         }
 
         public async Task<IEnumerable<WeekStatistics>> GetWeekStatisticsAsync(WeekStatisticsOrder order, CancellationToken cancellationToken = default)
@@ -78,8 +74,6 @@ namespace Sportik.Data.Services.Implementations
                 exerciseStatistics = _exerciseStatisticsRepository.Update(exerciseStatistics);
             }
 
-            _eventsService.RaiseEvent(new ExerciseStatisticsDeltaAddedEventArgs(exerciseStatisticsDelta.Exercise, exerciseStatisticsDelta.Sets, exerciseStatisticsDelta.Repetitions));
-
             return _dayStatisticsRepository.GetById(dayStatistics.Id);
         }
 
@@ -116,8 +110,6 @@ namespace Sportik.Data.Services.Implementations
 
                 exerciseStatistics = await _exerciseStatisticsRepository.UpdateAsync(exerciseStatistics, cancellationToken);
             }
-
-            _eventsService.RaiseEvent(new ExerciseStatisticsDeltaAddedEventArgs(exerciseStatisticsDelta.Exercise, exerciseStatisticsDelta.Sets, exerciseStatisticsDelta.Repetitions));
 
             return await _dayStatisticsRepository.GetByIdAsync(dayStatistics.Id, cancellationToken);
         }

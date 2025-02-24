@@ -146,7 +146,6 @@
     <Compile Include="Events\ExerciseTimeBetweenSetsChangedEventArgs.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseSettingsRepository.cs" />
     <Compile Include="Services\Interfaces\IExerciseSettingsService.cs" />
-    <Compile Include="Events\ExerciseStatisticsDeltaAddedEventArgs.cs" />
     <Compile Include="Repositories\Interfaces\IDayStatisticsRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseStatisticsRepository.cs" />
     <Compile Include="Services\Interfaces\IExerciseStatisticsService.cs" />

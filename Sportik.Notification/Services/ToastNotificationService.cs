@@ -27,8 +27,7 @@ namespace Sportik.Notification.Services
                     .AddArgument("view"))
                 .AddButton(new ToastButton()
                     .SetContent("Skip")
-                    .AddArgument("dismiss")
-                    .SetBackgroundActivation());
+                    .AddArgument("dismiss"));
 
             ToastNotification toast = new ToastNotification(builder.GetToastContent().GetXml())
             {

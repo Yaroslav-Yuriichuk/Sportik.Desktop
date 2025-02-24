@@ -105,7 +105,7 @@
                                 
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding TimeSpan, Converter={StaticResource TimeSpanToStringConverter}}"/>
+                                        <TextBlock Text="{Binding TimeSpanValue, Converter={StaticResource TimeSpanToStringConverter}}"/>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
 
@@ -128,7 +128,7 @@
 
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding TimeSpan, Converter={StaticResource TimeSpanToStringConverter}}"/>
+                                        <TextBlock Text="{Binding TimeSpanValue, Converter={StaticResource TimeSpanToStringConverter}}"/>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
 

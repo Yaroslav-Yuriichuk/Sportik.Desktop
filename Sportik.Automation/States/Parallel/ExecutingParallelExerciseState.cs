@@ -1,4 +1,5 @@
 ﻿using System;
+using Sportik.Automation.Events;
 using Sportik.Automation.Models;
 using Sportik.Automation.Services;
 using Sportik.Core.Events;
@@ -31,7 +32,7 @@ namespace Sportik.Automation.States.Parallel
 
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
-            _eventsService.AddListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
@@ -51,7 +52,7 @@ namespace Sportik.Automation.States.Parallel
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
-            _eventsService.RemoveListener<ExerciseStatisticsDeltaAddedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
@@ -81,11 +82,11 @@ namespace Sportik.Automation.States.Parallel
             }
         }
 
-        private void EventsService_Event(ExerciseStatisticsDeltaAddedEventArgs args)
+        private void EventsService_Event(ExerciseCompleteRequestedEventArgs args)
         {
             if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                Context.Switch(Context.WaitingExerciseState);
+                Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
             }
         }
 
@@ -93,13 +94,13 @@ namespace Sportik.Automation.States.Parallel
         {
             if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                Context.Switch(Context.WaitingExerciseState);
+                Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
             }
         }
 
         private void Timer_Elapsed(object sender, EventArgs args)
         {
-            Context.Switch(Context.WaitingExerciseState);
+            Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
         }
     }
 }

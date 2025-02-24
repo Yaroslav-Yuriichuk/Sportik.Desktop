@@ -20,8 +20,13 @@ namespace Sportik.Automation.States.Sequential
         public Exercise Exercise { get; }
 
         public SequentialExerciseState DisabledExerciseState { get; }
-        public SequentialExerciseState WaitingExerciseState { get; }
+
+        public SequentialExerciseState WaitingBeforeForceExecutionExerciseState { get; }
+
+        public SequentialExerciseState WaitingWithForceExecutionExerciseState { get; }
+
         public SequentialExerciseState ExecutingExerciseState { get; }
+
         public SequentialExerciseState QueuedExerciseState { get; }
 
         public SequentialExerciseState CurrentState { get; private set; }
@@ -36,16 +41,17 @@ namespace Sportik.Automation.States.Sequential
             Exercise = exercise;
 
             DisabledExerciseState = new DisabledSequentialExerciseState(this, eventsService, exerciseSettingsServiceFactory);
-            WaitingExerciseState = new WaitingSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
-            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory);
+            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
+            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
             QueuedExerciseState = new QueuedSequentialExerciseState(this, eventsService);
+            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory);
 
             if (Exercise.ExerciseSettings.IsEnabled)
             {
                 Exercise firstEnabledExercise = Exercises.FirstOrDefault(e => e.ExerciseSettings.IsEnabled);
 
                 SequentialExerciseState state = CompareHelper.EqualById(firstEnabledExercise, Exercise)
-                    ? WaitingExerciseState
+                    ? WaitingBeforeForceExecutionExerciseState
                     : QueuedExerciseState;
 
                 Switch(state);

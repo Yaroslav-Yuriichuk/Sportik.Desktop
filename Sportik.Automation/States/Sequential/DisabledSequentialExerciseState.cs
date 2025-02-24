@@ -45,7 +45,7 @@ namespace Sportik.Automation.States.Sequential
 
                 if (otherExercise == null)
                 {
-                    Context.Switch(Context.WaitingExerciseState);
+                    Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
                 }
                 else
                 {

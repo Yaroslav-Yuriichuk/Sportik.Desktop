@@ -1,10 +1,11 @@
 ## Overview
 
-Sportik is a desktop application to create reminders for exercises and track your progress. It is designed for people who want to keep track of their exercises and progress.
+Sportik is a desktop application to create reminders for exercises and track the progress.
 
 ## Release installation
 
-To install the application, download the latest certificate and installer from the [releases page](https://github.com/Yaroslav-Yuriichuk/Sportik/releases).
+To install the application, download the latest certificate and installer from the [Releases](https://github.com/Yaroslav-Yuriichuk/Sportik/releases) page.
+
 Install certificate:
 - Right-click on the certificate file and select "Install Certificate".
 - Select "Local Machine" and click "Next".

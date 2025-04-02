@@ -126,7 +126,7 @@
                             <SymbolIcon Symbol="Clock"
                                         Margin="0 0 10 0" />
 
-                            <Button Content="Execute"
+                            <Button Content="Start executing"
                                     Command="{Binding ExecuteCommand}"/>
 
                         </StackPanel>
@@ -228,7 +228,7 @@
                             <SymbolIcon Symbol="Clock"
                                         Margin="0 0 10 0" />
 
-                            <Button Content="Execute"
+                            <Button Content="Start executing"
                                     Command="{Binding ExecuteCommand}"/>
 
                         </StackPanel>
@@ -263,7 +263,11 @@
                                 <Run Text="Queued"></Run>
                             </TextBlock>
 
-                            <SymbolIcon Symbol="Clock" />
+                            <SymbolIcon Symbol="Clock"
+                                        Margin="0 0 10 0" />
+
+                            <Button Content="Switch"
+                                    Command="{Binding SwitchCommand}"/>
 
                         </StackPanel>
 

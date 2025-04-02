@@ -84,5 +84,10 @@ namespace Sportik.Automation.States.Sequential
         {
             return _getContextCallback(exercise);
         }
+
+        public SequentialExerciseState GetState(Exercise exercise)
+        {
+            return GetContext(exercise).CurrentState;
+        }
     }
 }

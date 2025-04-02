@@ -133,6 +133,7 @@
     <Compile Include="Constants\AutomationConstants.cs" />
     <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseSwitchRequestedEventArgs.cs" />
     <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
     <Compile Include="Events\SequentialExerciseStateChangedEventArgs.cs" />
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />

@@ -15,7 +15,7 @@ namespace Sportik.Core.Services.Implementations
                 return (T)value;
             }
 
-            throw new InvalidOperationException($"Value of type {typeof(T).Name} not found in cache.");
+            throw new KeyNotFoundException($"Value of type {typeof(T).Name} not found in cache.");
         }
 
         public bool TryGet<T>(out T value)

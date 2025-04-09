@@ -138,6 +138,7 @@
     <Compile Include="Events\SequentialExerciseStateChangedEventArgs.cs" />
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
     <Compile Include="Models\ReminderMode.cs" />
+    <Compile Include="Models\SequentialExercisesCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ExerciseTimersService.cs" />
     <Compile Include="Services\IExerciseTimersService.cs" />

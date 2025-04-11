@@ -24,6 +24,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
@@ -127,6 +128,7 @@
                                         Margin="0 0 10 0" />
 
                             <Button Content="Start executing"
+                                    MinWidth="130"
                                     Command="{Binding ExecuteCommand}"/>
 
                         </StackPanel>
@@ -147,6 +149,7 @@
                                         Margin="0 0 10 0"/>
 
                             <Button Content="Mark as completed"
+                                    MinWidth="130"
                                     Command="{Binding CompleteCommand}"/>
 
                         </StackPanel>
@@ -229,6 +232,7 @@
                                         Margin="0 0 10 0" />
 
                             <Button Content="Start executing"
+                                    MinWidth="130"
                                     Command="{Binding ExecuteCommand}"/>
 
                         </StackPanel>
@@ -249,6 +253,7 @@
                                 Margin="0 0 10 0"/>
 
                             <Button Content="Mark as completed"
+                                    MinWidth="130"
                                     Command="{Binding CompleteCommand}"/>
 
                         </StackPanel>
@@ -267,6 +272,7 @@
                                         Margin="0 0 10 0" />
 
                             <Button Content="Switch"
+                                    MinWidth="130"
                                     Command="{Binding SwitchCommand}"/>
 
                         </StackPanel>
@@ -276,6 +282,23 @@
             </ListView.ItemTemplate>
 
         </ListView>
+
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="15 0 15 15">
+
+            <Button Content="Pause"
+                    Margin="0 0 15 0"
+                    MinWidth="130"
+                    Command="{Binding PauseCommand}" />
+
+            <Button Content="Resume"
+                    Margin="0 0 15 0"
+                    MinWidth="130"
+                    Command="{Binding ResumeCommand}" />
+
+        </StackPanel>
 
     </Grid>
 </Page>

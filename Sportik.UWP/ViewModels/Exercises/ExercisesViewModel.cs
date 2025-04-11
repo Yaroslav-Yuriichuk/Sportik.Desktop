@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Automation.Models;
 using Sportik.Automation.Services;
@@ -72,6 +73,10 @@ namespace Sportik.UWP.ViewModels.Exercises
             set => SetField(ref _reminderMode, value);
         }
 
+        public ICanExecuteCommand PauseCommand { get; private set; }
+
+        public ICanExecuteCommand ResumeCommand { get; private set; }
+
         private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
         private IReminderService ReminderService => App.ServiceProvider.GetService<IReminderService>();
 
@@ -79,6 +84,9 @@ namespace Sportik.UWP.ViewModels.Exercises
 
         public ExercisesViewModel()
         {
+            PauseCommand = new RelayCommand<object>(Pause, _ => ReminderService.IsRunning);
+            ResumeCommand = new RelayCommand<object>(Resume, _ => !ReminderService.IsRunning);
+
             ReminderModeOptions = new ObservableCollection<ReminderModeOption>
             {
                 new ReminderModeOption {Name = "Parallel", Mode = ReminderMode.Parallel},
@@ -106,6 +114,29 @@ namespace Sportik.UWP.ViewModels.Exercises
             foreach (SequentialExerciseViewModel exerciseViewModel in SequentialExercises)
             {
                 exerciseViewModel.Dispose();
+            }
+        }
+
+        private void Pause(object parameter)
+        {
+            if (ReminderService.IsRunning)
+            {
+                ReminderService.Stop();
+
+                PauseCommand.RaiseCanExecuteChanged();
+                ResumeCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private void Resume(object parameter)
+        {
+            if (!ReminderService.IsRunning)
+            {
+                IEnumerable<Exercise> exercises = ExercisesService.GetAllExercises();
+                ReminderService.Start(exercises, ReminderMode);
+
+                PauseCommand.RaiseCanExecuteChanged();
+                ResumeCommand.RaiseCanExecuteChanged();
             }
         }
 

@@ -33,6 +33,8 @@ namespace Sportik.Automation.Services
             _notificationServiceFactory = notificationServiceFactory;
         }
 
+        public bool IsRunning => _runner != null;
+
         public ReminderMode Mode
         {
             get => _runner?.Mode ?? ReminderMode.Parallel;

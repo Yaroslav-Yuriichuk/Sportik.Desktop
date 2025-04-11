@@ -155,6 +155,7 @@
     <Compile Include="ViewModels\Exercises\ParallelExerciseViewModel.cs" />
     <Compile Include="ViewModels\Exercises\ReminderModeOption.cs" />
     <Compile Include="ViewModels\Exercises\SequentialExerciseViewModel.cs" />
+    <Compile Include="ViewModels\ICanExecuteCommand.cs" />
     <Compile Include="ViewModels\IntOption.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\Settings\ExerciseSettingsViewModel.cs" />

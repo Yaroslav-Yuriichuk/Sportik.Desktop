@@ -18,12 +18,12 @@ namespace Sportik.Automation.States
         public ReminderMode Mode => ReminderMode.Sequential;
 
         public SequentialStatesRunner(IEnumerable<Exercise> exercises, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
+            IRuntimeCacheService runtimeCacheService, Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             exercises = exercises as Exercise[] ?? exercises.ToArray();
 
             IEnumerable<SequentialExercisesStatesContext> contexts = exercises
-                .Select(exercise => new SequentialExercisesStatesContext(exercises, exercise, GetContext, eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory))
+                .Select(exercise => new SequentialExercisesStatesContext(exercises, exercise, GetContext, eventsService, exerciseTimersService, runtimeCacheService, exerciseSettingsServiceFactory, notificationServiceFactory))
                 .ToArray();
 
             _contexts = contexts;

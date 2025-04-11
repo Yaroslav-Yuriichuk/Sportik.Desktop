@@ -13,6 +13,7 @@ namespace Sportik.Automation.Services
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
+        private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
@@ -21,15 +22,18 @@ namespace Sportik.Automation.Services
 
         private IStatesRunner _runner;
 
-        public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+        public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService, IRuntimeCacheService runtimeCacheService,
             Func<IExercisesService> exercisesServiceFactory, Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
+            _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
             _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
+
+        public bool IsRunning => _runner != null;
 
         public ReminderMode Mode
         {
@@ -50,7 +54,7 @@ namespace Sportik.Automation.Services
 
                 _runner = value switch
                 {
-                    ReminderMode.Sequential => new SequentialStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                    ReminderMode.Sequential => new SequentialStatesRunner(_exercises, _eventsService, _exerciseTimersService, _runtimeCacheService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
                     ReminderMode.Parallel => new ParallelStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
                     _ => throw new ArgumentException($"Mode {value} is not supported.")
                 };
@@ -71,7 +75,7 @@ namespace Sportik.Automation.Services
 
             _runner = mode switch
             {
-                ReminderMode.Sequential => new SequentialStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
+                ReminderMode.Sequential => new SequentialStatesRunner(_exercises, _eventsService, _exerciseTimersService, _runtimeCacheService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
                 ReminderMode.Parallel => new ParallelStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
                 _ => throw new ArgumentException($"Mode {mode} is not supported.")
             };

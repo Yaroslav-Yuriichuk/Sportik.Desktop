@@ -133,10 +133,12 @@
     <Compile Include="Constants\AutomationConstants.cs" />
     <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseSwitchRequestedEventArgs.cs" />
     <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
     <Compile Include="Events\SequentialExerciseStateChangedEventArgs.cs" />
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
     <Compile Include="Models\ReminderMode.cs" />
+    <Compile Include="Models\SequentialExercisesCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ExerciseTimersService.cs" />
     <Compile Include="Services\IExerciseTimersService.cs" />

@@ -71,7 +71,10 @@ namespace Sportik.UWP.ViewModels.Exercises
         }
 
         public ICommand CompleteCommand { get; }
+
         public ICommand ExecuteCommand { get; }
+
+        public ICommand SwitchCommand { get; }
 
         private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetService<IExerciseStatisticsService>();
@@ -97,6 +100,7 @@ namespace Sportik.UWP.ViewModels.Exercises
 
             CompleteCommand = new RelayCommand<object>(CompleteExercise);
             ExecuteCommand = new RelayCommand<object>(ExecuteExercise);
+            SwitchCommand = new RelayCommand<object>(SwitchExercise);
 
             _exerciseReminderUpdateTimer = new DefaultTimerBuilder()
                 .SetInterval(TimeSpan.FromSeconds(0.5))
@@ -259,6 +263,11 @@ namespace Sportik.UWP.ViewModels.Exercises
         private void ExecuteExercise(object parameter)
         {
             EventsService.RaiseEvent(new ExerciseForceExecutionRequestedEventArgs(_exercise));
+        }
+
+        private void SwitchExercise(object parameter)
+        {
+            EventsService.RaiseEvent(new ExerciseSwitchRequestedEventArgs(_exercise));
         }
 
         private async Task CompleteExerciseAsync(CancellationToken cancellationToken)

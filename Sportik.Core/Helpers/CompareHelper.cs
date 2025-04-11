@@ -8,5 +8,10 @@ namespace Sportik.Core.Helpers
         {
             return first.Id == second.Id;
         }
+
+        public static bool EqualById(Exercise exercise, int id)
+        {
+            return exercise.Id == id;
+        }
     }
 }

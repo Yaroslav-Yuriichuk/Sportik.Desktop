@@ -6,6 +6,7 @@ using Sportik.Automation.Helpers;
 using Sportik.Automation.Models;
 using Sportik.Automation.Services;
 using Sportik.Core.Events;
+using Sportik.Core.Extensions;
 using Sportik.Core.Helpers;
 using Sportik.Core.Models;
 using Sportik.Core.Models.Settings;
@@ -20,6 +21,7 @@ namespace Sportik.Automation.States.Sequential
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
+        private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
@@ -28,16 +30,22 @@ namespace Sportik.Automation.States.Sequential
         private ITimer _forceExecutionTimer;
 
         public WaitingBeforeForceExecutionSequentialExerciseState(SequentialExercisesStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
+            IRuntimeCacheService runtimeCacheService, Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
+            _runtimeCacheService = runtimeCacheService;
             _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
         public override void Enter()
         {
+            SequentialExercisesCache sequentialExercisesCache = _runtimeCacheService.GetOrNew<SequentialExercisesCache>();
+            sequentialExercisesCache.LastActiveExerciseId = Context.Exercise.Id;
+
+            _runtimeCacheService.Set(sequentialExercisesCache);
+
             IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
 
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);

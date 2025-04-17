@@ -141,6 +141,7 @@
     <Compile Include="Behaviors\NavigationViewCollapseBehavior.cs" />
     <Compile Include="Converters\BoolToInvertedVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\DateTimeOffsetToStringConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EnumTargetValueToVisibilityConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesSecondsStringConverter.cs" />
@@ -152,9 +153,12 @@
     <Compile Include="Models\ReminderCache.cs" />
     <Compile Include="Services\INavigationService.cs" />
     <Compile Include="Services\FrameNavigationService.cs" />
+    <Compile Include="ViewModels\ExerciseOption.cs" />
     <Compile Include="ViewModels\Exercises\ParallelExerciseViewModel.cs" />
     <Compile Include="ViewModels\Exercises\ReminderModeOption.cs" />
     <Compile Include="ViewModels\Exercises\SequentialExerciseViewModel.cs" />
+    <Compile Include="ViewModels\Extra\ExtraExercisesViewModel.cs" />
+    <Compile Include="ViewModels\Extra\SetViewModel.cs" />
     <Compile Include="ViewModels\ICanExecuteCommand.cs" />
     <Compile Include="ViewModels\IntOption.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
@@ -172,6 +176,9 @@
     <Compile Include="ViewModels\Exercises\ExercisesViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavigationViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavigationOption.cs" />
+    <Compile Include="Views\ExtraExercisesPage.xaml.cs">
+      <DependentUpon>ExtraExercisesPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
@@ -255,6 +262,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ExtraExercisesPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -274,10 +285,6 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
       <Version>2.0.1</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Sportik.UWP_TemporaryKey.pfx" />
-    <None Include="Sportik_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sportik.Automation\Sportik.Automation.csproj">

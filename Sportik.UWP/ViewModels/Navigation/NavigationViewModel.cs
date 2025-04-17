@@ -50,6 +50,7 @@ namespace Sportik.UWP.ViewModels.Navigation
             {
                 new NavigationOption { Name = "Exercises", Icon = Symbol.AllApps, PageType = typeof(ExercisesPage), },
                 new NavigationOption { Name = "Statistics", Icon = Symbol.ViewAll, PageType = typeof(StatisticsPage), },
+                new NavigationOption { Name = "Extra", Icon = Symbol.Favorite, PageType = typeof(ExtraExercisesPage), },
             };
 
             EventsService.AddListener<ReminderNotificationAcceptedEventArgs>(EventsService_Event);

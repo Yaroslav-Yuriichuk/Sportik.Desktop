@@ -10,6 +10,7 @@ using Sportik.Core.Models;
 using Sportik.Core.Models.Settings;
 using Sportik.Core.Models.Statistics;
 using Sportik.Core.Services.Interfaces;
+using Sportik.ViewModels;
 
 namespace Sportik.UWP.ViewModels.Extra
 {
@@ -75,8 +76,8 @@ namespace Sportik.UWP.ViewModels.Extra
             set => SetField(ref _sets, value);
         }
 
-        public RelayCommand<object> AddSetCommand { get; private set; }
-        public RelayCommand<object> SaveSetsCommand { get; private set; }
+        public IReactiveCommand AddSetCommand { get; }
+        public IReactiveCommand SaveSetsCommand { get; }
 
         private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetService<IExerciseStatisticsService>();
@@ -91,11 +92,10 @@ namespace Sportik.UWP.ViewModels.Extra
 
             SelectedDate = DateTimeOffset.Now.Date;
 
-            AddSetCommand = new RelayCommand<object>(AddSet);
-            SaveSetsCommand = new RelayCommand<object>(SaveSets);
+            AddSetCommand = new ReactiveRelayCommand(AddSet);
+            SaveSetsCommand = new ReactiveRelayCommand(SaveSets, false);
 
             Sets = new ObservableCollection<SetViewModel>();
-
 
             _ = LoadExercisesAsync(_loadCts.Token);
         }
@@ -114,7 +114,7 @@ namespace Sportik.UWP.ViewModels.Extra
                 exercises.Select(e => new ExerciseOption(e)));
         }
 
-        private void AddSet(object parameter)
+        private void AddSet()
         {
             if (SelectedExerciseOption == null || SelectedRepetitionsOption == null)
             {
@@ -123,16 +123,23 @@ namespace Sportik.UWP.ViewModels.Extra
 
             SetViewModel set = new SetViewModel(SelectedExerciseOption.Exercise, SelectedRepetitionsOption.IntValue, SelectedDate);
             Sets.Add(set);
+
+            SaveSetsCommand.IsExecutable = Sets.Count > 0;
         }
 
-        private void SaveSets(object parameter)
+        private void SaveSets()
         {
             _ = SaveSetsAsync(_saveCts.Token);
         }
 
         private async Task SaveSetsAsync(CancellationToken cancellationToken)
         {
-            foreach (SetViewModel set in Sets)
+            AddSetCommand.IsExecutable = false;
+            SaveSetsCommand.IsExecutable = false;
+
+            List<SetViewModel> sets = Sets.ToList();
+
+            foreach (SetViewModel set in sets)
             {
                 ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta
                 {
@@ -142,9 +149,13 @@ namespace Sportik.UWP.ViewModels.Extra
                 };
 
                 await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, set.Date.Date, cancellationToken);
+
+                Sets.Remove(set);
             }
 
             Sets.Clear();
+
+            AddSetCommand.IsExecutable = true;
         }
     }
 }

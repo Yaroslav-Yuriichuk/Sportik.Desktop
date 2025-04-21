@@ -44,7 +44,7 @@ namespace Sportik.UWP.ViewModels.Navigation
 
         public NavigationViewModel()
         {
-            SelectionChangedCommand = new RelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
+            SelectionChangedCommand = new LazyRelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
 
             MenuItemOptions = new ObservableCollection<NavigationOption>()
             {

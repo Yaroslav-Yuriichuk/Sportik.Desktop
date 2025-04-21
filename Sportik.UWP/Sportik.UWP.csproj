@@ -159,7 +159,8 @@
     <Compile Include="ViewModels\Exercises\SequentialExerciseViewModel.cs" />
     <Compile Include="ViewModels\Extra\ExtraExercisesViewModel.cs" />
     <Compile Include="ViewModels\Extra\SetViewModel.cs" />
-    <Compile Include="ViewModels\ICanExecuteCommand.cs" />
+    <Compile Include="ViewModels\IReactiveCommand.cs" />
+    <Compile Include="ViewModels\ILazyCommand.cs" />
     <Compile Include="ViewModels\IntOption.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\Settings\ExerciseSettingsViewModel.cs" />

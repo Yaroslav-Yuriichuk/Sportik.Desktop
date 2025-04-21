@@ -98,9 +98,9 @@ namespace Sportik.UWP.ViewModels.Exercises
             Name = exercise.Name;
             SetField(ref _isEnabled, exercise.ExerciseSettings.IsEnabled);
 
-            CompleteCommand = new RelayCommand<object>(CompleteExercise);
-            ExecuteCommand = new RelayCommand<object>(ExecuteExercise);
-            SwitchCommand = new RelayCommand<object>(SwitchExercise);
+            CompleteCommand = new ReactiveRelayCommand(CompleteExercise);
+            ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise);
+            SwitchCommand = new ReactiveRelayCommand(SwitchExercise);
 
             _exerciseReminderUpdateTimer = new DefaultTimerBuilder()
                 .SetInterval(TimeSpan.FromSeconds(0.5))
@@ -252,7 +252,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             });
         }
 
-        private void CompleteExercise(object parameter)
+        private void CompleteExercise()
         {
             _completeCts?.Cancel();
             _completeCts = new CancellationTokenSource();
@@ -260,12 +260,12 @@ namespace Sportik.UWP.ViewModels.Exercises
             _ = CompleteExerciseAsync(_completeCts.Token);
         }
 
-        private void ExecuteExercise(object parameter)
+        private void ExecuteExercise()
         {
             EventsService.RaiseEvent(new ExerciseForceExecutionRequestedEventArgs(_exercise));
         }
 
-        private void SwitchExercise(object parameter)
+        private void SwitchExercise()
         {
             EventsService.RaiseEvent(new ExerciseSwitchRequestedEventArgs(_exercise));
         }

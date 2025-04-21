@@ -2,7 +2,7 @@
 
 namespace Sportik.UWP.ViewModels
 {
-    internal interface ICanExecuteCommand : ICommand
+    internal interface ILazyCommand : ICommand
     {
         void RaiseCanExecuteChanged();
     }

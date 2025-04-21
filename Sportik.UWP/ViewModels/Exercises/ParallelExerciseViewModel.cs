@@ -16,6 +16,7 @@ using Sportik.Core.Timers;
 using Sportik.Sound.Models;
 using Sportik.Sound.Services.Interfaces;
 using Sportik.UWP.Helpers;
+using Sportik.ViewModels;
 
 namespace Sportik.UWP.ViewModels.Exercises
 {
@@ -70,7 +71,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             set => SetField(ref _state, value);
         }
 
-        public ICommand CompleteCommand { get; }
+        public IReactiveCommand CompleteCommand { get; }
 
         public ICommand ExecuteCommand { get; }
 
@@ -96,8 +97,8 @@ namespace Sportik.UWP.ViewModels.Exercises
             Name = exercise.Name;
             SetField(ref _isEnabled, exercise.ExerciseSettings.IsEnabled);
 
-            CompleteCommand = new RelayCommand<object>(CompleteExercise);
-            ExecuteCommand = new RelayCommand<object>(ExecuteExercise);
+            CompleteCommand = new ReactiveRelayCommand(CompleteExercise, false);
+            ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise);
 
             _exerciseReminderUpdateTimer = new DefaultTimerBuilder()
                 .SetInterval(TimeSpan.FromSeconds(0.5))
@@ -123,6 +124,7 @@ namespace Sportik.UWP.ViewModels.Exercises
                     _exerciseReminderUpdateTimer.Start();
                     break;
                 case ParallelExerciseState.Executing:
+                    CompleteCommand.IsExecutable = true;
                     _exerciseExecutionUpdateTimer.Start();
                     break;
                 default:
@@ -184,6 +186,7 @@ namespace Sportik.UWP.ViewModels.Exercises
                         _exerciseReminderUpdateTimer.Stop();
                         break;
                     case ParallelExerciseState.Executing:
+                        CompleteCommand.IsExecutable = false;
                         _exerciseExecutionUpdateTimer.Stop();
                         break;
                     default:
@@ -202,6 +205,7 @@ namespace Sportik.UWP.ViewModels.Exercises
                         _exerciseReminderUpdateTimer.Start();
                         break;
                     case ParallelExerciseState.Executing:
+                        CompleteCommand.IsExecutable = true;
                         _exerciseExecutionUpdateTimer.Start();
                         break;
                     default:
@@ -246,7 +250,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             });
         }
 
-        private void CompleteExercise(object parameter)
+        private void CompleteExercise()
         {
             _completeCts?.Cancel();
             _completeCts = new CancellationTokenSource();
@@ -254,13 +258,15 @@ namespace Sportik.UWP.ViewModels.Exercises
             _ = CompleteExerciseAsync(_completeCts.Token);
         }
 
-        private void ExecuteExercise(object parameter)
+        private void ExecuteExercise()
         {
             EventsService.RaiseEvent(new ExerciseForceExecutionRequestedEventArgs(_exercise));
         }
 
         private async Task CompleteExerciseAsync(CancellationToken cancellationToken)
         {
+            CompleteCommand.IsExecutable = false;
+
             ExerciseSettings exerciseSettings = await ExerciseSettingsService.GetExerciseSettingsAsync(_exercise, cancellationToken);
 
             ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta

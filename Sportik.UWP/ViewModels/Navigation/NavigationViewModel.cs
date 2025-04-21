@@ -44,12 +44,13 @@ namespace Sportik.UWP.ViewModels.Navigation
 
         public NavigationViewModel()
         {
-            SelectionChangedCommand = new RelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
+            SelectionChangedCommand = new LazyRelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
 
             MenuItemOptions = new ObservableCollection<NavigationOption>()
             {
                 new NavigationOption { Name = "Exercises", Icon = Symbol.AllApps, PageType = typeof(ExercisesPage), },
                 new NavigationOption { Name = "Statistics", Icon = Symbol.ViewAll, PageType = typeof(StatisticsPage), },
+                new NavigationOption { Name = "Extra", Icon = Symbol.Favorite, PageType = typeof(ExtraExercisesPage), },
             };
 
             EventsService.AddListener<ReminderNotificationAcceptedEventArgs>(EventsService_Event);

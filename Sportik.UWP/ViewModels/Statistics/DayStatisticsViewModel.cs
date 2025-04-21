@@ -42,10 +42,10 @@ namespace Sportik.UWP.ViewModels.Statistics
                                dayStatistics.ExerciseStatistics.Select(statistics => new ExerciseStatisticsViewModel(statistics)));
 
             IsCollapsed = true;
-            ToggleCollapsedCommand = new RelayCommand<object>(ToggleCollapsed);
+            ToggleCollapsedCommand = new ReactiveRelayCommand(ToggleCollapsed);
         }
 
-        private void ToggleCollapsed(object _)
+        private void ToggleCollapsed()
         {
             IsCollapsed = !IsCollapsed;
         }

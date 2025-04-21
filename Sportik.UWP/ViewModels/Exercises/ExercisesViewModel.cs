@@ -73,9 +73,9 @@ namespace Sportik.UWP.ViewModels.Exercises
             set => SetField(ref _reminderMode, value);
         }
 
-        public ICanExecuteCommand PauseCommand { get; private set; }
+        public ILazyCommand PauseCommand { get; private set; }
 
-        public ICanExecuteCommand ResumeCommand { get; private set; }
+        public ILazyCommand ResumeCommand { get; private set; }
 
         private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
         private IReminderService ReminderService => App.ServiceProvider.GetService<IReminderService>();
@@ -84,8 +84,8 @@ namespace Sportik.UWP.ViewModels.Exercises
 
         public ExercisesViewModel()
         {
-            PauseCommand = new RelayCommand<object>(Pause, _ => ReminderService.IsRunning);
-            ResumeCommand = new RelayCommand<object>(Resume, _ => !ReminderService.IsRunning);
+            PauseCommand = new LazyRelayCommand(Pause, () => ReminderService.IsRunning);
+            ResumeCommand = new LazyRelayCommand(Resume, () => !ReminderService.IsRunning);
 
             ReminderModeOptions = new ObservableCollection<ReminderModeOption>
             {
@@ -117,7 +117,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             }
         }
 
-        private void Pause(object parameter)
+        private void Pause()
         {
             if (ReminderService.IsRunning)
             {
@@ -128,7 +128,7 @@ namespace Sportik.UWP.ViewModels.Exercises
             }
         }
 
-        private void Resume(object parameter)
+        private void Resume()
         {
             if (!ReminderService.IsRunning)
             {

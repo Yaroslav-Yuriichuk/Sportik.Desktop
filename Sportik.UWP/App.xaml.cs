@@ -47,13 +47,18 @@ namespace Sportik.UWP
             IPersistentCacheService persistentCacheService = ServiceProvider.GetService<IPersistentCacheService>();
 
             ReminderMode reminderMode = ReminderMode.Parallel;
+            bool toStartReminders = true;
 
             if (persistentCacheService.TryGet(out ReminderCache cache))
             {
+                toStartReminders = cache.IsActive;
                 reminderMode = cache.Mode;
             }
 
-            reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
+            if (toStartReminders)
+            {
+                reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
+            }
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -88,7 +93,11 @@ namespace Sportik.UWP
             IRuntimeCacheService runtimeCacheService = ServiceProvider.GetService<IRuntimeCacheService>();
             IPersistentCacheService persistentCacheService = ServiceProvider.GetService<IPersistentCacheService>();
 
-            ReminderCache reminderCache = new ReminderCache { Mode = reminderService.Mode, };
+            ReminderCache reminderCache = new ReminderCache
+            {
+                IsActive = reminderService.IsRunning,
+                Mode = reminderService.Mode,
+            };
 
             persistentCacheService.Set(reminderCache);
             runtimeCacheService.Set(reminderCache);
@@ -105,13 +114,18 @@ namespace Sportik.UWP
             IRuntimeCacheService runtimeCacheService = ServiceProvider.GetService<IRuntimeCacheService>();
 
             ReminderMode reminderMode = ReminderMode.Parallel;
+            bool toStartReminders = true;
 
             if (runtimeCacheService.TryGet(out ReminderCache cache))
             {
+                toStartReminders = cache.IsActive;
                 reminderMode = cache.Mode;
             }
 
-            reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
+            if (toStartReminders)
+            {
+                reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
+            }
         }
 
         private void ConfigureServices()

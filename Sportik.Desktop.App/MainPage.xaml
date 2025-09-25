@@ -1,0 +1,46 @@
+﻿<Page
+    x:Class="Sportik.Desktop.App.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Sportik.Desktop.App"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:navigation="using:Sportik.Desktop.App.ViewModels.Navigation"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <navigation:NavigationViewModel />
+    </Page.DataContext>
+
+    <Grid>
+        <NavigationView Name="PagesNavigationView"
+                        IsPaneOpen="True"
+                        PaneDisplayMode="Left"
+                        IsBackButtonVisible="Collapsed"
+                        MenuItemsSource="{Binding MenuItemOptions}"
+                        SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}">
+
+            <NavigationView.MenuItemTemplate>
+                <DataTemplate x:DataType="navigation:NavigationOption">
+                    <NavigationViewItem Content="{Binding Name}">
+                        <NavigationViewItem.Icon>
+                            <SymbolIcon Symbol="{Binding Icon}" />
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                </DataTemplate>
+            </NavigationView.MenuItemTemplate>
+
+            <interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="SelectionChanged">
+                    <core:InvokeCommandAction Command="{Binding SelectionChangedCommand}"/>
+                </core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
+
+            <Frame Name="PagesFrame" />
+
+        </NavigationView>
+    </Grid>
+</Page>

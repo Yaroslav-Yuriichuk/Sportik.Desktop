@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Sportik.Desktop.Automation.Events;
 using Sportik.Desktop.Automation.Models;
 using Sportik.Desktop.Automation.Services;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Helpers;
+using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.Timers;
 using Sportik.Desktop.Notification.Events;
@@ -26,7 +28,7 @@ namespace Sportik.Desktop.Automation.States.Parallel
             _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
         }
 
-        public override void Enter()
+        protected override void HandleEnter()
         {
             IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
 
@@ -35,20 +37,26 @@ namespace Sportik.Desktop.Automation.States.Parallel
             _eventsService.AddListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
-            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
-
-            timer.Loop = false;
-            timer.Interval = exerciseSettingsService.GetExerciseSettings(Context.Exercise).ExecutionTime;
-
-            timer.Elapsed += Timer_Elapsed;
-
-            if (!timer.IsRunning)
+            Task.Run(async () =>
             {
-                timer.Start();
-            }
+                ExerciseSettings exerciseSettings =
+                    await exerciseSettingsService.GetExerciseSettingsAsync(Context.Exercise, ActiveCancellationToken);
+
+                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
+
+                timer.Loop = false;
+                timer.Interval = exerciseSettings.ExecutionTime;
+
+                timer.Elapsed += Timer_Elapsed;
+
+                if (!timer.IsRunning)
+                {
+                    timer.Start();
+                }
+            });
         }
 
-        public override void Exit()
+        protected override void HandleExit()
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);

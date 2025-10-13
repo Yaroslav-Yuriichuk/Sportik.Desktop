@@ -41,42 +41,6 @@ namespace Sportik.Desktop.Data.Services.Implementations
             };
         }
 
-        public DayStatistics AddExerciseStatisticsDelta(ExerciseStatisticsDelta exerciseStatisticsDelta, DateTime date)
-        {
-            date = date.Date;
-
-            DayStatistics dayStatistics = _dayStatisticsRepository.GetByDate(date);
-
-            if (dayStatistics == null)
-            {
-                dayStatistics = _dayStatisticsRepository.Add(dayStatistics = new DayStatistics { Date = date, });
-            }
-
-            ExerciseStatistics exerciseStatistics = dayStatistics.ExerciseStatistics.FirstOrDefault(statistics => statistics.ExerciseId == exerciseStatisticsDelta.Exercise.Id);
-
-            if (exerciseStatistics == null)
-            {
-                exerciseStatistics = new ExerciseStatistics
-                {
-                    ExerciseId = exerciseStatisticsDelta.Exercise.Id,
-                    DayStatisticsId = dayStatistics.Id,
-                    Sets = exerciseStatisticsDelta.Sets,
-                    Repetitions = exerciseStatisticsDelta.Repetitions,
-                };
-
-                exerciseStatistics = _exerciseStatisticsRepository.Add(exerciseStatistics);
-            }
-            else
-            {
-                exerciseStatistics.Sets += exerciseStatisticsDelta.Sets;
-                exerciseStatistics.Repetitions += exerciseStatisticsDelta.Repetitions;
-
-                exerciseStatistics = _exerciseStatisticsRepository.Update(exerciseStatistics);
-            }
-
-            return _dayStatisticsRepository.GetById(dayStatistics.Id);
-        }
-
         public async Task<DayStatistics> AddExerciseStatisticsDeltaAsync(ExerciseStatisticsDelta exerciseStatisticsDelta, DateTime date,
             CancellationToken cancellationToken = default)
         {

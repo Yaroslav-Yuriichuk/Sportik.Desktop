@@ -1,4 +1,5 @@
-﻿using Sportik.Desktop.Core.StateMachine;
+﻿using System.Threading;
+using Sportik.Desktop.Core.StateMachine;
 
 namespace Sportik.Desktop.Automation.States.Parallel
 {
@@ -8,12 +9,32 @@ namespace Sportik.Desktop.Automation.States.Parallel
 
         protected ParallelExerciseStatesContext Context { get; }
 
+        protected CancellationToken ActiveCancellationToken => _activeCts?.Token ?? new CancellationToken(true);
+
+        private CancellationTokenSource _activeCts;
+
         public ParallelExerciseState(ParallelExerciseStatesContext context)
         {
             Context = context;
         }
 
-        public abstract void Enter();
-        public abstract void Exit();
+        public void Enter()
+        {
+            _activeCts?.Cancel();
+            _activeCts = new CancellationTokenSource();
+
+            HandleEnter();
+        }
+
+        public void Exit()
+        {
+            _activeCts?.Cancel();
+            _activeCts = null;
+
+            HandleExit();
+        }
+
+        protected abstract void HandleEnter();
+        protected abstract void HandleExit();
     }
 }

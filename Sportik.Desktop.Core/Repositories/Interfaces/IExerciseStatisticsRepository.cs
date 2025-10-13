@@ -3,5 +3,5 @@ using Sportik.Desktop.Core.Repositories.Generic;
 
 namespace Sportik.Desktop.Core.Repositories.Interfaces
 {
-    public interface IExerciseStatisticsRepository : ISyncRepository<ExerciseStatistics>, IAsyncRepository<ExerciseStatistics> { }
+    public interface IExerciseStatisticsRepository : IAsyncRepository<ExerciseStatistics> { }
 }

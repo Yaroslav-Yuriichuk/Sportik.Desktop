@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Sportik.Desktop.Automation.Helpers;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Helpers;
@@ -24,34 +25,37 @@ namespace Sportik.Desktop.Automation.States.Sequential
             _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
         }
 
-        public override void Enter()
+        protected override void HandleEnter()
         {
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
         }
 
-        public override void Exit()
+        protected override void HandleExit()
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
         }
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && args.IsEnabled)
+            if (!CompareHelper.EqualById(Context.Exercise, args.Exercise) || !args.IsEnabled)
             {
-                IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+                return;
+            }
 
-                IEnumerable<ExerciseSettings> exerciseSettings = Context.Exercises.Select(e => exerciseSettingsService.GetExerciseSettings(e));
+            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+
+            Task.Run(async () =>
+            {
+                IEnumerable<ExerciseSettings> exerciseSettings = await Task.WhenAll(
+                    Context.Exercises.Select(async e =>
+                        await exerciseSettingsService.GetExerciseSettingsAsync(e, ActiveCancellationToken)));
+
                 Exercise otherExercise = ExercisesSequenceHelper.GetAnyOtherEnabledExercise(Context.Exercises, Context.Exercise, exerciseSettings);
 
-                if (otherExercise == null)
-                {
-                    Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
-                }
-                else
-                {
-                    Context.Switch(Context.QueuedExerciseState);
-                }
-            }
+                Context.Switch(otherExercise == null
+                    ? Context.WaitingBeforeForceExecutionExerciseState
+                    : Context.QueuedExerciseState);
+            });
         }
     }
 }

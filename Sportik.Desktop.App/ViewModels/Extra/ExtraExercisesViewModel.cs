@@ -108,7 +108,7 @@ namespace Sportik.Desktop.App.ViewModels.Extra
 
         private async Task LoadExercisesAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<Exercise> exercises = await ExercisesService.GetAllExercisesAsync(cancellationToken);
+            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
 
             ExercisesOptions = new ObservableCollection<ExerciseOption>(
                 exercises.Select(e => new ExerciseOption(e)));

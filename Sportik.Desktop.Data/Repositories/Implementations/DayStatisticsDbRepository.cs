@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -17,26 +16,6 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
         public DayStatisticsDbRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
-        }
-
-        public DayStatistics GetById(int id)
-        {
-            return _dbContext.DayStatistics
-                .Include(dayStatistics => dayStatistics.ExerciseStatistics)
-                    .ThenInclude(exerciseStatistics => exerciseStatistics.Exercise)
-                .Include(dayStatistics => dayStatistics.ExerciseStatistics)
-                    .ThenInclude(exerciseStatistics => exerciseStatistics.DayStatistics)
-                .FirstOrDefault(dayStatistics => dayStatistics.Id == id);
-        }
-
-        public IEnumerable<DayStatistics> GetAll()
-        {
-            return _dbContext.DayStatistics
-                .Include(dayStatistics => dayStatistics.ExerciseStatistics)
-                    .ThenInclude(exerciseStatistics => exerciseStatistics.Exercise)
-                .Include(dayStatistics => dayStatistics.ExerciseStatistics)
-                    .ThenInclude(exerciseStatistics => exerciseStatistics.DayStatistics)
-                .ToList();
         }
 
         public async Task<DayStatistics> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -59,14 +38,6 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
                 .ToListAsync(cancellationToken);
         }
 
-        public DayStatistics Add(DayStatistics entity)
-        {
-            _dbContext.DayStatistics.Add(entity);
-            _dbContext.SaveChanges();
-
-            return entity;
-        }
-
         public async Task<DayStatistics> AddAsync(DayStatistics entity, CancellationToken cancellationToken = default)
         {
             await _dbContext.DayStatistics.AddAsync(entity, cancellationToken);
@@ -75,39 +46,10 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
             return entity;
         }
 
-        public DayStatistics Update(DayStatistics entity)
-        {
-            _dbContext.DayStatistics.Update(entity);
-            _dbContext.SaveChanges();
-
-            return entity;
-        }
-
         public async Task<DayStatistics> UpdateAsync(DayStatistics entity, CancellationToken cancellationToken = default)
         {
             _dbContext.DayStatistics.Update(entity);
             await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return entity;
-        }
-
-        public DayStatistics DeleteById(int id)
-        {
-            DayStatistics entity = GetById(id);
-
-            if (entity != null)
-            {
-                _dbContext.DayStatistics.Remove(entity);
-                _dbContext.SaveChanges();
-            }
-
-            return entity;
-        }
-
-        public DayStatistics Delete(DayStatistics entity)
-        {
-            _dbContext.DayStatistics.Remove(entity);
-            _dbContext.SaveChanges();
 
             return entity;
         }
@@ -131,16 +73,6 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return entity;
-        }
-
-        public DayStatistics GetByDate(DateTime date)
-        {
-            return _dbContext.DayStatistics
-                .Include(dayStatistics => dayStatistics.ExerciseStatistics)
-                    .ThenInclude(exerciseStatistics => exerciseStatistics.Exercise)
-                .Include(dayStatistics => dayStatistics.ExerciseStatistics)
-                    .ThenInclude(exerciseStatistics => exerciseStatistics.DayStatistics)
-                .FirstOrDefault(dayStatistics => dayStatistics.Date == date);
         }
 
         public async Task<DayStatistics> GetByDateAsync(DateTime date, CancellationToken cancellationToken = default)

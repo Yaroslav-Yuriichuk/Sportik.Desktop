@@ -6,10 +6,8 @@ using Sportik.Desktop.Core.Repositories.Generic;
 
 namespace Sportik.Desktop.Core.Repositories.Interfaces
 {
-    public interface IExerciseSettingsRepository : ISyncRepository<ExerciseSettings>, IAsyncRepository<ExerciseSettings>
+    public interface IExerciseSettingsRepository : IAsyncRepository<ExerciseSettings>
     {
-        ExerciseSettings GetByKind(ExerciseKind exerciseKind);
-
         Task<ExerciseSettings> GetByKindAsync(ExerciseKind exerciseKind, CancellationToken cancellationToken = default);
     }
 }

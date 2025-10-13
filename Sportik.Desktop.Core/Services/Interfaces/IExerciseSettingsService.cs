@@ -10,8 +10,6 @@ namespace Sportik.Desktop.Core.Services.Interfaces
     {
         Task<IEnumerable<ExerciseSettings>> GetAllExerciseSettingsAsync(CancellationToken cancellationToken = default);
 
-        ExerciseSettings GetExerciseSettings(Exercise exercise);
-
         Task<ExerciseSettings> GetExerciseSettingsAsync(Exercise exercise, CancellationToken cancellationToken = default);
 
         Task<ExerciseSettings> UpdateExerciseSettingsAsync(ExerciseSettingsDelta exerciseSettingsDelta, Exercise exercise, CancellationToken cancellationToken = default);

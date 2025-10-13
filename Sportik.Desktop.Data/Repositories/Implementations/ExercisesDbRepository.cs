@@ -18,20 +18,6 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
             _dbContext = dbContext;
         }
 
-        public Exercise GetById(int id)
-        {
-            return _dbContext.Exercises
-                .Include(exercise => exercise.ExerciseSettings)
-                .FirstOrDefault(exercise => exercise.Id == id);
-        }
-
-        public IEnumerable<Exercise> GetAll()
-        {
-            return _dbContext.Exercises
-                .Include(exercise => exercise.ExerciseSettings)
-                .ToList();
-        }
-
         public async Task<Exercise> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Exercises
@@ -46,14 +32,6 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
                 .ToListAsync(cancellationToken);
         }
 
-        public Exercise Add(Exercise entity)
-        {
-            _dbContext.Exercises.Add(entity);
-            _dbContext.SaveChanges();
-
-            return entity;
-        }
-
         public async Task<Exercise> AddAsync(Exercise entity, CancellationToken cancellationToken = default)
         {
             await _dbContext.Exercises.AddAsync(entity, cancellationToken);
@@ -62,39 +40,10 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
             return entity;
         }
 
-        public Exercise Update(Exercise entity)
-        {
-            _dbContext.Exercises.Update(entity);
-            _dbContext.SaveChanges();
-
-            return entity;
-        }
-
         public async Task<Exercise> UpdateAsync(Exercise entity, CancellationToken cancellationToken = default)
         {
             _dbContext.Exercises.Update(entity);
             await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return entity;
-        }
-
-        public Exercise DeleteById(int id)
-        {
-            Exercise entity = GetById(id);
-
-            if (entity != null)
-            {
-                _dbContext.Exercises.Remove(entity);
-                _dbContext.SaveChanges();
-            }
-
-            return entity;
-        }
-
-        public Exercise Delete(Exercise entity)
-        {
-            _dbContext.Exercises.Remove(entity);
-            _dbContext.SaveChanges();
 
             return entity;
         }
@@ -120,11 +69,12 @@ namespace Sportik.Desktop.Data.Repositories.Implementations
             return entity;
         }
 
-        public Exercise GetByKind(ExerciseKind exerciseKind)
+        public async Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<int> exercisesIds, CancellationToken cancellationToken = default)
         {
-            return _dbContext.Exercises
+            return await _dbContext.Exercises
                 .Include(exercise => exercise.ExerciseSettings)
-                .FirstOrDefault(exercise => exercise.Kind == exerciseKind);
+                .Where(exercise => exercisesIds.Contains(exercise.Id))
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<Exercise> GetByKindAsync(ExerciseKind exerciseKind, CancellationToken cancellationToken = default)

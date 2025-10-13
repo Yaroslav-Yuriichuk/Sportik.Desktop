@@ -141,7 +141,6 @@
     <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
     <Compile Include="Services\Interfaces\IExercisesService.cs" />
     <Compile Include="Repositories\Generic\IAsyncRepository.cs" />
-    <Compile Include="Repositories\Generic\ISyncRepository.cs" />
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseIsEnabledChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseTimeBetweenSetsChangedEventArgs.cs" />

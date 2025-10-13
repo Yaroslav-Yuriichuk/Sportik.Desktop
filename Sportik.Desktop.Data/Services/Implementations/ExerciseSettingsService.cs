@@ -25,11 +25,6 @@ namespace Sportik.Desktop.Data.Services.Implementations
             return await _exerciseSettingsRepository.GetAllAsync(cancellationToken);
         }
 
-        public ExerciseSettings GetExerciseSettings(Exercise exercise)
-        {
-            return _exerciseSettingsRepository.GetByKind(exercise.Kind);
-        }
-
         public async Task<ExerciseSettings> GetExerciseSettingsAsync(Exercise exercise, CancellationToken cancellationToken)
         {
             return await _exerciseSettingsRepository.GetByKindAsync(exercise.Kind, cancellationToken);

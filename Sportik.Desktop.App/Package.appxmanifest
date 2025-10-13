@@ -14,7 +14,7 @@
   <mp:PhoneIdentity PhoneProductId="0673a919-54fc-4f4c-a08f-54aa3a790e94" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Sportik</DisplayName>
+    <DisplayName>Sportik Desktop</DisplayName>
     <PublisherDisplayName>Yaroslav Yuriichuk</PublisherDisplayName>
     <Logo>Assets\Logo\StoreLogo.png</Logo>
   </Properties>
@@ -32,10 +32,10 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="Sportik.App">
       <uap:VisualElements
-        DisplayName="Sportik"
+        DisplayName="Sportik Desktop"
         Square150x150Logo="Assets\Logo\Square150x150Logo.png"
         Square44x44Logo="Assets\Logo\Square44x44Logo.png"
-        Description="Sportik"
+        Description="Sportik Desktop"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Logo\Wide310x150Logo.png" Square71x71Logo="Assets\Logo\SmallTile.png" Square310x310Logo="Assets\Logo\LargeTile.png"/>
         <uap:SplashScreen Image="Assets\Logo\SplashScreen.png" />

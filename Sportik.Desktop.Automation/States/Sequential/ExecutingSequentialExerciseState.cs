@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Sportik.Desktop.Automation.Events;
 using Sportik.Desktop.Automation.Helpers;
 using Sportik.Desktop.Automation.Models;
@@ -31,7 +32,7 @@ namespace Sportik.Desktop.Automation.States.Sequential
             _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
         }
 
-        public override void Enter()
+        protected override void HandleEnter()
         {
             IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
 
@@ -40,20 +41,26 @@ namespace Sportik.Desktop.Automation.States.Sequential
             _eventsService.AddListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
 
-            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Sequential);
-
-            timer.Loop = false;
-            timer.Interval = exerciseSettingsService.GetExerciseSettings(Context.Exercise).ExecutionTime;
-
-            timer.Elapsed += Timer_Elapsed;
-
-            if (!timer.IsRunning)
+            Task.Run(async () =>
             {
-                timer.Start();
-            }
+                ExerciseSettings exerciseSettings =
+                    await exerciseSettingsService.GetExerciseSettingsAsync(Context.Exercise, ActiveCancellationToken);
+
+                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Sequential);
+
+                timer.Loop = false;
+                timer.Interval = exerciseSettings.ExecutionTime;
+
+                timer.Elapsed += Timer_Elapsed;
+
+                if (!timer.IsRunning)
+                {
+                    timer.Start();
+                }
+            });
         }
 
-        public override void Exit()
+        protected override void HandleExit()
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
@@ -72,21 +79,29 @@ namespace Sportik.Desktop.Automation.States.Sequential
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && !args.IsEnabled)
+            if (!CompareHelper.EqualById(Context.Exercise, args.Exercise) || args.IsEnabled)
             {
-                IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+                return;
+            }
 
-                IEnumerable<ExerciseSettings> exerciseSettings = Context.Exercises.Select(e => exerciseSettingsService.GetExerciseSettings(e));
+            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+
+            Task.Run(async () =>
+            {
+                IEnumerable<ExerciseSettings> exerciseSettings = await Task.WhenAll(
+                    Context.Exercises.Select(async e =>
+                        await exerciseSettingsService.GetExerciseSettingsAsync(e, ActiveCancellationToken)));
+
                 Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(Context.Exercises, Context.Exercise, exerciseSettings);
 
                 Context.Switch(Context.DisabledExerciseState);
-                
+
                 if (nextExercise != null)
                 {
                     SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
                     nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
                 }
-            }
+            });
         }
 
         private void EventsService_Event(ExerciseExecutionTimeChangedEventArgs args)
@@ -100,11 +115,19 @@ namespace Sportik.Desktop.Automation.States.Sequential
 
         private void EventsService_Event(ExerciseCompleteRequestedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
+            if (!CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+                return;
+            }
 
-                IEnumerable<ExerciseSettings> exerciseSettings = Context.Exercises.Select(e => exerciseSettingsService.GetExerciseSettings(e));
+            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+
+            Task.Run(async () =>
+            {
+                IEnumerable<ExerciseSettings> exerciseSettings = await Task.WhenAll(
+                    Context.Exercises.Select(async e =>
+                        await exerciseSettingsService.GetExerciseSettingsAsync(e, ActiveCancellationToken)));
+
                 Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(Context.Exercises, Context.Exercise, exerciseSettings);
 
                 if (nextExercise != null)
@@ -118,16 +141,24 @@ namespace Sportik.Desktop.Automation.States.Sequential
                 {
                     Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
                 }
-            }
+            });
         }
 
         private void EventsService_Event(ReminderNotificationDismissedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
+            if (!CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+                return;
+            }
 
-                IEnumerable<ExerciseSettings> exerciseSettings = Context.Exercises.Select(e => exerciseSettingsService.GetExerciseSettings(e));
+            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+
+            Task.Run(async () =>
+            {
+                IEnumerable<ExerciseSettings> exerciseSettings = await Task.WhenAll(
+                    Context.Exercises.Select(async e =>
+                        await exerciseSettingsService.GetExerciseSettingsAsync(e, ActiveCancellationToken)));
+
                 Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(Context.Exercises, Context.Exercise, exerciseSettings);
 
                 if (nextExercise != null)
@@ -141,27 +172,33 @@ namespace Sportik.Desktop.Automation.States.Sequential
                 {
                     Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
                 }
-            }
+            });
         }
 
         private void Timer_Elapsed(object sender, EventArgs args)
         {
             IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
 
-            IEnumerable<ExerciseSettings> exerciseSettings = Context.Exercises.Select(e => exerciseSettingsService.GetExerciseSettings(e));
-            Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(Context.Exercises, Context.Exercise, exerciseSettings);
-
-            if (nextExercise != null)
+            Task.Run(async () =>
             {
-                Context.Switch(Context.QueuedExerciseState);
+                IEnumerable<ExerciseSettings> exerciseSettings = await Task.WhenAll(
+                    Context.Exercises.Select(async e =>
+                        await exerciseSettingsService.GetExerciseSettingsAsync(e, ActiveCancellationToken)));
 
-                SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
-                nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
-            }
-            else
-            {
-                Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
-            }
+                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(Context.Exercises, Context.Exercise, exerciseSettings);
+
+                if (nextExercise != null)
+                {
+                    Context.Switch(Context.QueuedExerciseState);
+
+                    SequentialExercisesStatesContext nextExerciseContext = Context.GetContext(nextExercise);
+                    nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
+                }
+                else
+                {
+                    Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
+                }
+            });
         }
     }
 }

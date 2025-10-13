@@ -6,10 +6,8 @@ using Sportik.Desktop.Core.Repositories.Generic;
 
 namespace Sportik.Desktop.Core.Repositories.Interfaces
 {
-    public interface IDayStatisticsRepository : ISyncRepository<DayStatistics>, IAsyncRepository<DayStatistics>
+    public interface IDayStatisticsRepository : IAsyncRepository<DayStatistics>
     {
-        DayStatistics GetByDate(DateTime date);
-
         Task<DayStatistics> GetByDateAsync(DateTime date, CancellationToken cancellationToken = default);
     }
 }

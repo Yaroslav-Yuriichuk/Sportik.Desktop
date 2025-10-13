@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Models;
@@ -17,19 +16,14 @@ namespace Sportik.Desktop.Data.Services.Implementations
             _exercisesRepository = exercisesRepository;
         }
 
-        public IEnumerable<Exercise> GetAllExercises()
-        {
-            return _exercisesRepository.GetAll();
-        }
-
-        public async Task<IEnumerable<Exercise>> GetAllExercisesAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Exercise>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _exercisesRepository.GetAllAsync(cancellationToken);
         }
 
-        public IEnumerable<Exercise> GetExercises(IEnumerable<int> exercisesIds)
+        public async Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<int> exercisesIds, CancellationToken cancellationToken = default)
         {
-            return exercisesIds.Select(id => _exercisesRepository.GetById(id));
+            return await _exercisesRepository.GetByIdsAsync(exercisesIds, cancellationToken);
         }
     }
 }

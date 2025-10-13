@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Automation.Models;
 using Sportik.Desktop.Automation.Services;
@@ -89,8 +88,8 @@ namespace Sportik.Desktop.App.ViewModels.Exercises
 
             ReminderModeOptions = new ObservableCollection<ReminderModeOption>
             {
-                new ReminderModeOption {Name = "Parallel", Mode = ReminderMode.Parallel},
-                new ReminderModeOption {Name = "Sequential", Mode = ReminderMode.Sequential}
+                new ReminderModeOption { Name = "Parallel", Mode = ReminderMode.Parallel },
+                new ReminderModeOption { Name = "Sequential", Mode = ReminderMode.Sequential },
             };
 
             ReminderModeOption selectedReminderModeOption = ReminderModeOptions.FirstOrDefault(option => option.Mode == ReminderService.Mode)
@@ -132,17 +131,13 @@ namespace Sportik.Desktop.App.ViewModels.Exercises
         {
             if (!ReminderService.IsRunning)
             {
-                IEnumerable<Exercise> exercises = ExercisesService.GetAllExercises();
-                ReminderService.Start(exercises, ReminderMode);
-
-                PauseCommand.RaiseCanExecuteChanged();
-                ResumeCommand.RaiseCanExecuteChanged();
+                _ = StartRemindersAsync(_loadCts.Token);
             }
         }
 
         private async Task LoadExercisesAsync(ReminderMode reminderMode, CancellationToken cancellationToken)
         {
-            IEnumerable<Exercise> exercises = await ExercisesService.GetAllExercisesAsync(cancellationToken);
+            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
 
             switch (reminderMode)
             {
@@ -175,6 +170,19 @@ namespace Sportik.Desktop.App.ViewModels.Exercises
             }
 
             ReminderMode = reminderMode;
+        }
+
+        private async Task StartRemindersAsync(CancellationToken cancellationToken)
+        {
+            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
+
+            if (!ReminderService.IsRunning)
+            {
+                ReminderService.Start(exercises, ReminderMode);
+
+                PauseCommand.RaiseCanExecuteChanged();
+                ResumeCommand.RaiseCanExecuteChanged();
+            }
         }
     }
 }

@@ -18,13 +18,13 @@ namespace Sportik.Desktop.Automation.States.Sequential
             _eventsService = eventsService;
         }
 
-        public override void Enter()
+        protected override void HandleEnter()
         {
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseSwitchRequestedEventArgs>(EventsService_Event);
         }
 
-        public override void Exit()
+        protected override void HandleExit()
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseSwitchRequestedEventArgs>(EventsService_Event);
@@ -40,26 +40,28 @@ namespace Sportik.Desktop.Automation.States.Sequential
 
         private void EventsService_Event(ExerciseSwitchRequestedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
+            if (!CompareHelper.EqualById(Context.Exercise, args.Exercise))
             {
-                Exercise activeExercise = Context.Exercises.FirstOrDefault(e =>
-                {
-                    SequentialExerciseState exerciseState = Context.GetState(e);
-                    States.SequentialExerciseState state = exerciseState.ExerciseState;
-
-                    return state == States.SequentialExerciseState.WaitingBeforeForceExecution ||
-                           state == States.SequentialExerciseState.WaitingWithForceExecution ||
-                           state == States.SequentialExerciseState.Executing;
-                });
-
-                if (activeExercise != null)
-                {
-                    SequentialExercisesStatesContext activeExercisesContext = Context.GetContext(activeExercise);
-                    activeExercisesContext.Switch(activeExercisesContext.QueuedExerciseState);
-                }
-
-                Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
+                return;
             }
+
+            Exercise activeExercise = Context.Exercises.FirstOrDefault(e =>
+            {
+                SequentialExerciseState exerciseState = Context.GetState(e);
+                States.SequentialExerciseState state = exerciseState.ExerciseState;
+
+                return state == States.SequentialExerciseState.WaitingBeforeForceExecution ||
+                       state == States.SequentialExerciseState.WaitingWithForceExecution ||
+                       state == States.SequentialExerciseState.Executing;
+            });
+
+            if (activeExercise != null)
+            {
+                SequentialExercisesStatesContext activeExercisesContext = Context.GetContext(activeExercise);
+                activeExercisesContext.Switch(activeExercisesContext.QueuedExerciseState);
+            }
+
+            Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
         }
     }
 }

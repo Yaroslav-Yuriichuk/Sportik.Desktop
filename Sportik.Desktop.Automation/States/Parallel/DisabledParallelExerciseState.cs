@@ -15,12 +15,12 @@ namespace Sportik.Desktop.Automation.States.Parallel
             _eventsService = eventsService;
         }
 
-        public override void Enter()
+        protected override void HandleEnter()
         {
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
         }
 
-        public override void Exit()
+        protected override void HandleExit()
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
         }

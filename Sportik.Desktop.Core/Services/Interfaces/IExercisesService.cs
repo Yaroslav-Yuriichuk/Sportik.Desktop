@@ -7,10 +7,8 @@ namespace Sportik.Desktop.Core.Services.Interfaces
 {
     public interface IExercisesService
     {
-        IEnumerable<Exercise> GetAllExercises();
+        Task<IEnumerable<Exercise>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Exercise>> GetAllExercisesAsync(CancellationToken cancellationToken = default);
-
-        IEnumerable<Exercise> GetExercises(IEnumerable<int> exercisesIds);
+        Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<int> exercisesIds, CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Globalization;
@@ -27,6 +30,8 @@ namespace Sportik.Desktop.App
     {
         public static IServiceProvider ServiceProvider { get; private set; }
 
+        private CancellationTokenSource _activeCts;
+
         public App()
         {
             this.InitializeComponent();
@@ -42,8 +47,9 @@ namespace Sportik.Desktop.App
 
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
-            IExercisesService exercisesService = ServiceProvider.GetService<IExercisesService>();
+            _activeCts?.Cancel();
+            _activeCts = new CancellationTokenSource();
+
             IPersistentCacheService persistentCacheService = ServiceProvider.GetService<IPersistentCacheService>();
 
             ReminderMode reminderMode = ReminderMode.Parallel;
@@ -57,7 +63,7 @@ namespace Sportik.Desktop.App
 
             if (toStartReminders)
             {
-                reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
+                _ = StartRemindersAsync(reminderMode, _activeCts.Token);
             }
 
             Frame rootFrame = Window.Current.Content as Frame;
@@ -89,6 +95,9 @@ namespace Sportik.Desktop.App
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
+            _activeCts?.Cancel();
+            _activeCts = null;
+
             IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
             IRuntimeCacheService runtimeCacheService = ServiceProvider.GetService<IRuntimeCacheService>();
             IPersistentCacheService persistentCacheService = ServiceProvider.GetService<IPersistentCacheService>();
@@ -109,8 +118,9 @@ namespace Sportik.Desktop.App
 
         private void OnResuming(object sender, object e)
         {
-            IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
-            IExercisesService exercisesService = ServiceProvider.GetService<IExercisesService>();
+            _activeCts?.Cancel();
+            _activeCts = new CancellationTokenSource();
+
             IRuntimeCacheService runtimeCacheService = ServiceProvider.GetService<IRuntimeCacheService>();
 
             ReminderMode reminderMode = ReminderMode.Parallel;
@@ -124,8 +134,17 @@ namespace Sportik.Desktop.App
 
             if (toStartReminders)
             {
-                reminderService.Start(exercisesService.GetAllExercises(), reminderMode);
+                _ = StartRemindersAsync(reminderMode, _activeCts.Token);
             }
+        }
+
+        private async Task StartRemindersAsync(ReminderMode mode, CancellationToken cancellationToken)
+        {
+            IExercisesService exercisesService = ServiceProvider.GetService<IExercisesService>();
+            IReminderService reminderService = ServiceProvider.GetService<IReminderService>();
+
+            IEnumerable<Exercise> exercises = await exercisesService.GetAllAsync(cancellationToken);
+            reminderService.Start(exercises, mode);
         }
 
         private void ConfigureServices()
@@ -161,6 +180,7 @@ namespace Sportik.Desktop.App
             AppDbContext db = ServiceProvider.GetService<AppDbContext>();
             db.Database.EnsureCreated();
 
+            /*
             IExercisesRepository exercisesRepository = ServiceProvider.GetService<IExercisesRepository>();
 
             if (exercisesRepository.GetByKind(ExerciseKind.TraditionalPushUps) == null)
@@ -289,7 +309,7 @@ namespace Sportik.Desktop.App
                     TimeBetweenSets = TimeSpan.FromMinutes(35),
                     ExecutionTime = TimeSpan.FromMinutes(3),
                 });
-            }
+            }*/
         }
     }
 }

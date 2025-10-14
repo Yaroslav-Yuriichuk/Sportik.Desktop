@@ -1,4 +1,6 @@
-﻿namespace Sportik.Desktop.UI.ViewModels.Statistics
+﻿using Sportik.Desktop.Core.Models.Statistics;
+
+namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
     internal sealed class ExerciseStatisticsViewModel : ViewModel
     {

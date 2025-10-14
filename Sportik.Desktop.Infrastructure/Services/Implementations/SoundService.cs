@@ -4,16 +4,17 @@ using System.Threading.Tasks;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage;
-using Sportik.Desktop.Infrastructure.Models;
+using Sportik.Desktop.Core.Models.Sound;
+using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure.Services.Implementations
 {
-    public sealed class SoundService : ISoundService
+    internal sealed class SoundService : ISoundService
     {
         public async Task PlayAsync(SoundSource soundSource, CancellationToken cancellationToken = default)
         {
             MediaPlayer player = new MediaPlayer();
-            
+
             MediaSource mediaSource = await CreateMediaSourceAsync(soundSource, cancellationToken);
             player.Source = mediaSource;
 

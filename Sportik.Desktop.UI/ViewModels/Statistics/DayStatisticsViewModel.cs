@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
+using Sportik.Desktop.Core.Models.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {

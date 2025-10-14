@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Sportik.Desktop.Core;
+using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Automation;
+using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Infrastructure;
 using Sportik.Desktop.UI.Models;
-using Sportik.Desktop.UI.Services;
 
 namespace Sportik.Desktop.UI
 {
@@ -24,6 +29,13 @@ namespace Sportik.Desktop.UI
 
             this.Suspending += OnSuspending;
             this.Resuming += OnResuming;
+
+            ServiceCollection services = new ServiceCollection();
+
+            services.AddCore();
+            services.AddInfrastructure();
+
+            ServiceProvider = services.BuildServiceProvider();
 
             ConfigureServices();
             ConfigureDatabase();
@@ -135,36 +147,13 @@ namespace Sportik.Desktop.UI
 
         private void ConfigureServices()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddTransient<AppDbContext>();
-            serviceCollection.AddTransient<IExercisesRepository, ExercisesDbRepository>();
-            serviceCollection.AddTransient<IExerciseStatisticsRepository, ExerciseStatisticsDbRepository>();
-            serviceCollection.AddTransient<IDayStatisticsRepository, DayStatisticsDbRepository>();
-            serviceCollection.AddTransient<IExerciseSettingsRepository, ExerciseSettingsDbRepository>();
-            serviceCollection.AddTransient<IExercisesService, ExercisesService>();
-            serviceCollection.AddTransient<IExerciseStatisticsService, ExerciseStatisticsService>();
-            serviceCollection.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
-            serviceCollection.AddTransient<INotificationService, ToastNotificationService>();
-            serviceCollection.AddTransient<ISoundService, SoundService>();
-
-            serviceCollection.AddSingleton<IEventsService, EventsService>();
-            serviceCollection.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();
-            serviceCollection.AddSingleton<IPersistentCacheService, PersistentCacheService>();
-            serviceCollection.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
-            serviceCollection.AddSingleton<INavigationService, FrameNavigationService>();
-            serviceCollection.AddSingleton<IReminderService, ReminderService>();
-            serviceCollection.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
-            serviceCollection.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);
-            serviceCollection.AddSingleton<Func<IExercisesService>>(sp => sp.GetService<IExercisesService>);
-
-            ServiceProvider = serviceCollection.BuildServiceProvider();
         }
 
         private void ConfigureDatabase()
         {
-            AppDbContext db = ServiceProvider.GetService<AppDbContext>();
-            db.Database.EnsureCreated();
+            /*AppDbContext db = ServiceProvider.GetService<AppDbContext>();
+            db.Database.EnsureCreated();*/
 
             /*
             IExercisesRepository exercisesRepository = ServiceProvider.GetService<IExercisesRepository>();

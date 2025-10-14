@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using Sportik.Desktop.Core.StateMachine;
+using Sportik.Desktop.Core.Common.StateMachine;
 
 namespace Sportik.Desktop.Core.States.Parallel
 {

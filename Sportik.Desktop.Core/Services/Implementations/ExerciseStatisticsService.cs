@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Sportik.Desktop.Core.Helpers;
+using Sportik.Desktop.Core.Models.Statistics;
+using Sportik.Desktop.Core.Repositories.Interfaces;
+using Sportik.Desktop.Core.Services.Interfaces;
 
-namespace Sportik.Desktop.Infrastructure.Services.Implementations
+namespace Sportik.Desktop.Core.Services.Implementations
 {
-    public sealed class ExerciseStatisticsService : IExerciseStatisticsService
+    internal sealed class ExerciseStatisticsService : IExerciseStatisticsService
     {
         private readonly IExerciseStatisticsRepository _exerciseStatisticsRepository;
         private readonly IDayStatisticsRepository _dayStatisticsRepository;

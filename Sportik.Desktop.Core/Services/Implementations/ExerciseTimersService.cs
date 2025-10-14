@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
-using Sportik.Desktop.Core.Timers;
 
 namespace Sportik.Desktop.Core.Services.Implementations
 {
-    public sealed class ExerciseTimersService : IExerciseTimersService
+    internal sealed class ExerciseTimersService : IExerciseTimersService
     {
         private readonly Dictionary<ReminderMode, Dictionary<int, ITimer>> _timers = new Dictionary<ReminderMode, Dictionary<int, ITimer>>();
 

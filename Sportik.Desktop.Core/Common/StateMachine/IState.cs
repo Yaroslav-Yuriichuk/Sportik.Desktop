@@ -1,4 +1,4 @@
-﻿namespace Sportik.Desktop.Core.StateMachine
+﻿namespace Sportik.Desktop.Core.Common.StateMachine
 {
     public interface IState
     {

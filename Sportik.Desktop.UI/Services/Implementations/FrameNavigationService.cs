@@ -1,7 +1,8 @@
 ﻿using System;
 using Windows.UI.Xaml.Controls;
+using Sportik.Desktop.UI.Services.Interfaces;
 
-namespace Sportik.Desktop.UI.Services
+namespace Sportik.Desktop.UI.Services.Implementations
 {
     internal sealed class FrameNavigationService : INavigationService
     {

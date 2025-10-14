@@ -1,11 +1,12 @@
 ﻿using System;
 
-namespace Sportik.Desktop.Infrastructure.Models
+namespace Sportik.Desktop.Core.Models.Sound
 {
     public sealed class SoundSource
     {
-        internal Uri Uri { get; }
-        internal bool IsSystem { get; }
+        public Uri Uri { get; }
+
+        public bool IsSystem { get; }
 
         private SoundSource(Uri uri, bool isSystem)
         {

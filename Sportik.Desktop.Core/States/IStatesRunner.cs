@@ -1,5 +1,6 @@
 ﻿using System;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Automation;
 
 namespace Sportik.Desktop.Core.States
 {

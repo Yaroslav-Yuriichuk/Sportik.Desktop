@@ -3,8 +3,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Windows.UI.Xaml.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.UI.Helpers;
 using Sportik.Desktop.UI.Services;
+using Sportik.Desktop.UI.Services.Interfaces;
 using Sportik.Desktop.UI.Views;
 
 namespace Sportik.Desktop.UI.ViewModels.Navigation
@@ -12,7 +16,7 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
     internal sealed class NavigationViewModel : ViewModel, IDisposable
     {
         private ObservableCollection<NavigationOption> _options;
-        
+
         public ObservableCollection<NavigationOption> MenuItemOptions
         {
             get => _options;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sportik.Desktop.Core.Timers
+namespace Sportik.Desktop.Core.Common.Timers
 {
     public interface ITimer
     {

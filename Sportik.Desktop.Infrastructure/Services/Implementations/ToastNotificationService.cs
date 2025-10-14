@@ -1,9 +1,13 @@
 ﻿using System;
 using Windows.UI.Notifications;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure.Services.Implementations
 {
-    public sealed class ToastNotificationService : INotificationService
+    internal sealed class ToastNotificationService : INotificationService
     {
         private readonly IEventsService _eventsService;
 
@@ -40,8 +44,6 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
                             break;
                         case "dismiss":
                             _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exercise));
-                            break;
-                        default:
                             break;
                     }
                 }

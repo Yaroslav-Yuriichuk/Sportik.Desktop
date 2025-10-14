@@ -2,6 +2,17 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Common.Timers;
+using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Helpers;
+using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Automation;
+using Sportik.Desktop.Core.Models.Settings;
+using Sportik.Desktop.Core.Models.Sound;
+using Sportik.Desktop.Core.Models.Statistics;
+using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Core.States;
 using Sportik.Desktop.UI.Helpers;
 
 namespace Sportik.Desktop.UI.ViewModels.Exercises

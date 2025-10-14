@@ -3,6 +3,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Constants;
+using Sportik.Desktop.Core.Models.Settings;
+using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Settings
 {
@@ -132,7 +136,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             TimeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>(
                 AutomationConstants.TimesBetweenSets.Select(time => new TimeSpanOption(time)));
 
-            TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpanValue == exerciseSettings.TimeBetweenSets) 
+            TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpanValue == exerciseSettings.TimeBetweenSets)
                                                            ?? TimeBetweenSetsOptions[0];
 
             SetField(ref _selectedTimeBetweenSetsOption, selectedTimeBetweenSetsOption);

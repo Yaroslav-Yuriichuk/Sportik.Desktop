@@ -130,7 +130,13 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\StateMachine\IState.cs" />
+    <Compile Include="Common\StateMachine\IStatesContext.cs" />
+    <Compile Include="Common\Timers\DefaultTimer.cs" />
+    <Compile Include="Common\Timers\DefaultTimerBuilder.cs" />
+    <Compile Include="Common\Timers\ITimer.cs" />
     <Compile Include="Constants\AutomationConstants.cs" />
+    <Compile Include="DependencyInjection.cs" />
     <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
@@ -147,13 +153,15 @@
     <Compile Include="Helpers\CompareHelper.cs" />
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
+    <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\Exercise.cs" />
     <Compile Include="Models\ExerciseKind.cs" />
-    <Compile Include="Models\ReminderMode.cs" />
     <Compile Include="Models\ReminderNotification.cs" />
     <Compile Include="Models\SequentialExercisesCache.cs" />
     <Compile Include="Models\Settings\ExerciseSettings.cs" />
     <Compile Include="Models\Settings\ExerciseSettingsDelta.cs" />
+    <Compile Include="Models\Sound\SoundSource.cs" />
+    <Compile Include="Models\Sound\SystemSound.cs" />
     <Compile Include="Models\Statistics\DayStatistics.cs" />
     <Compile Include="Models\Statistics\ExerciseStatistics.cs" />
     <Compile Include="Models\Statistics\ExerciseStatisticsDelta.cs" />
@@ -166,10 +174,11 @@
     <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseStatisticsRepository.cs" />
     <Compile Include="Services\Implementations\EventsService.cs" />
+    <Compile Include="Services\Implementations\ExerciseSettingsService.cs" />
+    <Compile Include="Services\Implementations\ExercisesService.cs" />
+    <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
     <Compile Include="Services\Implementations\ExerciseTimersService.cs" />
-    <Compile Include="Services\Implementations\PersistentCacheService.cs" />
     <Compile Include="Services\Implementations\ReminderService.cs" />
-    <Compile Include="Services\Implementations\RuntimeCacheService.cs" />
     <Compile Include="Services\Interfaces\IEventsService.cs" />
     <Compile Include="Services\Interfaces\IExerciseSettingsService.cs" />
     <Compile Include="Services\Interfaces\IExercisesService.cs" />
@@ -180,8 +189,6 @@
     <Compile Include="Services\Interfaces\IReminderService.cs" />
     <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
     <Compile Include="Services\Interfaces\ISoundService.cs" />
-    <Compile Include="StateMachine\IState.cs" />
-    <Compile Include="StateMachine\IStatesContext.cs" />
     <Compile Include="States\IStatesRunner.cs" />
     <Compile Include="States\ParallelExerciseState.cs" />
     <Compile Include="States\ParallelStatesRunner.cs" />
@@ -200,15 +207,21 @@
     <Compile Include="States\Sequential\SequentialExerciseState.cs" />
     <Compile Include="States\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
     <Compile Include="States\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
-    <Compile Include="Timers\DefaultTimer.cs" />
-    <Compile Include="Timers\DefaultTimerBuilder.cs" />
-    <Compile Include="Timers\ITimer.cs" />
     <EmbeddedResource Include="Properties\Sportik.Desktop.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <Version>9.0.9</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.14</Version>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.4</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

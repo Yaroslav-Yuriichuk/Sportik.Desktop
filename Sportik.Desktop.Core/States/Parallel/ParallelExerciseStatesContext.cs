@@ -1,8 +1,8 @@
 ﻿using System;
+using Sportik.Desktop.Core.Common.StateMachine;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
-using Sportik.Desktop.Core.StateMachine;
 
 namespace Sportik.Desktop.Core.States.Parallel
 {

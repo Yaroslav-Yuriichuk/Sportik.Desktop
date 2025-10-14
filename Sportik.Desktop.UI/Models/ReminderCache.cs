@@ -1,4 +1,6 @@
-﻿namespace Sportik.Desktop.UI.Models
+﻿using Sportik.Desktop.Core.Models.Automation;
+
+namespace Sportik.Desktop.UI.Models
 {
     internal sealed class ReminderCache
     {

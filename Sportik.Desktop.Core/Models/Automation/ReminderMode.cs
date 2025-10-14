@@ -1,4 +1,4 @@
-﻿namespace Sportik.Desktop.Core.Models
+﻿namespace Sportik.Desktop.Core.Models.Automation
 {
     public enum ReminderMode
     {

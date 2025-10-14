@@ -1,4 +1,5 @@
 ﻿using System;
+using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.UI.ViewModels.Extra
 {

@@ -3,9 +3,9 @@ using Windows.Storage;
 using Newtonsoft.Json;
 using Sportik.Desktop.Core.Services.Interfaces;
 
-namespace Sportik.Desktop.Core.Services.Implementations
+namespace Sportik.Desktop.Infrastructure.Services.Implementations
 {
-    public sealed class PersistentCacheService : IPersistentCacheService
+    internal sealed class PersistentCacheService : IPersistentCacheService
     {
         public T Get<T>()
         {

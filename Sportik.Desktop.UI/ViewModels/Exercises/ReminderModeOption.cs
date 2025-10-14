@@ -1,4 +1,6 @@
-﻿namespace Sportik.Desktop.UI.ViewModels.Exercises
+﻿using Sportik.Desktop.Core.Models.Automation;
+
+namespace Sportik.Desktop.UI.ViewModels.Exercises
 {
     internal sealed class ReminderModeOption
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Sportik.Desktop.Core.Services.Interfaces;
 
-namespace Sportik.Desktop.Core.Services.Implementations
+namespace Sportik.Desktop.Infrastructure.Services.Implementations
 {
-    public sealed class RuntimeCacheService : IRuntimeCacheService
+    internal sealed class RuntimeCacheService : IRuntimeCacheService
     {
         private readonly Dictionary<Type, object> _cache = new Dictionary<Type, object>();
 

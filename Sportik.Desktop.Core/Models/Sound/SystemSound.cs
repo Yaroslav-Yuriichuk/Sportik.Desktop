@@ -1,4 +1,4 @@
-﻿namespace Sportik.Desktop.Infrastructure.Models
+﻿namespace Sportik.Desktop.Core.Models.Sound
 {
     public enum SystemSound
     {

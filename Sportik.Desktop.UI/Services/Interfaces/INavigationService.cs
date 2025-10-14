@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sportik.Desktop.UI.Services
+namespace Sportik.Desktop.UI.Services.Interfaces
 {
     internal interface INavigationService
     {

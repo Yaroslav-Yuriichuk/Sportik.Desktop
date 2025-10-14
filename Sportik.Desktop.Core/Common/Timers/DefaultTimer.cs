@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Timers;
 
-namespace Sportik.Desktop.Core.Timers
+namespace Sportik.Desktop.Core.Common.Timers
 {
     internal sealed class DefaultTimer : ITimer, IDisposable
     {

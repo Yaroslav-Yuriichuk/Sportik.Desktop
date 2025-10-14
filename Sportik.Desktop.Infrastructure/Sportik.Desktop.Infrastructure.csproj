@@ -130,25 +130,34 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Database\AppDbContext.cs" />
-    <Compile Include="Models\SoundSource.cs" />
-    <Compile Include="Models\SystemSound.cs" />
+    <Compile Include="DependencyInjection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\Implementations\DayStatisticsDbRepository.cs" />
-    <Compile Include="Repositories\Implementations\ExercisesDbRepository.cs" />
-    <Compile Include="Repositories\Implementations\ExerciseSettingsDbRepository.cs" />
-    <Compile Include="Repositories\Implementations\ExerciseStatisticsDbRepository.cs" />
-    <Compile Include="Services\Implementations\ExerciseSettingsService.cs" />
-    <Compile Include="Services\Implementations\ExercisesService.cs" />
-    <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
+    <Compile Include="Repositories\Implementations\RemoteDayStatisticsRepository.cs" />
+    <Compile Include="Repositories\Implementations\RemoteExerciseSettingsRepository.cs" />
+    <Compile Include="Repositories\Implementations\RemoteExercisesRepository.cs" />
+    <Compile Include="Repositories\Implementations\RemoteExerciseStatisticsRepository.cs" />
+    <Compile Include="Services\Implementations\PersistentCacheService.cs" />
+    <Compile Include="Services\Implementations\RuntimeCacheService.cs" />
     <Compile Include="Services\Implementations\SoundService.cs" />
     <Compile Include="Services\Implementations\ToastNotificationService.cs" />
     <EmbeddedResource Include="Properties\Sportik.Desktop.Infrastructure.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <Version>9.0.9</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.14</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
+      <Version>7.1.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sportik.Desktop.Core\Sportik.Desktop.Core.csproj">
+      <Project>{74a53f28-1bd6-4fe6-b24d-0fcae2bd5394}</Project>
+      <Name>Sportik.Desktop.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

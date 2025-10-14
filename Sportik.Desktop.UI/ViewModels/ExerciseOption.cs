@@ -1,4 +1,6 @@
-﻿namespace Sportik.Desktop.UI.ViewModels
+﻿using Sportik.Desktop.Core.Models;
+
+namespace Sportik.Desktop.UI.ViewModels
 {
     internal sealed class ExerciseOption
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States.Sequential;
 

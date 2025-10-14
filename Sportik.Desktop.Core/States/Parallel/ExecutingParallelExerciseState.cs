@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
-using Sportik.Desktop.Core.Timers;
 
 namespace Sportik.Desktop.Core.States.Parallel
 {

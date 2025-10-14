@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Sportik.Desktop.Core.Helpers;
+using Sportik.Desktop.Core.Models.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {

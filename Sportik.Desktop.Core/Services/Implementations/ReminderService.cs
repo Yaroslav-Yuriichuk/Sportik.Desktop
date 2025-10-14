@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States;
 
 namespace Sportik.Desktop.Core.Services.Implementations
 {
-    public sealed class ReminderService : IReminderService
+    internal sealed class ReminderService : IReminderService
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;

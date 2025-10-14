@@ -1,7 +1,9 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.UI.Behaviors;
-using Sportik.Desktop.UI.Services;
+using Sportik.Desktop.UI.Services.Implementations;
+using Sportik.Desktop.UI.Services.Interfaces;
 using Sportik.Desktop.UI.ViewModels.Navigation;
 
 namespace Sportik.Desktop.UI

@@ -4,7 +4,7 @@ using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.Services.Implementations
 {
-    public sealed class EventsService : IEventsService
+    internal sealed class EventsService : IEventsService
     {
         private readonly Dictionary<Type, Delegate> _eventListeners = new Dictionary<Type, Delegate>();
 
@@ -16,7 +16,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
 
             Type eventType = typeof(TEventArgs);
-            
+
             if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
             {
                 _eventListeners[eventType] = Delegate.Combine(existingDelegate, callback);
@@ -35,11 +35,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
 
             Type eventType = typeof(TEventArgs);
-            
+
             if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
             {
                 Delegate newDelegate = Delegate.Remove(existingDelegate, callback);
-                
+
                 if (newDelegate == null)
                 {
                     _eventListeners.Remove(eventType);
@@ -57,9 +57,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
             {
                 throw new ArgumentNullException(nameof(args));
             }
-            
+
             Type eventType = typeof(TEventArgs);
-            
+
             if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
             {
                 if (existingDelegate is Action<TEventArgs> action)

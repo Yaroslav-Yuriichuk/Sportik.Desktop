@@ -9,7 +9,5 @@ namespace Sportik.Desktop.Core.Repositories.Interfaces
     public interface IExercisesRepository : IAsyncRepository<Exercise>
     {
         Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<int> exercisesIds, CancellationToken cancellationToken = default);
-
-        Task<Exercise> GetByKindAsync(ExerciseKind exerciseKind, CancellationToken cancellationToken = default);
     }
 }

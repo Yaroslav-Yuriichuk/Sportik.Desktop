@@ -1,6 +1,4 @@
-﻿using Sportik.Desktop.Core.Models;
-
-namespace Sportik.Desktop.Core.Models.Statistics
+﻿namespace Sportik.Desktop.Core.Models.Statistics
 {
     public sealed class ExerciseStatistics
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.Desktop.Core.Models.Settings;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Settings
@@ -20,7 +20,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             set => SetField(ref _exerciseSettings, value);
         }
 
-        private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
+        private IExercisesService ExercisesService => App.ServiceProvider.GetRequiredService<IExercisesService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -41,10 +41,10 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
 
         private async Task LoadExerciseSettingsAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<ExerciseSettings> exerciseSettings = await ExerciseSettingsService.GetAllExerciseSettingsAsync(cancellationToken);
+            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
 
             ExerciseSettings = new ObservableCollection<ExerciseSettingsViewModel>(
-                exerciseSettings.Select(settings => new ExerciseSettingsViewModel(settings)));
+                exercises.Select(exercise => new ExerciseSettingsViewModel(exercise)));
         }
     }
 }

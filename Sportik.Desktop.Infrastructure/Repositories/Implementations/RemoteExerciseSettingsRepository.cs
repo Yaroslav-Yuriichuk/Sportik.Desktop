@@ -38,10 +38,5 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
         {
             throw new System.NotImplementedException();
         }
-
-        public Task<ExerciseSettings> GetByKindAsync(ExerciseKind exerciseKind, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

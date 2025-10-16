@@ -1,17 +1,16 @@
 ﻿using System;
-using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.Core.Events
 {
-    public class ExerciseIsEnabledChangedEventArgs : EventArgs
+    public sealed class ExerciseIsEnabledChangedEventArgs : EventArgs
     {
-        public Exercise Exercise { get; }
+        public Guid ExerciseId { get; }
 
         public bool IsEnabled { get; }
 
-        public ExerciseIsEnabledChangedEventArgs(Exercise exercise, bool isEnabled)
+        public ExerciseIsEnabledChangedEventArgs(Guid exerciseId, bool isEnabled)
         {
-            Exercise = exercise;
+            ExerciseId = exerciseId;
             IsEnabled = isEnabled;
         }
     }

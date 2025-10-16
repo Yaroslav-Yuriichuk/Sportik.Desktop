@@ -1,15 +1,14 @@
 ﻿using System;
-using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.Core.Events
 {
     public sealed class ReminderNotificationAcceptedEventArgs : EventArgs
     {
-        public Exercise Exercise { get; }
+        public Guid ExerciseId { get; }
 
-        public ReminderNotificationAcceptedEventArgs(Exercise exercise)
+        public ReminderNotificationAcceptedEventArgs(Guid exerciseId)
         {
-            Exercise = exercise;
+            ExerciseId = exerciseId;
         }
     }
 }

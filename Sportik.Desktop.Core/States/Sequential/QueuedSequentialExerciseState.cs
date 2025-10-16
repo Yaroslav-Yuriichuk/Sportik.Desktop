@@ -1,7 +1,5 @@
-﻿using System.Linq;
+﻿using System;
 using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Helpers;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.Sequential
@@ -31,7 +29,7 @@ namespace Sportik.Desktop.Core.States.Sequential
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && !args.IsEnabled)
+            if (args.ExerciseId == Context.ExerciseId && !args.IsEnabled)
             {
                 Context.Switch(Context.DisabledExerciseState);
             }
@@ -39,25 +37,25 @@ namespace Sportik.Desktop.Core.States.Sequential
 
         private void EventsService_Event(ExerciseSwitchRequestedEventArgs args)
         {
-            if (!CompareHelper.EqualById(Context.Exercise, args.Exercise))
+            if (args.ExerciseId != Context.ExerciseId)
             {
                 return;
             }
 
-            Exercise activeExercise = Context.Exercises.FirstOrDefault(e =>
+            foreach (Guid exerciseId in Context.ExerciseIds)
             {
-                SequentialExerciseState exerciseState = Context.GetState(e);
+                SequentialExerciseState exerciseState = Context.GetState(exerciseId);
                 States.SequentialExerciseState state = exerciseState.ExerciseState;
 
-                return state == States.SequentialExerciseState.WaitingBeforeForceExecution ||
+                bool isActive = state == States.SequentialExerciseState.WaitingBeforeForceExecution ||
                        state == States.SequentialExerciseState.WaitingWithForceExecution ||
                        state == States.SequentialExerciseState.Executing;
-            });
 
-            if (activeExercise != null)
-            {
-                SequentialExercisesStatesContext activeExercisesContext = Context.GetContext(activeExercise);
-                activeExercisesContext.Switch(activeExercisesContext.QueuedExerciseState);
+                if (isActive)
+                {
+                    SequentialExercisesStatesContext activeExercisesContext = Context.GetContext(exerciseId);
+                    activeExercisesContext.Switch(activeExercisesContext.QueuedExerciseState);
+                }
             }
 
             Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);

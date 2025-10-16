@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sportik.Desktop.Core.Helpers;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States.Sequential;
@@ -15,13 +13,13 @@ namespace Sportik.Desktop.Core.States
 
         public ReminderMode Mode => ReminderMode.Sequential;
 
-        public SequentialStatesRunner(IEnumerable<Exercise> exercises, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            IRuntimeCacheService runtimeCacheService, Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
+        public SequentialStatesRunner(IEnumerable<Guid> exerciseIds, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+            IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
-            exercises = exercises as Exercise[] ?? exercises.ToArray();
+            exerciseIds = exerciseIds as Guid[] ?? exerciseIds.ToArray();
 
-            IEnumerable<SequentialExercisesStatesContext> contexts = exercises
-                .Select(exercise => new SequentialExercisesStatesContext(exercises, exercise, GetContext, eventsService, exerciseTimersService, runtimeCacheService, exerciseSettingsServiceFactory, notificationServiceFactory))
+            IEnumerable<SequentialExercisesStatesContext> contexts = exerciseIds
+                .Select(exerciseId => new SequentialExercisesStatesContext(exerciseIds, exerciseId, GetContext, eventsService, exerciseTimersService, runtimeCacheService, exercisesServiceFactory, notificationServiceFactory))
                 .ToArray();
 
             _contexts = contexts;
@@ -40,7 +38,7 @@ namespace Sportik.Desktop.Core.States
             }
         }
 
-        public TState GetExerciseState<TState>(Exercise exercise) where TState : Enum
+        public TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum
         {
             if (_contexts == null)
             {
@@ -52,13 +50,13 @@ namespace Sportik.Desktop.Core.States
                 throw new ArgumentException($"Type {typeof(TState)} is not supported.");
             }
 
-            SequentialExercisesStatesContext context = _contexts.FirstOrDefault(c => c.Exercise.Id == exercise.Id);
+            SequentialExercisesStatesContext context = _contexts.FirstOrDefault(c => c.ExerciseId == exerciseId);
             return (TState)(object)(context?.CurrentState.ExerciseState ?? SequentialExerciseState.Unknown);
         }
 
-        private SequentialExercisesStatesContext GetContext(Exercise exercise)
+        private SequentialExercisesStatesContext GetContext(Guid exerciseId)
         {
-            return _contexts.FirstOrDefault(c => CompareHelper.EqualById(c.Exercise, exercise));
+            return _contexts.FirstOrDefault(c => c.ExerciseId == exerciseId);
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Models.Settings;
@@ -72,6 +71,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         public ICommand ExecuteCommand { get; }
 
+        private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
         private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetService<IExerciseStatisticsService>();
         private IExerciseTimersService ExerciseTimersService => App.ServiceProvider.GetService<IExerciseTimersService>();
@@ -79,7 +79,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         private IReminderService ReminderService => App.ServiceProvider.GetService<IReminderService>();
         private ISoundService SoundService => App.ServiceProvider.GetService<ISoundService>();
 
-        private readonly Exercise _exercise;
+        private readonly Guid _exerciseId;
 
         private CancellationTokenSource _updateCts = new CancellationTokenSource();
         private CancellationTokenSource _completeCts = new CancellationTokenSource();
@@ -89,10 +89,10 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         public ParallelExerciseViewModel(Exercise exercise)
         {
-            _exercise = exercise;
+            _exerciseId = exercise.Id;
 
             Name = exercise.Name;
-            SetField(ref _isEnabled, exercise.ExerciseSettings.IsEnabled);
+            SetField(ref _isEnabled, exercise.Settings.IsEnabled);
 
             CompleteCommand = new ReactiveRelayCommand(CompleteExercise, false);
             ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise);
@@ -109,7 +109,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 .SetLoop()
                 .Build();
 
-            ParallelExerciseState state = ReminderService.GetExerciseState<ParallelExerciseState>(exercise);
+            ParallelExerciseState state = ReminderService.GetExerciseState<ParallelExerciseState>(_exerciseId);
 
             switch (state)
             {
@@ -130,7 +130,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             State = state;
 
-            ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
+            ITimer timer = ExerciseTimersService.GetTimer(_exerciseId, ReminderMode.Parallel);
 
             if (timer != null)
             {
@@ -153,18 +153,18 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         private async Task UpdateExerciseSettingsAsync(CancellationToken cancellationToken)
         {
-            ExerciseSettingsDelta exerciseSettingsDelta = new ExerciseSettingsDelta()
+            ExerciseSettingsDelta exerciseSettingsDelta = new ExerciseSettingsDelta
             {
                 Change = ExerciseSettingsChange.IsEnabled,
                 IsEnabled = IsEnabled,
             };
 
-            await ExerciseSettingsService.UpdateExerciseSettingsAsync(exerciseSettingsDelta, _exercise, cancellationToken);
+            await ExerciseSettingsService.UpdateAsync(exerciseSettingsDelta, _exerciseId, cancellationToken);
         }
 
         private void EventsService_Event(ParallelExerciseStateChangedEventArgs args)
         {
-            if (!CompareHelper.EqualById(_exercise, args.Exercise))
+            if (args.ExerciseId != _exerciseId)
             {
                 return;
             }
@@ -211,7 +211,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
                 State = currentState;
 
-                ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
+                ITimer timer = ExerciseTimersService.GetTimer(_exerciseId, ReminderMode.Parallel);
 
                 if (timer != null)
                 {
@@ -225,7 +225,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         {
             _ = UIThreadHelper.RunOnUIThreadAsync(() =>
             {
-                ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
+                ITimer timer = ExerciseTimersService.GetTimer(_exerciseId, ReminderMode.Parallel);
 
                 if (timer != null)
                 {
@@ -238,7 +238,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         {
             _ = UIThreadHelper.RunOnUIThreadAsync(() =>
             {
-                ITimer timer = ExerciseTimersService.GetTimer(_exercise, ReminderMode.Parallel);
+                ITimer timer = ExerciseTimersService.GetTimer(_exerciseId, ReminderMode.Parallel);
 
                 if (timer != null)
                 {
@@ -257,25 +257,25 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         private void ExecuteExercise()
         {
-            EventsService.RaiseEvent(new ExerciseForceExecutionRequestedEventArgs(_exercise));
+            EventsService.RaiseEvent(new ExerciseForceExecutionRequestedEventArgs(_exerciseId));
         }
 
         private async Task CompleteExerciseAsync(CancellationToken cancellationToken)
         {
             CompleteCommand.IsExecutable = false;
 
-            ExerciseSettings exerciseSettings = await ExerciseSettingsService.GetExerciseSettingsAsync(_exercise, cancellationToken);
+            Exercise exercise = await ExercisesService.GetByIdAsync(_exerciseId, cancellationToken);
 
             ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta
             {
-                Exercise = _exercise,
+                Exercise = null,
                 Sets = 1,
-                Repetitions = exerciseSettings.TargetRepetitions,
+                Repetitions = exercise.Settings.TargetRepetitions,
             };
 
             await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, DateTime.Today, cancellationToken);
 
-            EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(_exercise));
+            EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(_exerciseId));
 
             SoundSource soundSource = SoundSource.Custom("Assets/Sound/Completed.mp3");
             await SoundService.PlayAsync(soundSource, cancellationToken);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Models;
@@ -8,39 +9,19 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 {
     internal sealed class RemoteExercisesRepository : IExercisesRepository
     {
-        public Task<Exercise> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public Task<IEnumerable<Exercise>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public Task<Exercise> AddAsync(Exercise entity, CancellationToken cancellationToken = default)
+        public Task<Exercise> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public Task<Exercise> UpdateAsync(Exercise entity, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<Exercise> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<Exercise> DeleteAsync(Exercise entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<int> exercisesIds, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

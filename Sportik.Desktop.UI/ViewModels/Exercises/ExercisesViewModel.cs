@@ -176,7 +176,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             if (!ReminderService.IsRunning)
             {
-                ReminderService.Start(exercises, ReminderMode);
+                ReminderService.Start(exercises.Select(exercise => exercise.Id), ReminderMode);
 
                 PauseCommand.RaiseCanExecuteChanged();
                 ResumeCommand.RaiseCanExecuteChanged();

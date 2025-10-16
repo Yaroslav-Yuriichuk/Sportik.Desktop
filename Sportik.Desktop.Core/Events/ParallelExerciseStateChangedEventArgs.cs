@@ -1,20 +1,19 @@
 ﻿using System;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.States;
 
 namespace Sportik.Desktop.Core.Events
 {
-    public class ParallelExerciseStateChangedEventArgs : EventArgs
+    public sealed class ParallelExerciseStateChangedEventArgs : EventArgs
     {
-        public Exercise Exercise { get; }
+        public Guid ExerciseId { get; }
 
         public ParallelExerciseState PreviousState { get; }
 
         public ParallelExerciseState CurrentState { get; }
 
-        public ParallelExerciseStateChangedEventArgs(Exercise exercise, ParallelExerciseState previousState, ParallelExerciseState currentState)
+        public ParallelExerciseStateChangedEventArgs(Guid exerciseId, ParallelExerciseState previousState, ParallelExerciseState currentState)
         {
-            Exercise = exercise;
+            ExerciseId = exerciseId;
             PreviousState = previousState;
             CurrentState = currentState;
         }

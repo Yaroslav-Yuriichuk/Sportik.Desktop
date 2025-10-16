@@ -12,7 +12,7 @@ namespace Sportik.Desktop.Core.Models.Settings
         ExecutionTime = 1 << 3,
     }
 
-    public class ExerciseSettingsDelta
+    public sealed class ExerciseSettingsDelta
     {
         public ExerciseSettingsChange Change { get; set; }
 

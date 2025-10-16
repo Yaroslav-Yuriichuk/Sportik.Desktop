@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States;
@@ -16,22 +13,19 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
-        private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
-        private Exercise[] _exercises;
+        private Guid[] _exerciseIds;
 
         private IStatesRunner _runner;
-        private CancellationTokenSource _runningCts;
 
         public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService, IRuntimeCacheService runtimeCacheService,
-            Func<IExercisesService> exercisesServiceFactory, Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
+            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
-            _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
@@ -49,24 +43,30 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
                 _runner.Dispose();
 
-                _runningCts?.Cancel();
-                _runningCts = new CancellationTokenSource();
-
-                _ = StartAsync(value, _exercises.Select(e => e.Id), _runningCts.Token);
+                _runner = value switch
+                {
+                    ReminderMode.Sequential => new SequentialStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
+                    ReminderMode.Parallel => new ParallelStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
+                    _ => throw new ArgumentException($"Mode {value} is not supported.")
+                };
             }
         }
 
-        public void Start(IEnumerable<Exercise> exercises, ReminderMode mode = default)
+        public void Start(IEnumerable<Guid> exerciseIds, ReminderMode mode = default)
         {
             if (IsRunning)
             {
                 return;
             }
 
-            _runningCts?.Cancel();
-            _runningCts = new CancellationTokenSource();
+            _exerciseIds = exerciseIds as Guid[] ?? exerciseIds.ToArray();
 
-            _ = StartAsync(mode, exercises.Select(e => e.Id), _runningCts.Token);
+            _runner = mode switch
+            {
+                ReminderMode.Sequential => new SequentialStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
+                ReminderMode.Parallel => new ParallelStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
+                _ => throw new ArgumentException($"Mode {mode} is not supported.")
+            };
         }
 
         public void Stop()
@@ -76,32 +76,15 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 return;
             }
 
-            _runningCts?.Cancel();
-
             _runner.Dispose();
             _runner = null;
 
-            _exercises = null;
+            _exerciseIds = null;
         }
 
-        public TState GetExerciseState<TState>(Exercise exercise) where TState : Enum
+        public TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum
         {
-            return IsRunning ? _runner.GetExerciseState<TState>(exercise) : default;
-        }
-
-        private async Task StartAsync(ReminderMode mode, IEnumerable<int> exerciseIds, CancellationToken cancellationToken)
-        {
-            IExercisesService exercisesService = _exercisesServiceFactory();
-
-            IEnumerable<Exercise> exercises = await exercisesService.GetByIdsAsync(exerciseIds, cancellationToken);
-            _exercises = exercises as Exercise[] ?? exercises.ToArray();
-
-            _runner = mode switch
-            {
-                ReminderMode.Sequential => new SequentialStatesRunner(_exercises, _eventsService, _exerciseTimersService, _runtimeCacheService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
-                ReminderMode.Parallel => new ParallelStatesRunner(_exercises, _eventsService, _exerciseTimersService, _exerciseSettingsServiceFactory, _notificationServiceFactory),
-                _ => throw new ArgumentException($"Mode {mode} is not supported.")
-            };
+            return IsRunning ? _runner.GetExerciseState<TState>(exerciseId) : default;
         }
     }
 }

@@ -1,17 +1,16 @@
 ﻿using System;
-using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.Core.Events
 {
     public sealed class ExerciseExecutionTimeChangedEventArgs : EventArgs
     {
-        public Exercise Exercise { get; }
+        public Guid ExerciseId { get; }
 
         public TimeSpan ExecutionTime { get; }
 
-        public ExerciseExecutionTimeChangedEventArgs(Exercise exercise, TimeSpan executionTime)
+        public ExerciseExecutionTimeChangedEventArgs(Guid exerciseId, TimeSpan executionTime)
         {
-            Exercise = exercise;
+            ExerciseId = exerciseId;
             ExecutionTime = executionTime;
         }
     }

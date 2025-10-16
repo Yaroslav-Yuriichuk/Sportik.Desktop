@@ -1,4 +1,5 @@
-﻿using Sportik.Desktop.Core.Models;
+﻿using System;
+using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.Core.Helpers
 {
@@ -9,7 +10,7 @@ namespace Sportik.Desktop.Core.Helpers
             return first.Id == second.Id;
         }
 
-        public static bool EqualById(Exercise exercise, int id)
+        public static bool EqualById(Exercise exercise, Guid id)
         {
             return exercise.Id == id;
         }

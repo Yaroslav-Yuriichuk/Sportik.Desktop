@@ -2,10 +2,8 @@
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
-using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.Parallel
@@ -14,23 +12,23 @@ namespace Sportik.Desktop.Core.States.Parallel
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
-        private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
+        private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
         public override States.ParallelExerciseState ExerciseState => States.ParallelExerciseState.WaitingWithForceExecution;
 
         public WaitingWithForceExecutionParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
+            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
-            _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
+            _exercisesServiceFactory = exercisesServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
         protected override void HandleEnter()
         {
-            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+            IExercisesService exercisesService = _exercisesServiceFactory();
 
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
@@ -38,13 +36,12 @@ namespace Sportik.Desktop.Core.States.Parallel
 
             Task.Run(async () =>
             {
-                ExerciseSettings exerciseSettings =
-                    await exerciseSettingsService.GetExerciseSettingsAsync(Context.Exercise, ActiveCancellationToken);
+                Exercise exercise = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
 
-                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
+                ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Parallel);
 
                 timer.Loop = false;
-                timer.Interval = exerciseSettings.TimeBetweenSets;
+                timer.Interval = exercise.Settings.TimeBetweenSets;
 
                 timer.Elapsed += Timer_Elapsed;
 
@@ -65,7 +62,7 @@ namespace Sportik.Desktop.Core.States.Parallel
             _eventsService.RemoveListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseForceExecutionRequestedEventArgs>(EventsService_Event);
 
-            ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
+            ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Parallel);
 
             timer.Elapsed -= Timer_Elapsed;
 
@@ -77,7 +74,7 @@ namespace Sportik.Desktop.Core.States.Parallel
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && !args.IsEnabled)
+            if (args.ExerciseId == Context.ExerciseId && !args.IsEnabled)
             {
                 Context.Switch(Context.DisabledExerciseState);
             }
@@ -85,16 +82,16 @@ namespace Sportik.Desktop.Core.States.Parallel
 
         private void EventsService_Event(ExerciseTimeBetweenSetsChangedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
+            if (args.ExerciseId == Context.ExerciseId)
             {
-                ITimer timer = _exerciseTimersService.GetTimer(Context.Exercise, ReminderMode.Parallel);
+                ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Parallel);
                 timer.Interval = args.TimeBetweenSets;
             }
         }
 
         private void EventsService_Event(ExerciseForceExecutionRequestedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise))
+            if (args.ExerciseId == Context.ExerciseId)
             {
                 Context.Switch(Context.ExecutingExerciseState);
             }
@@ -102,23 +99,22 @@ namespace Sportik.Desktop.Core.States.Parallel
 
         private void Timer_Elapsed(object sender, EventArgs args)
         {
-            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+            IExercisesService exercisesService = _exercisesServiceFactory();
             INotificationService notificationService = _notificationServiceFactory();
 
             Task.Run(async () =>
             {
-                ExerciseSettings exerciseSettings =
-                    await exerciseSettingsService.GetExerciseSettingsAsync(Context.Exercise, ActiveCancellationToken);
+                Exercise exercise = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
 
-                notificationService.ShowReminder(Context.Exercise, new ReminderNotification
+                notificationService.ShowReminder(Context.ExerciseId, new ReminderNotification
                 {
-                    Title = $"{Context.Exercise.Name} reminder!",
+                    Title = $"{exercise.Name} reminder!",
                     Texts = new []
                     {
-                        $"You have {exerciseSettings.ExecutionTime.TotalMinutes} minutes to complete {Context.Exercise.Name.ToLower()} exercise.",
-                        $"Target repetitions: {exerciseSettings.TargetRepetitions}.",
+                        $"You have {exercise.Settings.ExecutionTime.TotalMinutes} minutes to complete {exercise.Name.ToLower()} exercise.",
+                        $"Target repetitions: {exercise.Settings.TargetRepetitions}.",
                     },
-                    ExpirationTime = exerciseSettings.ExecutionTime,
+                    ExpirationTime = exercise.Settings.ExecutionTime,
                 });
 
                 Context.Switch(Context.ExecutingExerciseState);

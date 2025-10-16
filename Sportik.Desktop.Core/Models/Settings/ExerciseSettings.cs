@@ -1,22 +1,38 @@
-﻿using Sportik.Desktop.Core.Models;
-using System;
+﻿using System;
 
 namespace Sportik.Desktop.Core.Models.Settings
 {
     public sealed class ExerciseSettings
     {
-        public int Id { get; set; }
+        public bool IsEnabled { get; private set; }
 
-        public int ExerciseId { get; set; }
+        public int TargetRepetitions { get; private set; }
 
-        public bool IsEnabled { get; set; }
+        public TimeSpan TimeBetweenSets { get; private set; }
 
-        public int TargetRepetitions { get; set; }
+        public TimeSpan ExecutionTime { get; private set; }
 
-        public TimeSpan TimeBetweenSets { get; set; }
+        public ExerciseSettings(bool isEnabled, int targetRepetitions, TimeSpan timeBetweenSets, TimeSpan executionTime)
+        {
+            if (targetRepetitions < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(targetRepetitions), "Target repetitions must be at least 1.");
+            }
 
-        public TimeSpan ExecutionTime { get; set; }
+            if (timeBetweenSets < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(timeBetweenSets), "Time between sets cannot be negative.");
+            }
 
-        public Exercise Exercise { get; set; }
+            if (executionTime < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(executionTime), "Execution time cannot be negative.");
+            }
+
+            IsEnabled = isEnabled;
+            TargetRepetitions = targetRepetitions;
+            TimeBetweenSets = timeBetweenSets;
+            ExecutionTime = executionTime;
+        }
     }
 }

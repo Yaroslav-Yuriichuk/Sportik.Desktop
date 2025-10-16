@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sportik.Desktop.Core.Common.Timers;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -8,28 +8,28 @@ namespace Sportik.Desktop.Core.Services.Implementations
 {
     internal sealed class ExerciseTimersService : IExerciseTimersService
     {
-        private readonly Dictionary<ReminderMode, Dictionary<int, ITimer>> _timers = new Dictionary<ReminderMode, Dictionary<int, ITimer>>();
+        private readonly Dictionary<ReminderMode, Dictionary<Guid, ITimer>> _timers = new Dictionary<ReminderMode, Dictionary<Guid, ITimer>>();
 
-        public ITimer GetTimer(Exercise exercise, ReminderMode mode)
+        public ITimer GetTimer(Guid exerciseId, ReminderMode mode, TimeSpan defaultInterval = default)
         {
             lock (_timers)
             {
-                if (!_timers.TryGetValue(mode, out Dictionary<int, ITimer> timers))
+                if (!_timers.TryGetValue(mode, out Dictionary<Guid, ITimer> timers))
                 {
-                    timers = new Dictionary<int, ITimer>();
+                    timers = new Dictionary<Guid, ITimer>();
                     _timers.Add(mode, timers);
                 }
 
-                if (timers.TryGetValue(exercise.Id, out ITimer timer))
+                if (timers.TryGetValue(exerciseId, out ITimer timer))
                 {
                     return timer;
                 }
 
                 timer = new DefaultTimerBuilder()
-                    .SetInterval(exercise.ExerciseSettings.TimeBetweenSets)
+                    .SetInterval(defaultInterval)
                     .Build();
 
-                timers.Add(exercise.Id, timer);
+                timers.Add(exerciseId, timer);
 
                 return timer;
             }

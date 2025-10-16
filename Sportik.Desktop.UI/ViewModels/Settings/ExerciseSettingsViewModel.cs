@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Constants;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -115,20 +116,20 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
 
         private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
 
-        private readonly ExerciseSettings _exerciseSettings;
+        private readonly Guid _exerciseId;
 
         private CancellationTokenSource _updateCts = new CancellationTokenSource();
 
-        public ExerciseSettingsViewModel(ExerciseSettings exerciseSettings)
+        public ExerciseSettingsViewModel(Exercise exercise)
         {
-            _exerciseSettings = exerciseSettings;
+            _exerciseId = exercise.Id;
 
-            Name = exerciseSettings.Exercise.Name;
+            Name = exercise.Name;
 
             TargetRepetitionsOptions = new ObservableCollection<IntOption>(
                 AutomationConstants.TargetRepetitions.Select(repetitions => new IntOption(repetitions)));
 
-            IntOption selectedTargetRepetitionsOption = TargetRepetitionsOptions.FirstOrDefault(o => o.IntValue == exerciseSettings.TargetRepetitions)
+            IntOption selectedTargetRepetitionsOption = TargetRepetitionsOptions.FirstOrDefault(o => o.IntValue == exercise.Settings.TargetRepetitions)
                                                         ?? TargetRepetitionsOptions[0];
 
             SetField(ref _selectedTargetRepetitionsOption, selectedTargetRepetitionsOption);
@@ -136,7 +137,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             TimeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>(
                 AutomationConstants.TimesBetweenSets.Select(time => new TimeSpanOption(time)));
 
-            TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpanValue == exerciseSettings.TimeBetweenSets)
+            TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpanValue == exercise.Settings.TimeBetweenSets)
                                                            ?? TimeBetweenSetsOptions[0];
 
             SetField(ref _selectedTimeBetweenSetsOption, selectedTimeBetweenSetsOption);
@@ -144,7 +145,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             ExecutionTimeOptions = new ObservableCollection<TimeSpanOption>(
                 AutomationConstants.ExecutionTimes.Select(time => new TimeSpanOption(time)));
 
-            TimeSpanOption selectedExecutionTimeOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpanValue == exerciseSettings.ExecutionTime)
+            TimeSpanOption selectedExecutionTimeOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpanValue == exercise.Settings.ExecutionTime)
                                                          ?? ExecutionTimeOptions[0];
 
             SetField(ref _selectedExecutionTimeOption, selectedExecutionTimeOption);
@@ -165,7 +166,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
                 ExecutionTime = SelectedExecutionTimeOption.TimeSpanValue,
             };
 
-            await ExerciseSettingsService.UpdateExerciseSettingsAsync(exerciseSettingsDelta, _exerciseSettings.Exercise, cancellationToken);
+            await ExerciseSettingsService.UpdateAsync(exerciseSettingsDelta, _exerciseId, cancellationToken);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using Sportik.Desktop.Core.Common.StateMachine;
 using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.Parallel
@@ -10,10 +9,12 @@ namespace Sportik.Desktop.Core.States.Parallel
     {
         private readonly IEventsService _eventsService;
 
-        public Exercise Exercise { get; }
+        public Guid ExerciseId { get; }
+
+        public ParallelExerciseState DeterminingExerciseState { get; }
 
         public ParallelExerciseState DisabledExerciseState { get; }
-        
+
         public ParallelExerciseState WaitingBeforeForceExecutionExerciseState { get; }
 
         public ParallelExerciseState WaitingWithForceExecutionExerciseState { get; }
@@ -22,23 +23,20 @@ namespace Sportik.Desktop.Core.States.Parallel
 
         public ParallelExerciseState CurrentState { get; private set; }
 
-        public ParallelExerciseStatesContext(Exercise exercise, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
+        public ParallelExerciseStatesContext(Guid exerciseId, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
 
+            ExerciseId = exerciseId;
+
+            DeterminingExerciseState = new DeterminingParallelExerciseState(this, exercisesServiceFactory);
             DisabledExerciseState = new DisabledParallelExerciseState(this, _eventsService);
-            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
-            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
-            ExecutingExerciseState = new ExecutingParallelExerciseState(this, _eventsService, exerciseTimersService, exerciseSettingsServiceFactory);
+            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            ExecutingExerciseState = new ExecutingParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory);
 
-            Exercise = exercise;
-
-            ParallelExerciseState state = Exercise.ExerciseSettings.IsEnabled
-                ? WaitingBeforeForceExecutionExerciseState
-                : DisabledExerciseState;
-
-            Switch(state);
+            Switch(DeterminingExerciseState);
         }
 
         public void Dispose()
@@ -56,7 +54,7 @@ namespace Sportik.Desktop.Core.States.Parallel
 
             States.ParallelExerciseState currentState = state?.ExerciseState ?? States.ParallelExerciseState.Unknown;
 
-            _eventsService.RaiseEvent(new ParallelExerciseStateChangedEventArgs(Exercise, previousState, currentState));
+            _eventsService.RaiseEvent(new ParallelExerciseStateChangedEventArgs(ExerciseId, previousState, currentState));
         }
     }
 }

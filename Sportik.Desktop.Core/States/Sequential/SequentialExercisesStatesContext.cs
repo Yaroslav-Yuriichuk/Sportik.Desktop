@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using Sportik.Desktop.Core.Common.StateMachine;
 using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Helpers;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.Sequential
 {
     internal sealed class SequentialExercisesStatesContext : IStatesContext<SequentialExerciseState>, IDisposable
     {
-        private readonly Func<Exercise, SequentialExercisesStatesContext> _getContextCallback;
+        private readonly Func<Guid, SequentialExercisesStatesContext> _getContextCallback;
         private readonly IEventsService _eventsService;
-        private readonly IRuntimeCacheService _runtimeCacheService;
 
-        public IEnumerable<Exercise> Exercises { get; }
-        public Exercise Exercise { get; }
+        public IEnumerable<Guid> ExerciseIds { get; }
+        public Guid ExerciseId { get; }
+
+        public SequentialExerciseState DeterminingState { get; }
 
         public SequentialExerciseState DisabledExerciseState { get; }
 
@@ -30,48 +29,29 @@ namespace Sportik.Desktop.Core.States.Sequential
 
         public SequentialExerciseState CurrentState { get; private set; }
 
-        public SequentialExercisesStatesContext(IEnumerable<Exercise> exercises, Exercise exercise, Func<Exercise, SequentialExercisesStatesContext> getContextCallback,
+        public SequentialExercisesStatesContext(IEnumerable<Guid> exerciseIds, Guid exerciseId, Func<Guid, SequentialExercisesStatesContext> getContextCallback,
             IEventsService eventsService, IExerciseTimersService exerciseTimersService, IRuntimeCacheService runtimeCacheService,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<INotificationService> notificationServiceFactory)
+            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
             _getContextCallback = getContextCallback;
             _eventsService = eventsService;
-            _runtimeCacheService = runtimeCacheService;
 
-            Exercises = exercises;
-            Exercise = exercise;
+            ExerciseIds = exerciseIds.ToList();
+            ExerciseId = exerciseId;
 
-            DisabledExerciseState = new DisabledSequentialExerciseState(this, eventsService, exerciseSettingsServiceFactory);
-            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, runtimeCacheService, exerciseSettingsServiceFactory, notificationServiceFactory);
-            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory, notificationServiceFactory);
+            DeterminingState = new DeterminingSequentialExerciseState(this, exercisesServiceFactory, runtimeCacheService);
+            DisabledExerciseState = new DisabledSequentialExerciseState(this, eventsService, exercisesServiceFactory);
+            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, runtimeCacheService, exercisesServiceFactory, notificationServiceFactory);
+            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
             QueuedExerciseState = new QueuedSequentialExerciseState(this, eventsService);
-            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exerciseSettingsServiceFactory);
+            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory);
 
-            if (Exercise.ExerciseSettings.IsEnabled)
-            {
-                SequentialExerciseState state;
+            Switch(DeterminingState);
+        }
 
-                if (_runtimeCacheService.TryGet(out SequentialExercisesCache sequentialExercisesCache))
-                {
-                    state = CompareHelper.EqualById(Exercise, sequentialExercisesCache.LastActiveExerciseId)
-                        ? WaitingBeforeForceExecutionExerciseState
-                        : QueuedExerciseState;
-                }
-                else
-                {
-                    Exercise firstEnabledExercise = Exercises.FirstOrDefault(e => e.ExerciseSettings.IsEnabled);
-
-                    state = CompareHelper.EqualById(firstEnabledExercise, Exercise)
-                        ? WaitingBeforeForceExecutionExerciseState
-                        : QueuedExerciseState;
-                }
-
-                Switch(state);
-            }
-            else
-            {
-                Switch(DisabledExerciseState);
-            }
+        public void Dispose()
+        {
+            Switch(null);
         }
 
         public void Switch(SequentialExerciseState state)
@@ -84,22 +64,17 @@ namespace Sportik.Desktop.Core.States.Sequential
 
             States.SequentialExerciseState currentState = state?.ExerciseState ?? States.SequentialExerciseState.Unknown;
 
-            _eventsService.RaiseEvent(new SequentialExerciseStateChangedEventArgs(Exercise, previousState, currentState));
+            _eventsService.RaiseEvent(new SequentialExerciseStateChangedEventArgs(ExerciseId, previousState, currentState));
         }
 
-        public void Dispose()
+        public SequentialExercisesStatesContext GetContext(Guid exerciseId)
         {
-            Switch(null);
+            return _getContextCallback(exerciseId);
         }
 
-        public SequentialExercisesStatesContext GetContext(Exercise exercise)
+        public SequentialExerciseState GetState(Guid exerciseId)
         {
-            return _getContextCallback(exercise);
-        }
-
-        public SequentialExerciseState GetState(Exercise exercise)
-        {
-            return GetContext(exercise).CurrentState;
+            return GetContext(exerciseId).CurrentState;
         }
     }
 }

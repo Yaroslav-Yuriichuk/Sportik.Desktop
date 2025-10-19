@@ -16,7 +16,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
             _eventsService = eventsService;
         }
 
-        public void ShowReminder(Exercise exercise, ReminderNotification reminderNotification)
+        public void ShowReminder(Guid exerciseId, ReminderNotification reminderNotification)
         {
             ToastContentBuilder builder = new ToastContentBuilder()
                 .AddText(reminderNotification.Title)
@@ -40,10 +40,10 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
                     switch (toastArgs.Arguments)
                     {
                         case "view":
-                            _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exercise));
+                            _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exerciseId));
                             break;
                         case "dismiss":
-                            _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exercise));
+                            _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exerciseId));
                             break;
                     }
                 }
@@ -51,7 +51,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
 
             ToastNotificationManager.CreateToastNotifier().Show(toast);
 
-            _eventsService.RaiseEvent(new ReminderNotificationShownEventArgs(exercise));
+            _eventsService.RaiseEvent(new ReminderNotificationShownEventArgs(exerciseId));
         }
     }
 }

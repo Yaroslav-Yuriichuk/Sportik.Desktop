@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.UI.Helpers;
-using Sportik.Desktop.UI.Services;
 using Sportik.Desktop.UI.Services.Interfaces;
 using Sportik.Desktop.UI.Views;
 

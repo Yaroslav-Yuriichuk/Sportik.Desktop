@@ -8,7 +8,7 @@
 
   <Identity
     Name="YYuriichuk.Sportik"
-    Publisher="CN=Yaroslav Yuriichuk"
+    Publisher="CN=Sportik Desktop Publisher"
     Version="1.1.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="0673a919-54fc-4f4c-a08f-54aa3a790e94" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
@@ -30,7 +30,7 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="Sportik.Desktop.App">
+      EntryPoint="Sportik.Desktop.UI.App">
       <uap:VisualElements
         DisplayName="Sportik Desktop"
         Square150x150Logo="Assets\Logo\Square150x150Logo.png"
@@ -42,4 +42,8 @@
       </uap:VisualElements>
     </Application>
   </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClient"/>
+    <Capability Name="privateNetworkClientServer"/></Capabilities>
 </Package>

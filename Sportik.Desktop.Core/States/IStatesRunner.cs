@@ -1,5 +1,4 @@
 ﻿using System;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 
 namespace Sportik.Desktop.Core.States
@@ -8,6 +7,6 @@ namespace Sportik.Desktop.Core.States
     {
         public ReminderMode Mode { get; }
 
-        TState GetExerciseState<TState>(Exercise exercise) where TState : Enum;
+        TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum;
     }
 }

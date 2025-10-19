@@ -1,9 +1,10 @@
-﻿using Sportik.Desktop.Core.Models;
+﻿using System;
+using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.Core.Services.Interfaces
 {
     public interface INotificationService
     {
-        void ShowReminder(Exercise exercise, ReminderNotification reminderNotification);
+        void ShowReminder(Guid exerciseId, ReminderNotification reminderNotification);
     }
 }

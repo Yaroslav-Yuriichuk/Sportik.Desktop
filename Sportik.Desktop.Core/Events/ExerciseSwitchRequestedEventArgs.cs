@@ -1,15 +1,14 @@
 ﻿using System;
-using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.Core.Events
 {
     public sealed class ExerciseSwitchRequestedEventArgs : EventArgs
     {
-        public Exercise Exercise { get; }
+        public Guid ExerciseId { get; }
 
-        public ExerciseSwitchRequestedEventArgs(Exercise exercise)
+        public ExerciseSwitchRequestedEventArgs(Guid exerciseId)
         {
-            Exercise = exercise;
+            ExerciseId = exerciseId;
         }
     }
 }

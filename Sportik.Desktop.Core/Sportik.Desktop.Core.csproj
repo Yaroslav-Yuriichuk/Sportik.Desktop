@@ -155,7 +155,6 @@
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\Exercise.cs" />
-    <Compile Include="Models\ExerciseKind.cs" />
     <Compile Include="Models\ReminderNotification.cs" />
     <Compile Include="Models\SequentialExercisesCache.cs" />
     <Compile Include="Models\Settings\ExerciseSettings.cs" />
@@ -196,10 +195,12 @@
     <Compile Include="States\Parallel\ExecutingParallelExerciseState.cs" />
     <Compile Include="States\Parallel\ParallelExerciseState.cs" />
     <Compile Include="States\Parallel\ParallelExerciseStatesContext.cs" />
+    <Compile Include="States\Parallel\DeterminingParallelExerciseState.cs" />
     <Compile Include="States\Parallel\WaitingBeforeForceExecutionParallelExerciseState.cs" />
     <Compile Include="States\Parallel\WaitingWithForceExecutionParallelExerciseState.cs" />
     <Compile Include="States\SequentialExerciseState.cs" />
     <Compile Include="States\SequentialStatesRunner.cs" />
+    <Compile Include="States\Sequential\DeterminingSequentialExerciseState.cs" />
     <Compile Include="States\Sequential\DisabledSequentialExerciseState.cs" />
     <Compile Include="States\Sequential\ExecutingSequentialExerciseState.cs" />
     <Compile Include="States\Sequential\QueuedSequentialExerciseState.cs" />
@@ -216,13 +217,8 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.14</Version>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.4</Version>
-    </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

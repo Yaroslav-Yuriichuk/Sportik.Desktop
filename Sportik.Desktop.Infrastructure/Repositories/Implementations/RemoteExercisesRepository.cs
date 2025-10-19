@@ -1,46 +1,57 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Repositories.Interfaces;
+using Sportik.Desktop.Infrastructure.DTOs;
+using Sportik.Desktop.Infrastructure.Mappers;
+using Sportik.Desktop.Infrastructure.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 {
     internal sealed class RemoteExercisesRepository : IExercisesRepository
     {
-        public Task<Exercise> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        private readonly IApiService _apiService;
+
+        public RemoteExercisesRepository(IApiService apiService)
         {
-            throw new System.NotImplementedException();
+            _apiService = apiService;
         }
 
-        public Task<IEnumerable<Exercise>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Exercise>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            IEnumerable<ExerciseDto> exercises = await _apiService.GetAsync<IEnumerable<ExerciseDto>>(
+                "/api/Exercises",
+                "",
+                cancellationToken);
+
+            return exercises.Select(e => ExerciseMapper.ToDomain(e, true));
         }
 
-        public Task<Exercise> AddAsync(Exercise entity, CancellationToken cancellationToken = default)
+        public async Task<Exercise> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            ExerciseDto exercise = await _apiService.GetAsync<ExerciseDto>(
+                $"/api/Exercises/{id}",
+                "",
+                cancellationToken);
+
+            return ExerciseMapper.ToDomain(exercise, true);
         }
 
-        public Task<Exercise> UpdateAsync(Exercise entity, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
-        }
+            IEnumerable<ExerciseDto> exercises = await _apiService.GetAsync<IEnumerable<ExerciseDto>>(
+                "/api/Exercises",
+                "",
+                cancellationToken);
 
-        public Task<Exercise> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+            HashSet<Guid> idsSet = ids as HashSet<Guid> ?? ids.ToHashSet();
 
-        public Task<Exercise> DeleteAsync(Exercise entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<int> exercisesIds, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
+            return exercises
+                .Where(e => idsSet.Contains(e.Id))
+                .Select(e => ExerciseMapper.ToDomain(e, true));
         }
     }
 }

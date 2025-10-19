@@ -1,15 +1,21 @@
-﻿using Sportik.Desktop.Core.Models.Settings;
+﻿using System;
+using Sportik.Desktop.Core.Models.Settings;
 
 namespace Sportik.Desktop.Core.Models
 {
     public sealed class Exercise
     {
-        public int Id { get; set; }
+        public Guid Id { get; private set; }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
-        public ExerciseKind Kind { get; set; }
+        public ExerciseSettings Settings { get; private set; }
 
-        public ExerciseSettings ExerciseSettings { get; set; }
+        public Exercise(Guid id, string name, ExerciseSettings settings)
+        {
+            Id = id;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        }
     }
 }

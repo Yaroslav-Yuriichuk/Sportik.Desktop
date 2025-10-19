@@ -1,5 +1,4 @@
 ﻿using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.Parallel
@@ -27,7 +26,7 @@ namespace Sportik.Desktop.Core.States.Parallel
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
         {
-            if (CompareHelper.EqualById(Context.Exercise, args.Exercise) && args.IsEnabled)
+            if (args.ExerciseId == Context.ExerciseId && args.IsEnabled)
             {
                 Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
             }

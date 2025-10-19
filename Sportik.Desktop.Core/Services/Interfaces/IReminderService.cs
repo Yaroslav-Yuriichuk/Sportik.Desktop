@@ -11,10 +11,10 @@ namespace Sportik.Desktop.Core.Services.Interfaces
 
         ReminderMode Mode { get; set; }
 
-        void Start(IEnumerable<Exercise> exercises, ReminderMode mode = default);
+        void Start(IEnumerable<Guid> exercises, ReminderMode mode = default);
 
         void Stop();
 
-        TState GetExerciseState<TState>(Exercise exercise) where TState : Enum;
+        TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum;
     }
 }

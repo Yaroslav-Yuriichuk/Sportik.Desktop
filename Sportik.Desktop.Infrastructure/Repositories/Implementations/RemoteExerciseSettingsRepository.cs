@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 
@@ -35,11 +34,6 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
         }
 
         public Task<ExerciseSettings> DeleteAsync(ExerciseSettings entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<ExerciseSettings> GetByKindAsync(ExerciseKind exerciseKind, CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();
         }

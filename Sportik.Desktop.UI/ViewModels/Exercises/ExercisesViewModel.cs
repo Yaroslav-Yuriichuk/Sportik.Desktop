@@ -18,7 +18,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public ObservableCollection<ParallelExerciseViewModel> ParallelExercises
         {
             get => _parallelExercises;
-            set => SetField(ref _parallelExercises, value);
+            private set => SetField(ref _parallelExercises, value);
         }
 
         private ObservableCollection<SequentialExerciseViewModel> _sequentialExercises = new ObservableCollection<SequentialExerciseViewModel>();
@@ -26,7 +26,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public ObservableCollection<SequentialExerciseViewModel> SequentialExercises
         {
             get => _sequentialExercises;
-            set => SetField(ref _sequentialExercises, value);
+            private set => SetField(ref _sequentialExercises, value);
         }
 
         private ObservableCollection<ReminderModeOption> _reminderModeOptions;
@@ -34,7 +34,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public ObservableCollection<ReminderModeOption> ReminderModeOptions
         {
             get => _reminderModeOptions;
-            set
+            private set
             {
                 if (SetField(ref _reminderModeOptions, value))
                 {
@@ -67,7 +67,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public ReminderMode ReminderMode
         {
             get => _reminderMode;
-            set => SetField(ref _reminderMode, value);
+            private set => SetField(ref _reminderMode, value);
         }
 
         public ILazyCommand PauseCommand { get; private set; }
@@ -176,7 +176,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             if (!ReminderService.IsRunning)
             {
-                ReminderService.Start(exercises, ReminderMode);
+                ReminderService.Start(exercises.Select(exercise => exercise.Id), ReminderMode);
 
                 PauseCommand.RaiseCanExecuteChanged();
                 ResumeCommand.RaiseCanExecuteChanged();

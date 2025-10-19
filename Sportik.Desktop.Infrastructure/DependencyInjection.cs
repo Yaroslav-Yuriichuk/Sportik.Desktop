@@ -4,6 +4,7 @@ using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Infrastructure.Repositories.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Implementations;
+using Sportik.Desktop.Infrastructure.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure
 {
@@ -11,6 +12,13 @@ namespace Sportik.Desktop.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
+            services.AddHttpClient<IApiService, HttpApiService>(client =>
+            {
+                client.BaseAddress = new Uri("");
+                client.Timeout = TimeSpan.FromSeconds(30);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
             services.AddTransient<IExercisesRepository, RemoteExercisesRepository>();
             services.AddTransient<IExerciseStatisticsRepository, RemoteExerciseStatisticsRepository>();
             services.AddTransient<IDayStatisticsRepository, RemoteDayStatisticsRepository>();

@@ -18,7 +18,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
         public string Name
         {
             get => _name;
-            set => SetField(ref _name, value);
+            private set => SetField(ref _name, value);
         }
 
         private ObservableCollection<IntOption> _targetRepetitionsOptions;
@@ -26,7 +26,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
         public ObservableCollection<IntOption> TargetRepetitionsOptions
         {
             get => _targetRepetitionsOptions;
-            set
+            private set
             {
                 if (SetField(ref _targetRepetitionsOptions, value))
                 {
@@ -57,7 +57,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
         public ObservableCollection<TimeSpanOption> TimeBetweenSetsOptions
         {
             get => _timeBetweenSetsOptions;
-            set
+            private set
             {
                 if (SetField(ref _timeBetweenSetsOptions, value))
                 {
@@ -88,7 +88,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
         public ObservableCollection<TimeSpanOption> ExecutionTimeOptions
         {
             get => _executionTimeOptions;
-            set
+            private set
             {
                 if (SetField(ref _executionTimeOptions, value))
                 {

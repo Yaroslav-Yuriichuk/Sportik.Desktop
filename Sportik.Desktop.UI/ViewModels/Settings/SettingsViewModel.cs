@@ -12,12 +12,12 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
 {
     internal sealed class SettingsViewModel : ViewModel, IDisposable
     {
-        private ObservableCollection<ExerciseSettingsViewModel> _exerciseSettings;
+        private ObservableCollection<ExerciseSettingsViewModel> _exerciseSettings = new ObservableCollection<ExerciseSettingsViewModel>();
 
         public ObservableCollection<ExerciseSettingsViewModel> ExerciseSettings
         {
             get => _exerciseSettings;
-            set => SetField(ref _exerciseSettings, value);
+            private set => SetField(ref _exerciseSettings, value);
         }
 
         private IExercisesService ExercisesService => App.ServiceProvider.GetRequiredService<IExercisesService>();

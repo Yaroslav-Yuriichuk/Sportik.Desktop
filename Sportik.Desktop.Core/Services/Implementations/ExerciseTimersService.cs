@@ -26,7 +26,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 }
 
                 timer = new DefaultTimerBuilder()
-                    .SetInterval(defaultInterval)
+                    .SetInterval(defaultInterval <= TimeSpan.Zero ? TimeSpan.FromMinutes(1) : defaultInterval)
                     .Build();
 
                 timers.Add(exerciseId, timer);

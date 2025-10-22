@@ -11,7 +11,7 @@
     <AssemblyName>Sportik.Desktop.Infrastructure</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -131,18 +131,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DependencyInjection.cs" />
-    <Compile Include="DTOs\ExerciseDto.cs" />
-    <Compile Include="DTOs\ExerciseSettingsDto.cs" />
+    <Compile Include="DTOs\Auth\AuthTokensDto.cs" />
+    <Compile Include="DTOs\Auth\LoginRequestDto.cs" />
+    <Compile Include="DTOs\Auth\RefreshTokenRequestDto.cs" />
+    <Compile Include="DTOs\Exercises\ExerciseDto.cs" />
+    <Compile Include="DTOs\Exercises\ExerciseSettingsDto.cs" />
+    <Compile Include="Helpers\JwtTokenHelper.cs" />
     <Compile Include="Mappers\ExerciseMapper.cs" />
     <Compile Include="Mappers\ExerciseSettingsMapper.cs" />
+    <Compile Include="Models\AccessTokenCache.cs" />
+    <Compile Include="Models\RefreshTokenCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Implementations\RemoteDayStatisticsRepository.cs" />
     <Compile Include="Repositories\Implementations\RemoteExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Implementations\RemoteExercisesRepository.cs" />
     <Compile Include="Repositories\Implementations\RemoteExerciseStatisticsRepository.cs" />
+    <Compile Include="Services\Implementations\AuthService.cs" />
     <Compile Include="Services\Implementations\HttpApiService.cs" />
     <Compile Include="Services\Implementations\PersistentCacheService.cs" />
     <Compile Include="Services\Implementations\RuntimeCacheService.cs" />
+    <Compile Include="Services\Implementations\SecureCacheService.cs" />
     <Compile Include="Services\Implementations\SoundService.cs" />
     <Compile Include="Services\Implementations\ToastNotificationService.cs" />
     <Compile Include="Services\Interfaces\IApiService.cs" />
@@ -163,6 +171,9 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.4</Version>
+    </PackageReference>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt">
+      <Version>7.7.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

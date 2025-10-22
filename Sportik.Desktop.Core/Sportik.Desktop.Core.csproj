@@ -11,7 +11,7 @@
     <AssemblyName>Sportik.Desktop.Core</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -130,6 +130,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Common\StateMachine\IState.cs" />
     <Compile Include="Common\StateMachine\IStatesContext.cs" />
     <Compile Include="Common\Timers\DefaultTimer.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
     <Compile Include="Services\Implementations\ExerciseTimersService.cs" />
     <Compile Include="Services\Implementations\ReminderService.cs" />
+    <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\IEventsService.cs" />
     <Compile Include="Services\Interfaces\IExerciseSettingsService.cs" />
     <Compile Include="Services\Interfaces\IExercisesService.cs" />
@@ -187,6 +189,7 @@
     <Compile Include="Services\Interfaces\IPersistentCacheService.cs" />
     <Compile Include="Services\Interfaces\IReminderService.cs" />
     <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
+    <Compile Include="Services\Interfaces\ISecureCacheService.cs" />
     <Compile Include="Services\Interfaces\ISoundService.cs" />
     <Compile Include="States\IStatesRunner.cs" />
     <Compile Include="States\ParallelExerciseState.cs" />
@@ -218,7 +221,6 @@
       <Version>6.2.14</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

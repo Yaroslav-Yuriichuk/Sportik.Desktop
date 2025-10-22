@@ -2,7 +2,7 @@
 using Windows.UI.Xaml.Navigation;
 using Sportik.Desktop.UI.ViewModels.Exercises;
 
-namespace Sportik.Desktop.UI.Views
+namespace Sportik.Desktop.UI.Views.Internal
 {
     internal sealed partial class ExercisesPage : Page
     {

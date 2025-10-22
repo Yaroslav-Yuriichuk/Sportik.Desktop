@@ -2,11 +2,12 @@
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.UI.Behaviors;
+using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.Services.Implementations;
 using Sportik.Desktop.UI.Services.Interfaces;
 using Sportik.Desktop.UI.ViewModels.Navigation;
 
-namespace Sportik.Desktop.UI
+namespace Sportik.Desktop.UI.Views.Main
 {
     internal sealed partial class MainPage : Page
     {
@@ -18,7 +19,7 @@ namespace Sportik.Desktop.UI
 
             if (App.ServiceProvider.GetService<INavigationService>() is FrameNavigationService frameNavigationService)
             {
-                frameNavigationService.Initialize(PagesFrame);
+                frameNavigationService.SetFrame(PagesFrame, NavigationScope.Internal);
             }
         }
 
@@ -26,12 +27,12 @@ namespace Sportik.Desktop.UI
         {
             base.OnNavigatedTo(e);
 
-            if (DataContext is NavigationViewModel navigationViewModel)
+            if (DataContext is InternalNavigationViewModel navigationViewModel)
             {
                 navigationViewModel.Dispose();
             }
 
-            DataContext = new NavigationViewModel();
+            DataContext = new InternalNavigationViewModel();
 
             _navigationViewCollapseBehavior?.Dispose();
             _navigationViewCollapseBehavior = new NavigationViewCollapseBehavior(PagesNavigationView, 850);
@@ -41,7 +42,7 @@ namespace Sportik.Desktop.UI
         {
             base.OnNavigatedFrom(e);
 
-            if (DataContext is NavigationViewModel navigationViewModel)
+            if (DataContext is InternalNavigationViewModel navigationViewModel)
             {
                 navigationViewModel.Dispose();
             }

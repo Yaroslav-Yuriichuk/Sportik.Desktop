@@ -17,6 +17,7 @@ using Sportik.Desktop.Infrastructure;
 using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.Services.Implementations;
 using Sportik.Desktop.UI.Services.Interfaces;
+using Sportik.Desktop.UI.Views.Main;
 
 namespace Sportik.Desktop.UI
 {
@@ -80,12 +81,19 @@ namespace Sportik.Desktop.UI
                 Window.Current.Content = rootFrame;
             }
 
+            if (ServiceProvider.GetService<INavigationService>() is FrameNavigationService frameNavigationService)
+            {
+                frameNavigationService.SetFrame(rootFrame, NavigationScope.Main);
+            }
+
             if (e.PrelaunchActivated == false)
             {
-                if (rootFrame.Content == null)
+                ServiceProvider.GetService<INavigationService>().Navigate(typeof(LoginPage), NavigationScope.Main);
+
+                /*if (rootFrame.Content == null)
                 {
                     rootFrame.Navigate(typeof(MainPage), e.Arguments);
-                }
+                }*/
 
                 Window.Current.Activate();
             }

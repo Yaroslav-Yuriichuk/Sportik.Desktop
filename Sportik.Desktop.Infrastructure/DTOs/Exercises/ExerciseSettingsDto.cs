@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sportik.Desktop.Infrastructure.DTOs
+namespace Sportik.Desktop.Infrastructure.DTOs.Exercises
 {
     internal sealed class ExerciseSettingsDto
     {

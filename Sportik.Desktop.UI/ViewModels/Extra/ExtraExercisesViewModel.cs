@@ -75,6 +75,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
         }
 
         public IReactiveCommand AddSetCommand { get; }
+
         public IReactiveCommand SaveSetsCommand { get; }
 
         private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();

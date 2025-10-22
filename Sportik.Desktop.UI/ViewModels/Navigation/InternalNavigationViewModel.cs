@@ -7,12 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.UI.Helpers;
+using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.Services.Interfaces;
 using Sportik.Desktop.UI.Views;
+using Sportik.Desktop.UI.Views.Internal;
 
 namespace Sportik.Desktop.UI.ViewModels.Navigation
 {
-    internal sealed class NavigationViewModel : ViewModel, IDisposable
+    internal sealed class InternalNavigationViewModel : ViewModel, IDisposable
     {
         private ObservableCollection<NavigationOption> _options;
 
@@ -24,7 +26,7 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
                 if (SetField(ref _options, value))
                 {
                     SelectedMenuItem = _options?[0];
-                    NavigationService.Navigate(_options?[0]?.PageType);
+                    NavigationService.Navigate(_options?[0]?.PageType, NavigationScope.Internal);
                 }
             }
         }
@@ -42,7 +44,7 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
         private INavigationService NavigationService => App.ServiceProvider.GetService<INavigationService>();
         private IEventsService EventsService => App.ServiceProvider.GetService<IEventsService>();
 
-        public NavigationViewModel()
+        public InternalNavigationViewModel()
         {
             SelectionChangedCommand = new LazyRelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
 
@@ -65,13 +67,13 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
         {
             if (args.IsSettingsSelected)
             {
-                NavigationService.Navigate(typeof(SettingsPage));
+                NavigationService.Navigate(typeof(SettingsPage), NavigationScope.Internal);
                 return;
             }
 
             if (args.SelectedItem is NavigationOption menuItem)
             {
-                NavigationService.Navigate(menuItem.PageType);
+                NavigationService.Navigate(menuItem.PageType, NavigationScope.Internal);
             }
         }
 

@@ -25,9 +25,11 @@ namespace Sportik.Desktop.Infrastructure
             services.AddTransient<IExerciseSettingsRepository, RemoteExerciseSettingsRepository>();
             services.AddTransient<INotificationService, ToastNotificationService>();
             services.AddTransient<ISoundService, SoundService>();
+            services.AddTransient<IAuthService, AuthService>();
 
             services.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();
             services.AddSingleton<IPersistentCacheService, PersistentCacheService>();
+            services.AddSingleton<ISecureCacheService, SecureCacheService>();
             services.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
             services.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);
             services.AddSingleton<Func<IExercisesService>>(sp => sp.GetService<IExercisesService>);

@@ -2,7 +2,7 @@
 using Windows.UI.Xaml.Navigation;
 using Sportik.Desktop.UI.ViewModels.Statistics;
 
-namespace Sportik.Desktop.UI.Views
+namespace Sportik.Desktop.UI.Views.Internal
 {
     public sealed partial class StatisticsPage : Page
     {

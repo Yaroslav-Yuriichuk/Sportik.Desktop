@@ -33,6 +33,7 @@ namespace Sportik.Desktop.Infrastructure
             services.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
             services.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);
             services.AddSingleton<Func<IExercisesService>>(sp => sp.GetService<IExercisesService>);
+            services.AddSingleton<Func<IAuthService>>(sp => sp.GetService<IAuthService>);
 
             return services;
         }

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Services.Interfaces;
 
-namespace Sportik.Desktop.UI.ViewModels.Login
+namespace Sportik.Desktop.UI.ViewModels.Registration
 {
-    internal sealed class LoginViewModel : ViewModel, IDisposable
+    internal sealed class RegistrationViewModel : ViewModel, IDisposable
     {
         private string _email;
 
@@ -26,22 +24,21 @@ namespace Sportik.Desktop.UI.ViewModels.Login
             set => SetField(ref _password, value);
         }
 
-        public IReactiveCommand LoginCommand { get; }
-
         public IReactiveCommand RegisterCommand { get; }
 
-        private IAuthService AuthService => App.ServiceProvider.GetService<IAuthService>();
+        public IReactiveCommand LoginCommand { get; }
+
         private IEventsService EventsService => App.ServiceProvider.GetService<IEventsService>();
 
         private readonly CancellationTokenSource _loginCts = new CancellationTokenSource();
 
-        public LoginViewModel()
+        public RegistrationViewModel()
         {
             Email = string.Empty;
             Password = string.Empty;
 
-            LoginCommand = new ReactiveRelayCommand(Login);
             RegisterCommand = new ReactiveRelayCommand(Register);
+            LoginCommand = new ReactiveRelayCommand(Login);
         }
 
         public void Dispose()
@@ -49,22 +46,13 @@ namespace Sportik.Desktop.UI.ViewModels.Login
             _loginCts.Cancel();
         }
 
-        private void Login()
-        {
-            _ = LoginAsync(_loginCts.Token);
-        }
-
         private void Register()
         {
-            EventsService.RaiseEvent(new RegistrationRequestedEventArgs());
         }
 
-        private async Task LoginAsync(CancellationToken cancellationToken)
+        private void Login()
         {
-            LoginCommand.IsExecutable = false;
-
-            OperationResult<string> result = await AuthService.LoginAsync(Email, Password, cancellationToken);
-            LoginCommand.IsExecutable = !result.Succeeded;
+            EventsService.RaiseEvent(new LoginRequestedEventArgs());
         }
     }
 }

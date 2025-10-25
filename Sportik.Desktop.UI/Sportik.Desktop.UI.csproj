@@ -129,6 +129,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Behaviors\MainAppNavigationBehavior.cs" />
     <Compile Include="Behaviors\NavigationViewCollapseBehavior.cs" />
     <Compile Include="Converters\BoolToInvertedVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
@@ -139,7 +140,6 @@
     <Compile Include="Converters\TimeSpanToLongHoursMinutesStringConverter.cs" />
     <Compile Include="Helpers\UIThreadHelper.cs" />
     <Compile Include="Models\NavigationScope.cs" />
-    <Compile Include="Models\ReminderCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\FrameNavigationService.cs" />
     <Compile Include="Services\Interfaces\INavigationService.cs" />
@@ -156,6 +156,7 @@
     <Compile Include="ViewModels\Login\LoginViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavigationOption.cs" />
     <Compile Include="ViewModels\Navigation\InternalNavigationViewModel.cs" />
+    <Compile Include="ViewModels\Registration\RegistrationViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\Settings\ExerciseSettingsViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
@@ -182,6 +183,12 @@
     </Compile>
     <Compile Include="Views\Main\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\RegistrationPage.xaml.cs">
+      <DependentUpon>RegistrationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\WelcomePage.xaml.cs">
+      <DependentUpon>WelcomePage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -273,6 +280,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Main\RegistrationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Main\WelcomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -293,7 +308,6 @@
   <ItemGroup>
     <None Include="SportikDesktop.pfx" />
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

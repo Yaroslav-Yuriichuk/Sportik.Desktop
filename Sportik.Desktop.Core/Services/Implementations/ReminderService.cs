@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
-using Sportik.Desktop.Core.States;
+using Sportik.Desktop.Core.States.Exercises;
 
 namespace Sportik.Desktop.Core.Services.Implementations
 {

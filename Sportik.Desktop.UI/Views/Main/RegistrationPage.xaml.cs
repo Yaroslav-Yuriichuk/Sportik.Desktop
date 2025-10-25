@@ -1,12 +1,12 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Sportik.Desktop.UI.ViewModels.Login;
+using Sportik.Desktop.UI.ViewModels.Registration;
 
 namespace Sportik.Desktop.UI.Views.Main
 {
-    public sealed partial class LoginPage : Page
+    public sealed partial class RegistrationPage : Page
     {
-        public LoginPage()
+        public RegistrationPage()
         {
             this.InitializeComponent();
         }
@@ -15,21 +15,21 @@ namespace Sportik.Desktop.UI.Views.Main
         {
             base.OnNavigatedTo(e);
 
-            if (DataContext is LoginViewModel loginViewModel)
+            if (DataContext is RegistrationViewModel registrationViewModel)
             {
-                loginViewModel.Dispose();
+                registrationViewModel.Dispose();
             }
 
-            DataContext = new LoginViewModel();
+            DataContext = new RegistrationViewModel();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
 
-            if (DataContext is LoginViewModel loginViewModel)
+            if (DataContext is RegistrationViewModel registrationViewModel)
             {
-                loginViewModel.Dispose();
+                registrationViewModel.Dispose();
             }
         }
     }

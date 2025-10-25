@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Infrastructure.DTOs.Auth;
 using Sportik.Desktop.Infrastructure.Helpers;
@@ -15,12 +16,15 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
         private readonly IApiService _apiService;
         private readonly ISecureCacheService _secureCacheService;
         private readonly IRuntimeCacheService _runtimeCacheService;
+        private readonly IEventsService _eventsService;
 
-        public AuthService(IApiService apiService, ISecureCacheService secureCacheService, IRuntimeCacheService runtimeCacheService)
+        public AuthService(IApiService apiService, ISecureCacheService secureCacheService,
+            IRuntimeCacheService runtimeCacheService, IEventsService eventsService)
         {
             _apiService = apiService;
             _secureCacheService = secureCacheService;
             _runtimeCacheService = runtimeCacheService;
+            _eventsService = eventsService;
         }
 
         public async Task<OperationResult<string>> LoginAsync(string email, string password, CancellationToken cancellationToken = default)
@@ -53,6 +57,8 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
                 _runtimeCacheService.Set(accessTokenCache);
                 _secureCacheService.Set(refreshTokenCache);
 
+                _eventsService.RaiseEvent(new UserLoggedInEventArgs(userId, email));
+
                 return OperationResult<string>.Success(authTokens.AccessToken);
             }
             catch (OperationCanceledException)
@@ -76,6 +82,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
 
             if (!_secureCacheService.TryGet(out RefreshTokenCache refreshTokenCache))
             {
+                _eventsService.RaiseEvent(new UserRefreshFailedEventArgs());
                 return OperationResult<string>.Failure(new[] { "No refresh token available." });
             }
 
@@ -115,6 +122,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
             }
             catch (Exception e)
             {
+                _eventsService.RaiseEvent(new UserRefreshFailedEventArgs());
                 return OperationResult<string>.Failure(new[] { $"Token refresh failed: {e.Message}", });
             }
         }
@@ -128,6 +136,8 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
 
                 // TODO: Revoke refresh token on the server.
                 await Task.CompletedTask;
+
+                _eventsService.RaiseEvent(new UserLoggedOutEventArgs());
 
                 return OperationResult.Success();
             }

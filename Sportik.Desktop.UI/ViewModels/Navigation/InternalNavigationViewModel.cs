@@ -9,7 +9,6 @@ using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.UI.Helpers;
 using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.Services.Interfaces;
-using Sportik.Desktop.UI.Views;
 using Sportik.Desktop.UI.Views.Internal;
 
 namespace Sportik.Desktop.UI.ViewModels.Navigation

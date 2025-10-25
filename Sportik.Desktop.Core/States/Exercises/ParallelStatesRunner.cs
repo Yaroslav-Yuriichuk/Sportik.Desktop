@@ -9,27 +9,26 @@ namespace Sportik.Desktop.Core.States.Exercises
 {
     internal sealed class ParallelStatesRunner : IStatesRunner
     {
-        private readonly IEnumerable<ParallelExerciseStatesContext> _contexts;
-
         public ReminderMode Mode => ReminderMode.Parallel;
 
-        public ParallelStatesRunner(IEnumerable<Guid> exerciseIds, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
+        private readonly IEventsService _eventsService;
+        private readonly IExerciseTimersService _exerciseTimersService;
+        private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<INotificationService> _notificationServiceFactory;
+
+        private readonly List<ParallelExerciseStatesContext> _contexts = new List<ParallelExerciseStatesContext>();
+
+        public ParallelStatesRunner(IEventsService eventsService, IExerciseTimersService exerciseTimersService,
             Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
         {
-            IEnumerable<ParallelExerciseStatesContext> contexts = exerciseIds
-                .Select(exerciseId => new ParallelExerciseStatesContext(exerciseId, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory))
-                .ToArray();
-
-            _contexts = contexts;
+            _eventsService = eventsService;
+            _exerciseTimersService = exerciseTimersService;
+            _exercisesServiceFactory = exercisesServiceFactory;
+            _notificationServiceFactory = notificationServiceFactory;
         }
 
         public void Dispose()
         {
-            if (_contexts == null)
-            {
-                throw new ObjectDisposedException($"{typeof(ParallelStatesRunner)} is disposed.");
-            }
-
             foreach (ParallelExerciseStatesContext context in _contexts)
             {
                 context.Dispose();
@@ -38,11 +37,6 @@ namespace Sportik.Desktop.Core.States.Exercises
 
         public TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum
         {
-            if (_contexts == null)
-            {
-                throw new ObjectDisposedException($"{typeof(ParallelStatesRunner)} is disposed.");
-            }
-
             if (typeof(TState) != typeof(ParallelExerciseState))
             {
                 throw new ArgumentException($"Type {typeof(TState)} is not supported.");
@@ -50,6 +44,25 @@ namespace Sportik.Desktop.Core.States.Exercises
 
             ParallelExerciseStatesContext context = _contexts.FirstOrDefault(c => c.ExerciseId == exerciseId);
             return (TState)(object)(context?.CurrentState.ExerciseState ?? ParallelExerciseState.Unknown);
+        }
+
+        public void AddExercise(Guid exerciseId)
+        {
+            ParallelExerciseStatesContext context = new ParallelExerciseStatesContext(exerciseId, _eventsService,
+                _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory);
+
+            _contexts.Add(context);
+        }
+
+        public void RemoveExercise(Guid exerciseId)
+        {
+            ParallelExerciseStatesContext context = _contexts.FirstOrDefault(c => c.ExerciseId == exerciseId);
+
+            if (context != null)
+            {
+                context.Dispose();
+                _contexts.Remove(context);
+            }
         }
     }
 }

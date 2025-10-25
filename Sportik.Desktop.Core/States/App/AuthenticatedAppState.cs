@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
@@ -46,14 +45,20 @@ namespace Sportik.Desktop.Core.States.App
 
             if (toStartReminders)
             {
-                IExercisesService exercisesService = _exercisesServiceFactory();
-
-                Task.Run(async () =>
-                {
-                    IEnumerable<Exercise> exercises = await exercisesService.GetAllAsync(ActiveCancellationToken);
-                    _reminderService.Start(exercises.Select(exercise => exercise.Id), reminderMode);
-                });
+                _reminderService.Start(reminderMode);
             }
+
+            IExercisesService exercisesService = _exercisesServiceFactory();
+
+            Task.Run(async () =>
+            {
+                IEnumerable<Exercise> exercises = await exercisesService.GetAllAsync(ActiveCancellationToken);
+
+                foreach (Exercise exercise in exercises)
+                {
+                    _reminderService.AddExercise(exercise.Id);
+                }
+            });
         }
 
         protected override void HandleExit()

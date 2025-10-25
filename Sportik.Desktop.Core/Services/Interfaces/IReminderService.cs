@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 
 namespace Sportik.Desktop.Core.Services.Interfaces
@@ -11,10 +9,16 @@ namespace Sportik.Desktop.Core.Services.Interfaces
 
         ReminderMode Mode { get; set; }
 
-        void Start(IEnumerable<Guid> exercises, ReminderMode mode = default);
+        void Start(ReminderMode mode = default);
 
         void Stop();
 
         TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum;
+
+        void AddExercise(Guid exerciseId);
+
+        void RemoveExercise(Guid exerciseId);
+
+        bool IsExerciseAdded(Guid exerciseId);
     }
 }

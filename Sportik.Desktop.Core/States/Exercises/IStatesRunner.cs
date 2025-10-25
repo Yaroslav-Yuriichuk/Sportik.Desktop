@@ -8,5 +8,9 @@ namespace Sportik.Desktop.Core.States.Exercises
         public ReminderMode Mode { get; }
 
         TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum;
+
+        void AddExercise(Guid exerciseId);
+
+        void RemoveExercise(Guid exerciseId);
     }
 }

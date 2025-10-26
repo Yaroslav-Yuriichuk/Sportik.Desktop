@@ -1,6 +1,6 @@
 ## Overview
 
-Sportik is a desktop application to create reminders for exercises and track the progress.
+Sportik Desktop is a desktop application to create reminders for exercises and track the progress.
 
 ## Release installation
 

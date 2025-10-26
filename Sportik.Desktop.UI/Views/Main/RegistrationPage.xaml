@@ -1,0 +1,70 @@
+﻿<Page
+    x:Class="Sportik.Desktop.UI.Views.Main.RegistrationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:login="using:Sportik.Desktop.UI.ViewModels.Registration"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <login:RegistrationViewModel />
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Row="0"
+                 Text=""
+                 Height="0" />
+
+        <TextBlock Grid.Row="1"
+                   Text="Sign up for Sportik Desktop"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0 15 0 0" />
+
+        <TextBox Grid.Row="2"
+                 Width="250"
+                 Margin="0,15,0,0"
+                 PlaceholderText="Email"
+                 Text="{Binding Email, Mode=TwoWay}" />
+
+        <PasswordBox Grid.Row="3"
+                     Width="250"
+                     Margin="0,15,0,0"
+                     PlaceholderText="Password"
+                     Password="{Binding Password, Mode=TwoWay}" />
+
+        <Button Grid.Row="4"
+                Content="Sign up"
+                Width="250"
+                Margin="0,15,0,0"
+                HorizontalAlignment="Center"
+                Command="{Binding RegisterCommand}" />
+
+        <TextBlock Grid.Row="5"
+                   Text="or"
+                   HorizontalAlignment="Center"
+                   Margin="0 15 0 0" />
+
+        <Button Grid.Row="6"
+                Content="Log in"
+                Width="250"
+                Margin="0,15,0,0"
+                HorizontalAlignment="Center"
+                Command="{Binding LoginCommand}" />
+
+    </Grid>
+</Page>

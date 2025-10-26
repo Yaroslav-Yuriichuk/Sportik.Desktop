@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{74A53F28-1BD6-4FE6-B24D-0FCAE2BD5394}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sportik.Desktop.Core</RootNamespace>
+    <AssemblyName>Sportik.Desktop.Core</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <OutputPath>bin\ARM64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Common\OperationResult.cs" />
+    <Compile Include="Common\StateMachine\IState.cs" />
+    <Compile Include="Common\StateMachine\IStatesContext.cs" />
+    <Compile Include="Common\Timers\DefaultTimer.cs" />
+    <Compile Include="Common\Timers\DefaultTimerBuilder.cs" />
+    <Compile Include="Common\Timers\ITimer.cs" />
+    <Compile Include="Constants\AutomationConstants.cs" />
+    <Compile Include="DependencyInjection.cs" />
+    <Compile Include="Events\ApplicationStateChangedEventArgs.cs" />
+    <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
+    <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseIsEnabledChangedEventArgs.cs" />
+    <Compile Include="Events\ExerciseSwitchRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseTimeBetweenSetsChangedEventArgs.cs" />
+    <Compile Include="Events\LoginRequestedEventArgs.cs" />
+    <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
+    <Compile Include="Events\RegistrationRequestedEventArgs.cs" />
+    <Compile Include="Events\ReminderNotificationAcceptedEventArgs.cs" />
+    <Compile Include="Events\ReminderNotificationDismissedEventArgs.cs" />
+    <Compile Include="Events\ReminderNotificationShownEventArgs.cs" />
+    <Compile Include="Events\SequentialExerciseStateChangedEventArgs.cs" />
+    <Compile Include="Events\UserLoggedInEventArgs.cs" />
+    <Compile Include="Events\UserLoggedOutEventArgs.cs" />
+    <Compile Include="Events\UserRefreshFailedEventArgs.cs" />
+    <Compile Include="Events\UserRegisteredEventArgs.cs" />
+    <Compile Include="Extensions\CachingExtension.cs" />
+    <Compile Include="Helpers\CalendarHelper.cs" />
+    <Compile Include="Helpers\CompareHelper.cs" />
+    <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
+    <Compile Include="Helpers\StatisticsHelper.cs" />
+    <Compile Include="Models\Automation\ReminderMode.cs" />
+    <Compile Include="Models\Exercise.cs" />
+    <Compile Include="Models\ExerciseSet.cs" />
+    <Compile Include="Models\ReminderCache.cs" />
+    <Compile Include="Models\ReminderNotification.cs" />
+    <Compile Include="Models\SequentialExercisesCache.cs" />
+    <Compile Include="Models\Settings\ExerciseSettings.cs" />
+    <Compile Include="Models\Settings\ExerciseSettingsDelta.cs" />
+    <Compile Include="Models\Sound\SoundSource.cs" />
+    <Compile Include="Models\Sound\SystemSound.cs" />
+    <Compile Include="Models\Statistics\DayStatistics.cs" />
+    <Compile Include="Models\Statistics\ExerciseStatistics.cs" />
+    <Compile Include="Models\Statistics\WeekStatistics.cs" />
+    <Compile Include="Models\Statistics\WeekStatisticsOrder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\Interfaces\IExerciseSettingsRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IExerciseStatisticsRepository.cs" />
+    <Compile Include="Services\Implementations\ApplicationStatesService.cs" />
+    <Compile Include="Services\Implementations\EventsService.cs" />
+    <Compile Include="Services\Implementations\ExerciseSettingsService.cs" />
+    <Compile Include="Services\Implementations\ExercisesService.cs" />
+    <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
+    <Compile Include="Services\Implementations\ExerciseTimersService.cs" />
+    <Compile Include="Services\Implementations\ReminderService.cs" />
+    <Compile Include="Services\Interfaces\IApplicationStatesService.cs" />
+    <Compile Include="Services\Interfaces\IAuthService.cs" />
+    <Compile Include="Services\Interfaces\IEventsService.cs" />
+    <Compile Include="Services\Interfaces\IExerciseSettingsService.cs" />
+    <Compile Include="Services\Interfaces\IExercisesService.cs" />
+    <Compile Include="Services\Interfaces\IExerciseStatisticsService.cs" />
+    <Compile Include="Services\Interfaces\IExerciseTimersService.cs" />
+    <Compile Include="Services\Interfaces\INotificationService.cs" />
+    <Compile Include="Services\Interfaces\IPersistentCacheService.cs" />
+    <Compile Include="Services\Interfaces\IReminderService.cs" />
+    <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
+    <Compile Include="Services\Interfaces\ISecureCacheService.cs" />
+    <Compile Include="Services\Interfaces\ISoundService.cs" />
+    <Compile Include="Services\Interfaces\IUsersService.cs" />
+    <Compile Include="States\App\ApplicationState.cs" />
+    <Compile Include="States\App\AppState.cs" />
+    <Compile Include="States\App\AppStatesContext.cs" />
+    <Compile Include="States\App\AuthenticatedAppState.cs" />
+    <Compile Include="States\App\DeterminingAppState.cs" />
+    <Compile Include="States\App\LoginAppState.cs" />
+    <Compile Include="States\App\RegistrationAppState.cs" />
+    <Compile Include="States\Exercises\IStatesRunner.cs" />
+    <Compile Include="States\Exercises\ParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\ParallelStatesRunner.cs" />
+    <Compile Include="States\Exercises\Parallel\DisabledParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\ExecutingParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\ParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\ParallelExerciseStatesContext.cs" />
+    <Compile Include="States\Exercises\Parallel\DeterminingParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\WaitingBeforeForceExecutionParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\WaitingWithForceExecutionParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\SequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\SequentialStatesRunner.cs" />
+    <Compile Include="States\Exercises\Sequential\DeterminingSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\DisabledSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\ExecutingSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\QueuedSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\SequentialExercisesStatesContext.cs" />
+    <Compile Include="States\Exercises\Sequential\SequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
+    <EmbeddedResource Include="Properties\Sportik.Desktop.Core.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <Version>9.0.9</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>6.2.14</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

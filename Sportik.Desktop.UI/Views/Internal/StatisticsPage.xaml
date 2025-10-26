@@ -1,0 +1,162 @@
+﻿<Page
+    x:Class="Sportik.Desktop.UI.Views.Internal.StatisticsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:statistics="using:Sportik.Desktop.UI.ViewModels.Statistics"
+    xmlns:converters="using:Sportik.Desktop.UI.Converters"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <statistics:StatisticsViewModel />
+    </Page.DataContext>
+
+    <Page.Resources>
+        <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
+        <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Statistics"
+                   FontSize="32"
+                   Margin="15 15 15 0"/>
+
+        <ListView Grid.Row="1"
+                  Margin="15"
+                  IsItemClickEnabled="True"
+                  SelectionMode="None"
+                  ItemsSource="{Binding WeekStatistics}">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="statistics:WeekStatisticsViewModel">
+                    <StackPanel>
+
+                        <TextBlock FontSize="20"
+                                   Margin="15 15 15 15">
+                            <Run Text="{Binding FirstWeekDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
+                            <Run Text="-" />
+                            <Run Text="{Binding LastWeekDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
+                        </TextBlock>
+
+                        <ListView ItemsSource="{Binding DayStatistics}"
+                                  IsItemClickEnabled="True"
+                                  SelectionMode="None">
+
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="statistics:DayStatisticsViewModel">
+                                    <StackPanel HorizontalAlignment="Stretch">
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Stretch"
+                                                    Margin="15 10 10 10"
+                                                    Background="Transparent">
+
+                                            <interactivity:Interaction.Behaviors>
+                                                <core:EventTriggerBehavior EventName="Tapped">
+                                                    <core:InvokeCommandAction Command="{Binding ToggleCollapsedCommand}"/>
+                                                </core:EventTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+
+                                            <SymbolIcon Symbol="Accept"
+                                                        Width="20"
+                                                        Height="20" />
+
+                                            <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=dddd}"
+                                                       FontSize="14"
+                                                       Margin="10 0 0 0"/>
+
+                                        </StackPanel>
+
+                                        <ListView IsItemClickEnabled="False"
+                                                  SelectionMode="None"
+                                                  ItemsSource="{Binding ExerciseStatistics}"
+                                                  Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
+
+                                            <ListView.ItemContainerStyle>
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    <Setter Property="Padding" Value="0" />
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
+
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="statistics:ExerciseStatisticsViewModel">
+                                                    <Grid Margin="45 0 0 0">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="30"></ColumnDefinition>
+                                                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <SymbolIcon Grid.Column="0"
+                                                                    Symbol="World"
+                                                                    Width="20"
+                                                                    Height="20"
+                                                                    Margin="0 0 10 0"/>
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding Name}"
+                                                                   FontSize="14"
+                                                                   Margin="0 5 0 5" />
+
+                                                        <TextBlock Grid.Column="2"
+                                                                   FontSize="14"
+                                                                   Margin="0 5 0 5">
+                                                            <Run Text="Sets: " />
+                                                            <Run Text="{Binding Sets}" />
+                                                        </TextBlock>
+
+                                                        <TextBlock Grid.Column="3"
+                                                                   FontSize="14"
+                                                                   Margin="0 5 0 5">
+                                                            <Run Text="Repetitions: " />
+                                                            <Run Text="{Binding Repetitions}" />
+                                                        </TextBlock>
+
+                                                    </Grid>
+
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+
+                                        </ListView>
+
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+                        </ListView>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+        </ListView>
+
+    </Grid>
+</Page>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Helpers;
@@ -37,12 +38,18 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             Task.Run(async () =>
             {
-                Exercise exercise = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
+                OperationResult<Exercise> result = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
+
+                if (!result.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
 
                 ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Sequential);
 
                 timer.Loop = false;
-                timer.Interval = exercise.Settings.ExecutionTime;
+                timer.Interval = result.Value.Settings.ExecutionTime;
 
                 timer.Elapsed += Timer_Elapsed;
 
@@ -81,10 +88,16 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             Task.Run(async () =>
             {
-                IEnumerable<Exercise> exercises =
+                OperationResult<IEnumerable<Exercise>> result =
                     await exercisesService.GetByIdsAsync(Context.ExerciseIds, ActiveCancellationToken);
 
-                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(exercises, Context.ExerciseId);
+                if (!result.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(result.Value, Context.ExerciseId);
 
                 Context.Switch(Context.DisabledExerciseState);
 
@@ -116,10 +129,16 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             Task.Run(async () =>
             {
-                IEnumerable<Exercise> exercises =
+                OperationResult<IEnumerable<Exercise>> result =
                     await exercisesService.GetByIdsAsync(Context.ExerciseIds, ActiveCancellationToken);
 
-                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(exercises, Context.ExerciseId);
+                if (!result.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(result.Value, Context.ExerciseId);
 
                 if (nextExercise != null)
                 {
@@ -146,10 +165,16 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             Task.Run(async () =>
             {
-                IEnumerable<Exercise> exercises =
+                OperationResult<IEnumerable<Exercise>> result =
                     await exercisesService.GetByIdsAsync(Context.ExerciseIds, ActiveCancellationToken);
 
-                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(exercises, Context.ExerciseId);
+                if (!result.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(result.Value, Context.ExerciseId);
 
                 if (nextExercise != null)
                 {
@@ -171,10 +196,16 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             Task.Run(async () =>
             {
-                IEnumerable<Exercise> exercises =
+                OperationResult<IEnumerable<Exercise>> result =
                     await exercisesService.GetByIdsAsync(Context.ExerciseIds, ActiveCancellationToken);
 
-                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(exercises, Context.ExerciseId);
+                if (!result.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(result.Value, Context.ExerciseId);
 
                 if (nextExercise != null)
                 {

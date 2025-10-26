@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Constants;
 using Sportik.Desktop.Core.Models;
-using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Extra
@@ -23,7 +23,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             {
                 if (SetField(ref _exercisesOptions, value))
                 {
-                    SetField(ref _selectedExerciseOption, value[0]);
+                    SetField(ref _selectedExerciseOption, value[0], nameof(SelectedExerciseOption));
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             {
                 if (SetField(ref _repetitionsOptions, value))
                 {
-                    SetField(ref _selectedRepetitionsOption, value[0]);
+                    SetField(ref _selectedRepetitionsOption, value[0], nameof(SelectedRepetitionsOption));
                 }
             }
         }
@@ -107,10 +107,16 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
 
         private async Task LoadExercisesAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
+            OperationResult<IEnumerable<Exercise>> result = await ExercisesService.GetAllAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error.
+                return;
+            }
 
             ExercisesOptions = new ObservableCollection<ExerciseOption>(
-                exercises.Select(e => new ExerciseOption(e)));
+                result.Value.Select(e => new ExerciseOption(e)));
         }
 
         private void AddSet()
@@ -136,20 +142,14 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             AddSetCommand.IsExecutable = false;
             SaveSetsCommand.IsExecutable = false;
 
-            List<SetViewModel> sets = Sets.ToList();
+            List<SetViewModel> setViewModels = Sets.ToList();
 
-            foreach (SetViewModel set in sets)
+            foreach (SetViewModel setViewModel in setViewModels)
             {
-                ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta
-                {
-                    Exercise = set.Exercise,
-                    Sets = 1,
-                    Repetitions = set.Repetitions,
-                };
+                ExerciseSet set = new ExerciseSet(setViewModel.Repetitions, setViewModel.Date);
+                await ExerciseStatisticsService.AddSetAsync(set, setViewModel.Exercise.Id, cancellationToken);
 
-                await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, set.Date.Date, cancellationToken);
-
-                Sets.Remove(set);
+                Sets.Remove(setViewModel);
             }
 
             Sets.Clear();

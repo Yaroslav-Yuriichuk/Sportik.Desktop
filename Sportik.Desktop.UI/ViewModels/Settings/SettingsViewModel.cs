@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -41,10 +42,16 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
 
         private async Task LoadExerciseSettingsAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
+            OperationResult<IEnumerable<Exercise>> result = await ExercisesService.GetAllAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error
+                return;
+            }
 
             ExerciseSettings = new ObservableCollection<ExerciseSettingsViewModel>(
-                exercises.Select(exercise => new ExerciseSettingsViewModel(exercise)));
+                result.Value.Select(exercise => new ExerciseSettingsViewModel(exercise)));
         }
     }
 }

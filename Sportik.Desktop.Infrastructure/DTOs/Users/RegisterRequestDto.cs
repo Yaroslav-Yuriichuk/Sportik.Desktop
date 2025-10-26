@@ -1,6 +1,6 @@
 ﻿namespace Sportik.Desktop.Infrastructure.DTOs.Users
 {
-    public sealed class RegisterRequestDto
+    internal sealed class RegisterRequestDto
     {
         public string Email { get; }
 

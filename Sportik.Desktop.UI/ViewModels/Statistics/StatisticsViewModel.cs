@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -36,10 +37,18 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         private async Task LoadDayStatisticsAsync(CancellationToken cancellationToken)
         {
-            IEnumerable<WeekStatistics> weekStatistics = await ExerciseStatisticsService.GetWeekStatisticsAsync(WeekStatisticsOrder.Descending, cancellationToken);
+            OperationResult<IEnumerable<WeekStatistics>> result = await ExerciseStatisticsService.GetWeeklyAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error.
+                return;
+            }
+
+            IEnumerable<WeekStatistics> weekStatistics = result.Value;
 
             WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
-                               weekStatistics.Select(statistics => new WeekStatisticsViewModel(statistics)));
+                weekStatistics.Select(statistics => new WeekStatisticsViewModel(statistics)));
         }
     }
 }

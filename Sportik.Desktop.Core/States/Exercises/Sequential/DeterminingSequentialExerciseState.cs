@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -27,10 +28,19 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             Task.Run(async () =>
             {
-                Exercise exercise = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
+                OperationResult<Exercise> exerciseResult = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
 
-                IEnumerable<Exercise> exercises =
+                OperationResult<IEnumerable<Exercise>> exercisesResult =
                     await exercisesService.GetByIdsAsync(Context.ExerciseIds, ActiveCancellationToken);
+
+                if (!exerciseResult.Succeeded || !exercisesResult.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                Exercise exercise = exerciseResult.Value;
+                IEnumerable<Exercise> exercises = exercisesResult.Value;
 
                 if (exercise.Settings.IsEnabled)
                 {

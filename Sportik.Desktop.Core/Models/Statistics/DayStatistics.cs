@@ -5,10 +5,14 @@ namespace Sportik.Desktop.Core.Models.Statistics
 {
     public sealed class DayStatistics
     {
-        public int Id { get; set; }
+        public DateTime Date { get; }
 
-        public DateTime Date { get; set; }
+        public List<ExerciseStatistics> ExerciseStatistics { get; }
 
-        public List<ExerciseStatistics> ExerciseStatistics { get; set; } = new List<ExerciseStatistics>();
+        public DayStatistics(DateTime date, List<ExerciseStatistics> exerciseStatistics)
+        {
+            Date = date;
+            ExerciseStatistics = exerciseStatistics;
+        }
     }
 }

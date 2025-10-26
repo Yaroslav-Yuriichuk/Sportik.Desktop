@@ -1,41 +1,55 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Repositories.Interfaces;
+using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Infrastructure.DTOs.Statistics;
+using Sportik.Desktop.Infrastructure.Mappers.Statistics;
+using Sportik.Desktop.Infrastructure.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 {
     internal sealed class RemoteExerciseStatisticsRepository : IExerciseStatisticsRepository
     {
-        public Task<ExerciseStatistics> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        private readonly IApiService _apiService;
+        private readonly IAuthService _authService;
+
+        public RemoteExerciseStatisticsRepository(IApiService apiService, IAuthService authService)
         {
-            throw new System.NotImplementedException();
+            _apiService = apiService;
+            _authService = authService;
         }
 
-        public Task<IEnumerable<ExerciseStatistics>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WeekStatistics>> GetWeeklyAsync(CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
+
+            IEnumerable<WeekStatisticsDto> weekStatistics = await _apiService.GetAsync<IEnumerable<WeekStatisticsDto>>(
+                "/api/ExerciseStatistics/weekly",
+                authResult.Value,
+                cancellationToken);
+
+            return weekStatistics.Select(WeekStatisticsMapper.ToDomain);
         }
 
-        public Task<ExerciseStatistics> AddAsync(ExerciseStatistics entity, CancellationToken cancellationToken = default)
+        public async Task<ExerciseSet> AddSetAsync(ExerciseSet set, Guid exerciseId, CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
-        }
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
-        public Task<ExerciseStatistics> UpdateAsync(ExerciseStatistics entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+            AddSetDto addSetDto = SetMapper.ToDto(set, exerciseId);
 
-        public Task<ExerciseStatistics> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+            SetDto addedSet = await _apiService.PostAsync<SetDto>(
+                "/api/ExerciseStatistics/sets",
+                addSetDto,
+                authResult.Value,
+                cancellationToken);
 
-        public Task<ExerciseStatistics> DeleteAsync(ExerciseStatistics entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
+            return SetMapper.ToDomain(addedSet);
         }
     }
 }

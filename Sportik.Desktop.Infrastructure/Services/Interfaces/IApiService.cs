@@ -8,5 +8,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Interfaces
         Task<T> GetAsync<T>(string endpoint, string token = null, CancellationToken cancellationToken = default);
 
         Task<T> PostAsync<T>(string endpoint, object data, string token = null, CancellationToken cancellationToken = default);
+
+        Task<T> PutAsync<T>(string endpoint, object data, string token = null, CancellationToken cancellationToken = default);
     }
 }

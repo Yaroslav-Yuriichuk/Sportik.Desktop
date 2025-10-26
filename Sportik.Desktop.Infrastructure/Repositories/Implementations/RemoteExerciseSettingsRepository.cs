@@ -1,41 +1,63 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Repositories.Interfaces;
+using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Infrastructure.DTOs.Exercises;
+using Sportik.Desktop.Infrastructure.DTOs.Settings;
+using Sportik.Desktop.Infrastructure.Mappers;
+using Sportik.Desktop.Infrastructure.Models;
+using Sportik.Desktop.Infrastructure.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 {
     internal sealed class RemoteExerciseSettingsRepository : IExerciseSettingsRepository
     {
-        public Task<ExerciseSettings> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        private readonly IApiService _apiService;
+        private readonly IAuthService _authService;
+        private readonly IPersistentCacheService _persistentCacheService;
+
+        public RemoteExerciseSettingsRepository(IApiService apiService, IAuthService authService,
+            IPersistentCacheService persistentCacheService)
         {
-            throw new System.NotImplementedException();
+            _apiService = apiService;
+            _authService = authService;
+            _persistentCacheService = persistentCacheService;
         }
 
-        public Task<IEnumerable<ExerciseSettings>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<ExerciseSettings> UpdateAsync(ExerciseSettingsDelta delta, Guid exerciseId,
+            CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
-        }
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
-        public Task<ExerciseSettings> AddAsync(ExerciseSettings entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+            ExerciseSettingsUpdateDto updateDto = ExerciseSettingsUpdateMapper.ToDto(delta, exerciseId);
 
-        public Task<ExerciseSettings> UpdateAsync(ExerciseSettings entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+            ExerciseSettingsDto exerciseSettingsDto = await _apiService.PutAsync<ExerciseSettingsDto>(
+                "/api/ExerciseSettings",
+                updateDto,
+                authResult.Value,
+                cancellationToken);
 
-        public Task<ExerciseSettings> DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
 
-        public Task<ExerciseSettings> DeleteAsync(ExerciseSettings entity, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
+            if (delta.Change.HasFlag(ExerciseSettingsChange.IsEnabled))
+            {
+                if (delta.IsEnabled)
+                {
+                    enabledExercisesCache.AddExercise(exerciseId);
+                }
+                else
+                {
+                    enabledExercisesCache.RemoveExercise(exerciseId);
+                }
+
+                _persistentCacheService.Set(enabledExercisesCache);
+            }
+
+            return ExerciseSettingsMapper.ToDomain(exerciseSettingsDto, enabledExercisesCache.IncludesExercise(exerciseId));
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             {
                 if (SetField(ref _targetRepetitionsOptions, value))
                 {
-                    SetField(ref _selectedTargetRepetitionsOption, value[0]);
+                    SetField(ref _selectedTargetRepetitionsOption, value[0], nameof(SelectedTargetRepetitionsOption));
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             {
                 if (SetField(ref _timeBetweenSetsOptions, value))
                 {
-                    SetField(ref _selectedTimeBetweenSetsOption, value[0]);
+                    SetField(ref _selectedTimeBetweenSetsOption, value[0], nameof(SelectedTimeBetweenSetsOption));
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             {
                 if (SetField(ref _executionTimeOptions, value))
                 {
-                    SetField(ref _selectedExecutionTimeOption, value[0]);
+                    SetField(ref _selectedExecutionTimeOption, value[0], nameof(SelectedExecutionTimeOption));
                 }
             }
         }

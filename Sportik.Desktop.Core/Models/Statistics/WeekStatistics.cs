@@ -4,6 +4,11 @@ namespace Sportik.Desktop.Core.Models.Statistics
 {
     public sealed class WeekStatistics
     {
-        public List<DayStatistics> DayStatistics { get; set; } = new List<DayStatistics>();
+        public List<DayStatistics> DayStatistics { get; }
+
+        public WeekStatistics(List<DayStatistics> dayStatistics)
+        {
+            DayStatistics = dayStatistics;
+        }
     }
 }

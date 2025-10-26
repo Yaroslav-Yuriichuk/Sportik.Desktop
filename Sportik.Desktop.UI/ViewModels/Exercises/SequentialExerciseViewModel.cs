@@ -3,13 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Models.Sound;
-using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States.Exercises;
 using Sportik.Desktop.UI.Helpers;
@@ -270,16 +270,18 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         private async Task CompleteExerciseAsync(CancellationToken cancellationToken)
         {
-            Exercise exercise = await ExercisesService.GetByIdAsync(_exerciseId, cancellationToken);
+            OperationResult<Exercise> result = await ExercisesService.GetByIdAsync(_exerciseId, cancellationToken);
 
-            ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta
+            if (!result.Succeeded)
             {
-                Exercise = null,
-                Sets = 1,
-                Repetitions = exercise.Settings.TargetRepetitions,
-            };
+                // TODO: Handle error.
+                return;
+            }
 
-            await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, DateTime.Today, cancellationToken);
+            Exercise exercise = result.Value;
+
+            ExerciseSet set = new ExerciseSet(exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow);
+            await ExerciseStatisticsService.AddSetAsync(set, exercise.Id, cancellationToken);
 
             EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(_exerciseId));
 

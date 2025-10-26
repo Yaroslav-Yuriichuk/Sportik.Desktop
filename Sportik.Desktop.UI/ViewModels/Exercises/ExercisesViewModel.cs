@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -38,7 +39,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             {
                 if (SetField(ref _reminderModeOptions, value))
                 {
-                    SetField(ref _selectedReminderModeOption, value[0]);
+                    SetField(ref _selectedReminderModeOption, value[0], nameof(SelectedReminderModeOption));
                 }
             }
         }
@@ -138,7 +139,13 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         private async Task LoadExercisesAsync(ReminderMode reminderMode, CancellationToken cancellationToken)
         {
-            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
+            OperationResult<IEnumerable<Exercise>> result = await ExercisesService.GetAllAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error.
+                return;
+            }
 
             switch (reminderMode)
             {
@@ -151,7 +158,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                     SequentialExercises.Clear();
 
                     ParallelExercises = new ObservableCollection<ParallelExerciseViewModel>(
-                        exercises.Select(exercise => new ParallelExerciseViewModel(exercise)));
+                        result.Value.Select(exercise => new ParallelExerciseViewModel(exercise)));
 
                     break;
                 case ReminderMode.Sequential:
@@ -163,7 +170,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                     ParallelExercises.Clear();
 
                     SequentialExercises = new ObservableCollection<SequentialExerciseViewModel>(
-                        exercises.Select(exercise => new SequentialExerciseViewModel(exercise)));
+                        result.Value.Select(exercise => new SequentialExerciseViewModel(exercise)));
 
                     break;
                 default:

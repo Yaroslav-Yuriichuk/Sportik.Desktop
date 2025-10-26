@@ -89,7 +89,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             RepetitionsOptions = new ObservableCollection<IntOption>(
                 AutomationConstants.TargetRepetitions.Select(repetitions => new IntOption(repetitions)));
 
-            SelectedDate = DateTimeOffset.Now.Date;
+            SelectedDate = DateTimeOffset.Now;
 
             AddSetCommand = new ReactiveRelayCommand(AddSet);
             SaveSetsCommand = new ReactiveRelayCommand(SaveSets, false);

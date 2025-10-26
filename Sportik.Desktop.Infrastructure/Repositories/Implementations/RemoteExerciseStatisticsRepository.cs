@@ -29,8 +29,10 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
         {
             OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
             IEnumerable<WeekStatisticsDto> weekStatistics = await _apiService.GetAsync<IEnumerable<WeekStatisticsDto>>(
-                "/api/ExerciseStatistics/weekly",
+                $"/api/ExerciseStatistics/weekly?order={WeekStatisticsOrder.Descending}&offset={offset}",
                 authResult.Value,
                 cancellationToken);
 

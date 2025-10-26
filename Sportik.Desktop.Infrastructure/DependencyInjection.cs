@@ -26,6 +26,7 @@ namespace Sportik.Desktop.Infrastructure
             services.AddTransient<INotificationService, ToastNotificationService>();
             services.AddTransient<ISoundService, SoundService>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IUsersService, UsersService>();
 
             services.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();
             services.AddSingleton<IPersistentCacheService, PersistentCacheService>();

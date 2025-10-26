@@ -201,6 +201,7 @@
     <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
     <Compile Include="Services\Interfaces\ISecureCacheService.cs" />
     <Compile Include="Services\Interfaces\ISoundService.cs" />
+    <Compile Include="Services\Interfaces\IUsersService.cs" />
     <Compile Include="States\App\ApplicationState.cs" />
     <Compile Include="States\App\AppState.cs" />
     <Compile Include="States\App\AppStatesContext.cs" />

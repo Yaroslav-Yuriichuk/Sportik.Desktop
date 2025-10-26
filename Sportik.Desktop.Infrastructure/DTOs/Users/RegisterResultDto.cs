@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Sportik.Desktop.Core.Events
+namespace Sportik.Desktop.Infrastructure.DTOs.Users
 {
-    public sealed class UserRegisteredEventArgs : EventArgs
+    internal sealed class RegisterResultDto
     {
         public Guid UserId { get; }
 
         public string Email { get; }
 
-        public UserRegisteredEventArgs(Guid userId, string email)
+        public RegisterResultDto(Guid userId, string email)
         {
             UserId = userId;
             Email = email;

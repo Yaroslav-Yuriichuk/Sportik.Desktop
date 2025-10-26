@@ -136,6 +136,8 @@
     <Compile Include="DTOs\Auth\RefreshTokenRequestDto.cs" />
     <Compile Include="DTOs\Exercises\ExerciseDto.cs" />
     <Compile Include="DTOs\Exercises\ExerciseSettingsDto.cs" />
+    <Compile Include="DTOs\Users\RegisterRequestDto.cs" />
+    <Compile Include="DTOs\Users\RegisterResultDto.cs" />
     <Compile Include="Helpers\JwtTokenHelper.cs" />
     <Compile Include="Mappers\ExerciseMapper.cs" />
     <Compile Include="Mappers\ExerciseSettingsMapper.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="Services\Implementations\SecureCacheService.cs" />
     <Compile Include="Services\Implementations\SoundService.cs" />
     <Compile Include="Services\Implementations\ToastNotificationService.cs" />
+    <Compile Include="Services\Implementations\UsersService.cs" />
     <Compile Include="Services\Interfaces\IApiService.cs" />
     <EmbeddedResource Include="Properties\Sportik.Desktop.Infrastructure.rd.xml" />
   </ItemGroup>

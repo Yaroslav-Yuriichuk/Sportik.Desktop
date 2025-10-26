@@ -57,5 +57,26 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
 
             return JsonConvert.DeserializeObject<T>(responseJson);
         }
+
+        public async Task<T> PutAsync<T>(string endpoint, object data, string token = null, CancellationToken cancellationToken = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            string jsonData = JsonConvert.SerializeObject(data);
+            using HttpContent content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.PutAsync(endpoint, content, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            string responseJson = await response.Content.ReadAsStringAsync();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return JsonConvert.DeserializeObject<T>(responseJson);
+        }
     }
 }

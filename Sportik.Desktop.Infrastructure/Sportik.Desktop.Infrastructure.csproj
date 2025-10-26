@@ -136,10 +136,14 @@
     <Compile Include="DTOs\Auth\RefreshTokenRequestDto.cs" />
     <Compile Include="DTOs\Exercises\ExerciseDto.cs" />
     <Compile Include="DTOs\Exercises\ExerciseSettingsDto.cs" />
+    <Compile Include="DTOs\Settings\ExerciseSettingsDeltaDto.cs" />
+    <Compile Include="DTOs\Settings\ExerciseSettingsUpdateDto.cs" />
     <Compile Include="DTOs\Users\RegisterRequestDto.cs" />
     <Compile Include="DTOs\Users\RegisterResultDto.cs" />
     <Compile Include="Helpers\JwtTokenHelper.cs" />
     <Compile Include="Mappers\ExerciseMapper.cs" />
+    <Compile Include="Mappers\ExerciseSettingsDeltaMapper.cs" />
+    <Compile Include="Mappers\ExerciseSettingsUpdateMapper.cs" />
     <Compile Include="Mappers\ExerciseSettingsMapper.cs" />
     <Compile Include="Models\AccessTokenCache.cs" />
     <Compile Include="Models\EnabledExercisesCache.cs" />

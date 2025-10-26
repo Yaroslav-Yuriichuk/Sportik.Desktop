@@ -1,5 +1,4 @@
 ﻿using Sportik.Desktop.Core.Models.Settings;
-using Sportik.Desktop.Infrastructure.DTOs;
 using Sportik.Desktop.Infrastructure.DTOs.Exercises;
 
 namespace Sportik.Desktop.Infrastructure.Mappers

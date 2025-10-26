@@ -26,7 +26,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
         public async Task<IEnumerable<Exercise>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            OperationResult<string> authResult = await _authService.LoginAsync("hello@gmail.com", "Hohoho123", cancellationToken);
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
             IEnumerable<ExerciseDto> exercises = await _apiService.GetAsync<IEnumerable<ExerciseDto>>(
                 "/api/Exercises",
@@ -38,9 +38,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
         public async Task<Exercise> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
+
             ExerciseDto exercise = await _apiService.GetAsync<ExerciseDto>(
                 $"/api/Exercises/{id}",
-                "",
+                authResult.Value,
                 cancellationToken);
 
             return ExerciseMapper.ToDomain(exercise, true);
@@ -48,9 +50,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
         public async Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
         {
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
+
             IEnumerable<ExerciseDto> exercises = await _apiService.GetAsync<IEnumerable<ExerciseDto>>(
                 "/api/Exercises",
-                "",
+                authResult.Value,
                 cancellationToken);
 
             HashSet<Guid> idsSet = ids as HashSet<Guid> ?? ids.ToHashSet();

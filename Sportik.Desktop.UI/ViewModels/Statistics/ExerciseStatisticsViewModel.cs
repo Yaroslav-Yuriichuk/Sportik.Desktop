@@ -1,4 +1,5 @@
-﻿using Sportik.Desktop.Core.Models.Statistics;
+﻿using System.Linq;
+using Sportik.Desktop.Core.Models.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
@@ -30,9 +31,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         public ExerciseStatisticsViewModel(ExerciseStatistics exerciseStatistics)
         {
-            Name = exerciseStatistics.Exercise.Name;
-            Sets = exerciseStatistics.Sets;
-            Repetitions = exerciseStatistics.Repetitions;
+            Name = "Unknown";
+            Sets = exerciseStatistics.Sets.Count;
+            Repetitions = exerciseStatistics.Sets.Aggregate(0, (sum, set) => sum + set.Repetitions);
         }
     }
 }

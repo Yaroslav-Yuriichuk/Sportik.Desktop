@@ -4,13 +4,13 @@ namespace Sportik.Desktop.Core.Models.Settings
 {
     public sealed class ExerciseSettings
     {
-        public bool IsEnabled { get; private set; }
+        public bool IsEnabled { get; }
 
-        public int TargetRepetitions { get; private set; }
+        public int TargetRepetitions { get; }
 
-        public TimeSpan TimeBetweenSets { get; private set; }
+        public TimeSpan TimeBetweenSets { get; }
 
-        public TimeSpan ExecutionTime { get; private set; }
+        public TimeSpan ExecutionTime { get; }
 
         public ExerciseSettings(bool isEnabled, int targetRepetitions, TimeSpan timeBetweenSets, TimeSpan executionTime)
         {

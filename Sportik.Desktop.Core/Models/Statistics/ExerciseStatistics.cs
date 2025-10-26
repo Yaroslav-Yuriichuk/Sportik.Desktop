@@ -1,19 +1,18 @@
-﻿namespace Sportik.Desktop.Core.Models.Statistics
+﻿using System;
+using System.Collections.Generic;
+
+namespace Sportik.Desktop.Core.Models.Statistics
 {
     public sealed class ExerciseStatistics
     {
-        public int Id { get; set; }
+        public Guid ExerciseId { get; }
 
-        public int ExerciseId { get; set; }
+        public List<ExerciseSet> Sets { get; }
 
-        public int DayStatisticsId { get; set; }
-
-        public int Sets { get; set; }
-
-        public int Repetitions { get; set; }
-
-        public Exercise Exercise { get; set; }
-
-        public DayStatistics DayStatistics { get; set; }
+        public ExerciseStatistics(Guid exerciseId, List<ExerciseSet> sets)
+        {
+            ExerciseId = exerciseId;
+            Sets = sets;
+        }
     }
 }

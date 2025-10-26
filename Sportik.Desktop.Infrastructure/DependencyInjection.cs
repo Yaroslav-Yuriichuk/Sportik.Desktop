@@ -21,7 +21,6 @@ namespace Sportik.Desktop.Infrastructure
 
             services.AddTransient<IExercisesRepository, RemoteExercisesRepository>();
             services.AddTransient<IExerciseStatisticsRepository, RemoteExerciseStatisticsRepository>();
-            services.AddTransient<IDayStatisticsRepository, RemoteDayStatisticsRepository>();
             services.AddTransient<IExerciseSettingsRepository, RemoteExerciseSettingsRepository>();
             services.AddTransient<INotificationService, ToastNotificationService>();
             services.AddTransient<ISoundService, SoundService>();

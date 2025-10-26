@@ -10,7 +10,6 @@ using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Models.Sound;
-using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States.Exercises;
 using Sportik.Desktop.UI.Helpers;
@@ -273,14 +272,10 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 return;
             }
 
-            ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta
-            {
-                Exercise = null,
-                Sets = 1,
-                Repetitions = result.Value.Settings.TargetRepetitions,
-            };
+            Exercise exercise = result.Value;
 
-            await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, DateTime.Today, cancellationToken);
+            ExerciseSet set = new ExerciseSet(exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow);
+            await ExerciseStatisticsService.AddSetAsync(set, exercise.Id, cancellationToken);
 
             EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(_exerciseId));
 

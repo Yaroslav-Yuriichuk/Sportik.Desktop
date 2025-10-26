@@ -5,11 +5,11 @@ namespace Sportik.Desktop.Core.Models
 {
     public sealed class Exercise
     {
-        public Guid Id { get; private set; }
+        public Guid Id { get; }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public ExerciseSettings Settings { get; private set; }
+        public ExerciseSettings Settings { get; }
 
         public Exercise(Guid id, string name, ExerciseSettings settings)
         {

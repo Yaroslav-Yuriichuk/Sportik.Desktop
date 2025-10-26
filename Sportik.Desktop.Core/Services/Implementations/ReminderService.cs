@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
-using Sportik.Desktop.Core.States;
+using Sportik.Desktop.Core.States.Exercises;
 
 namespace Sportik.Desktop.Core.Services.Implementations
 {
@@ -15,7 +14,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
-        private Guid[] _exerciseIds;
+        private readonly HashSet<Guid> _exerciseIds = new HashSet<Guid>();
 
         private IStatesRunner _runner;
 
@@ -41,32 +40,45 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     return;
                 }
 
+                foreach (Guid exerciseId in _exerciseIds)
+                {
+                    _runner.RemoveExercise(exerciseId);
+                }
+
                 _runner.Dispose();
 
                 _runner = value switch
                 {
-                    ReminderMode.Sequential => new SequentialStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
-                    ReminderMode.Parallel => new ParallelStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
+                    ReminderMode.Sequential => new SequentialStatesRunner(_eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
+                    ReminderMode.Parallel => new ParallelStatesRunner(_eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
                     _ => throw new ArgumentException($"Mode {value} is not supported.")
                 };
+
+                foreach (Guid exerciseId in _exerciseIds)
+                {
+                    _runner.AddExercise(exerciseId);
+                }
             }
         }
 
-        public void Start(IEnumerable<Guid> exerciseIds, ReminderMode mode = default)
+        public void Start(ReminderMode mode = default)
         {
             if (IsRunning)
             {
                 return;
             }
 
-            _exerciseIds = exerciseIds as Guid[] ?? exerciseIds.ToArray();
-
             _runner = mode switch
             {
-                ReminderMode.Sequential => new SequentialStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
-                ReminderMode.Parallel => new ParallelStatesRunner(_exerciseIds, _eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
+                ReminderMode.Sequential => new SequentialStatesRunner(_eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
+                ReminderMode.Parallel => new ParallelStatesRunner(_eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
                 _ => throw new ArgumentException($"Mode {mode} is not supported.")
             };
+
+            foreach (Guid exerciseId in _exerciseIds)
+            {
+                _runner.AddExercise(exerciseId);
+            }
         }
 
         public void Stop()
@@ -76,15 +88,43 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 return;
             }
 
+            foreach (Guid exerciseId in _exerciseIds)
+            {
+                _runner.RemoveExercise(exerciseId);
+            }
+
             _runner.Dispose();
             _runner = null;
-
-            _exerciseIds = null;
         }
 
         public TState GetExerciseState<TState>(Guid exerciseId) where TState : Enum
         {
             return IsRunning ? _runner.GetExerciseState<TState>(exerciseId) : default;
+        }
+
+        public void AddExercise(Guid exerciseId)
+        {
+            bool isAdded = _exerciseIds.Add(exerciseId);
+
+            if (IsRunning && isAdded)
+            {
+                _runner.AddExercise(exerciseId);
+            }
+        }
+
+        public void RemoveExercise(Guid exerciseId)
+        {
+            bool isRemoved = _exerciseIds.Remove(exerciseId);
+
+            if (IsRunning && isRemoved)
+            {
+                _runner.RemoveExercise(exerciseId);
+            }
+        }
+
+        public bool IsExerciseAdded(Guid exerciseId)
+        {
+            return _exerciseIds.Contains(exerciseId);
         }
     }
 }

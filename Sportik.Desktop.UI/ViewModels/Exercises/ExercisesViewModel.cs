@@ -129,7 +129,10 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         {
             if (!ReminderService.IsRunning)
             {
-                _ = StartRemindersAsync(_loadCts.Token);
+                ReminderService.Start();
+
+                PauseCommand.RaiseCanExecuteChanged();
+                ResumeCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -168,19 +171,6 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             }
 
             ReminderMode = reminderMode;
-        }
-
-        private async Task StartRemindersAsync(CancellationToken cancellationToken)
-        {
-            IEnumerable<Exercise> exercises = await ExercisesService.GetAllAsync(cancellationToken);
-
-            if (!ReminderService.IsRunning)
-            {
-                ReminderService.Start(exercises.Select(exercise => exercise.Id), ReminderMode);
-
-                PauseCommand.RaiseCanExecuteChanged();
-                ResumeCommand.RaiseCanExecuteChanged();
-            }
         }
     }
 }

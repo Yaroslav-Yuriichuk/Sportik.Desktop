@@ -11,7 +11,7 @@
     <AssemblyName>Sportik.Desktop.Core</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -130,6 +130,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Common\StateMachine\IState.cs" />
     <Compile Include="Common\StateMachine\IStatesContext.cs" />
     <Compile Include="Common\Timers\DefaultTimer.cs" />
@@ -137,17 +138,24 @@
     <Compile Include="Common\Timers\ITimer.cs" />
     <Compile Include="Constants\AutomationConstants.cs" />
     <Compile Include="DependencyInjection.cs" />
+    <Compile Include="Events\ApplicationStateChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseIsEnabledChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseSwitchRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseTimeBetweenSetsChangedEventArgs.cs" />
+    <Compile Include="Events\LoginRequestedEventArgs.cs" />
     <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
+    <Compile Include="Events\RegistrationRequestedEventArgs.cs" />
     <Compile Include="Events\ReminderNotificationAcceptedEventArgs.cs" />
     <Compile Include="Events\ReminderNotificationDismissedEventArgs.cs" />
     <Compile Include="Events\ReminderNotificationShownEventArgs.cs" />
     <Compile Include="Events\SequentialExerciseStateChangedEventArgs.cs" />
+    <Compile Include="Events\UserLoggedInEventArgs.cs" />
+    <Compile Include="Events\UserLoggedOutEventArgs.cs" />
+    <Compile Include="Events\UserRefreshFailedEventArgs.cs" />
+    <Compile Include="Events\UserRegisteredEventArgs.cs" />
     <Compile Include="Extensions\CachingExtension.cs" />
     <Compile Include="Helpers\CalendarHelper.cs" />
     <Compile Include="Helpers\CompareHelper.cs" />
@@ -155,6 +163,7 @@
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\Exercise.cs" />
+    <Compile Include="Models\ReminderCache.cs" />
     <Compile Include="Models\ReminderNotification.cs" />
     <Compile Include="Models\SequentialExercisesCache.cs" />
     <Compile Include="Models\Settings\ExerciseSettings.cs" />
@@ -172,12 +181,15 @@
     <Compile Include="Repositories\Interfaces\IExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseStatisticsRepository.cs" />
+    <Compile Include="Services\Implementations\ApplicationStatesService.cs" />
     <Compile Include="Services\Implementations\EventsService.cs" />
     <Compile Include="Services\Implementations\ExerciseSettingsService.cs" />
     <Compile Include="Services\Implementations\ExercisesService.cs" />
     <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
     <Compile Include="Services\Implementations\ExerciseTimersService.cs" />
     <Compile Include="Services\Implementations\ReminderService.cs" />
+    <Compile Include="Services\Interfaces\IApplicationStatesService.cs" />
+    <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\IEventsService.cs" />
     <Compile Include="Services\Interfaces\IExerciseSettingsService.cs" />
     <Compile Include="Services\Interfaces\IExercisesService.cs" />
@@ -187,27 +199,36 @@
     <Compile Include="Services\Interfaces\IPersistentCacheService.cs" />
     <Compile Include="Services\Interfaces\IReminderService.cs" />
     <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
+    <Compile Include="Services\Interfaces\ISecureCacheService.cs" />
     <Compile Include="Services\Interfaces\ISoundService.cs" />
-    <Compile Include="States\IStatesRunner.cs" />
-    <Compile Include="States\ParallelExerciseState.cs" />
-    <Compile Include="States\ParallelStatesRunner.cs" />
-    <Compile Include="States\Parallel\DisabledParallelExerciseState.cs" />
-    <Compile Include="States\Parallel\ExecutingParallelExerciseState.cs" />
-    <Compile Include="States\Parallel\ParallelExerciseState.cs" />
-    <Compile Include="States\Parallel\ParallelExerciseStatesContext.cs" />
-    <Compile Include="States\Parallel\DeterminingParallelExerciseState.cs" />
-    <Compile Include="States\Parallel\WaitingBeforeForceExecutionParallelExerciseState.cs" />
-    <Compile Include="States\Parallel\WaitingWithForceExecutionParallelExerciseState.cs" />
-    <Compile Include="States\SequentialExerciseState.cs" />
-    <Compile Include="States\SequentialStatesRunner.cs" />
-    <Compile Include="States\Sequential\DeterminingSequentialExerciseState.cs" />
-    <Compile Include="States\Sequential\DisabledSequentialExerciseState.cs" />
-    <Compile Include="States\Sequential\ExecutingSequentialExerciseState.cs" />
-    <Compile Include="States\Sequential\QueuedSequentialExerciseState.cs" />
-    <Compile Include="States\Sequential\SequentialExercisesStatesContext.cs" />
-    <Compile Include="States\Sequential\SequentialExerciseState.cs" />
-    <Compile Include="States\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
-    <Compile Include="States\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
+    <Compile Include="Services\Interfaces\IUsersService.cs" />
+    <Compile Include="States\App\ApplicationState.cs" />
+    <Compile Include="States\App\AppState.cs" />
+    <Compile Include="States\App\AppStatesContext.cs" />
+    <Compile Include="States\App\AuthenticatedAppState.cs" />
+    <Compile Include="States\App\DeterminingAppState.cs" />
+    <Compile Include="States\App\LoginAppState.cs" />
+    <Compile Include="States\App\RegistrationAppState.cs" />
+    <Compile Include="States\Exercises\IStatesRunner.cs" />
+    <Compile Include="States\Exercises\ParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\ParallelStatesRunner.cs" />
+    <Compile Include="States\Exercises\Parallel\DisabledParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\ExecutingParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\ParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\ParallelExerciseStatesContext.cs" />
+    <Compile Include="States\Exercises\Parallel\DeterminingParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\WaitingBeforeForceExecutionParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\WaitingWithForceExecutionParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\SequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\SequentialStatesRunner.cs" />
+    <Compile Include="States\Exercises\Sequential\DeterminingSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\DisabledSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\ExecutingSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\QueuedSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\SequentialExercisesStatesContext.cs" />
+    <Compile Include="States\Exercises\Sequential\SequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
     <EmbeddedResource Include="Properties\Sportik.Desktop.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>

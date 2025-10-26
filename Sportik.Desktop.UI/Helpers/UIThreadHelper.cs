@@ -26,7 +26,7 @@ namespace Sportik.Desktop.UI.Helpers
             bool wasCanceled = false;
 
             await dispatcher.RunAsync(
-                CoreDispatcherPriority.Normal, () =>
+                priority, () =>
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {

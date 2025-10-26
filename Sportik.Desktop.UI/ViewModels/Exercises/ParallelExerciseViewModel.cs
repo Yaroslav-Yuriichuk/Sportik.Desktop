@@ -11,7 +11,7 @@ using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Models.Sound;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
-using Sportik.Desktop.Core.States;
+using Sportik.Desktop.Core.States.Exercises;
 using Sportik.Desktop.UI.Helpers;
 
 namespace Sportik.Desktop.UI.ViewModels.Exercises

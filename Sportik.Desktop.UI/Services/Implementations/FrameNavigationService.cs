@@ -1,21 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
+using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.Services.Implementations
 {
     internal sealed class FrameNavigationService : INavigationService
     {
-        private Frame _frame;
+        private readonly Dictionary<NavigationScope, Frame> _frames = new Dictionary<NavigationScope, Frame>();
 
-        public void Initialize(Frame frame)
+        public void SetFrame(Frame frame, NavigationScope scope)
         {
-            _frame = frame;
+            _frames[scope] = frame;
         }
 
-        public void Navigate(Type pageType)
+        public void Navigate(Type pageType, NavigationScope scope)
         {
-            _frame?.Navigate(pageType);
+            if (_frames.TryGetValue(scope, out Frame frame))
+            {
+                frame.Navigate(pageType);
+            }
         }
     }
 }

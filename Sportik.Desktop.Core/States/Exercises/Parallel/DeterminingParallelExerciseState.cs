@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -22,9 +23,15 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
 
             Task.Run(async () =>
             {
-                Exercise exercise = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
+                OperationResult<Exercise> result = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
 
-                ParallelExerciseState state = exercise.Settings.IsEnabled
+                if (!result.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                ParallelExerciseState state = result.Value.Settings.IsEnabled
                     ? Context.WaitingBeforeForceExecutionExerciseState
                     : Context.DisabledExerciseState;
 

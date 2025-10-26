@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
@@ -264,13 +265,19 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         {
             CompleteCommand.IsExecutable = false;
 
-            Exercise exercise = await ExercisesService.GetByIdAsync(_exerciseId, cancellationToken);
+            OperationResult<Exercise> result = await ExercisesService.GetByIdAsync(_exerciseId, cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error.
+                return;
+            }
 
             ExerciseStatisticsDelta exerciseStatisticsDelta = new ExerciseStatisticsDelta
             {
                 Exercise = null,
                 Sets = 1,
-                Repetitions = exercise.Settings.TargetRepetitions,
+                Repetitions = result.Value.Settings.TargetRepetitions,
             };
 
             await ExerciseStatisticsService.AddExerciseStatisticsDeltaAsync(exerciseStatisticsDelta, DateTime.Today, cancellationToken);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
@@ -52,9 +53,14 @@ namespace Sportik.Desktop.Core.States.App
 
             Task.Run(async () =>
             {
-                IEnumerable<Exercise> exercises = await exercisesService.GetAllAsync(ActiveCancellationToken);
+                OperationResult<IEnumerable<Exercise>> result = await exercisesService.GetAllAsync(ActiveCancellationToken);
 
-                foreach (Exercise exercise in exercises)
+                if (!result.Succeeded)
+                {
+                    return;
+                }
+
+                foreach (Exercise exercise in result.Value)
                 {
                     _reminderService.AddExercise(exercise.Id);
                 }

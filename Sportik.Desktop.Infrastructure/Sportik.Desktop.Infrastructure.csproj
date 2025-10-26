@@ -142,6 +142,7 @@
     <Compile Include="Mappers\ExerciseMapper.cs" />
     <Compile Include="Mappers\ExerciseSettingsMapper.cs" />
     <Compile Include="Models\AccessTokenCache.cs" />
+    <Compile Include="Models\EnabledExercisesCache.cs" />
     <Compile Include="Models\RefreshTokenCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Implementations\RemoteDayStatisticsRepository.cs" />

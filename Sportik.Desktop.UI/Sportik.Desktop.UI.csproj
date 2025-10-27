@@ -172,11 +172,11 @@
     <Compile Include="Views\Internal\ExtraExercisesPage.xaml.cs">
       <DependentUpon>ExtraExercisesPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Internal\SettingsPage.xaml.cs">
-      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    <Compile Include="Views\Internal\ExerciseSettingsPage.xaml.cs">
+      <DependentUpon>ExerciseSettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Internal\StatisticsPage.xaml.cs">
-      <DependentUpon>StatisticsPage.xaml</DependentUpon>
+    <Compile Include="Views\Internal\ExerciseStatisticsPage.xaml.cs">
+      <DependentUpon>ExerciseStatisticsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
@@ -266,10 +266,10 @@
     <Page Include="Views\Internal\ExtraExercisesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Internal\SettingsPage.xaml">
+    <Page Include="Views\Internal\ExerciseSettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Internal\StatisticsPage.xaml">
+    <Page Include="Views\Internal\ExerciseStatisticsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Main\LoginPage.xaml">

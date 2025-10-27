@@ -50,8 +50,9 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
             MenuItemOptions = new ObservableCollection<NavigationOption>()
             {
                 new NavigationOption { Name = "Exercises", Icon = Symbol.AllApps, PageType = typeof(ExercisesPage), },
-                new NavigationOption { Name = "Statistics", Icon = Symbol.ViewAll, PageType = typeof(StatisticsPage), },
-                new NavigationOption { Name = "Extra", Icon = Symbol.Favorite, PageType = typeof(ExtraExercisesPage), },
+                new NavigationOption { Name = "Exercise Statistics", Icon = Symbol.ViewAll, PageType = typeof(ExerciseStatisticsPage), },
+                new NavigationOption { Name = "Extra Sets", Icon = Symbol.Favorite, PageType = typeof(ExtraExercisesPage), },
+                new NavigationOption { Name = "Exercise Settings", Icon = Symbol.Edit, PageType = typeof(ExerciseSettingsPage), },
             };
 
             EventsService.AddListener<ReminderNotificationAcceptedEventArgs>(EventsService_Event);
@@ -66,7 +67,7 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
         {
             if (args.IsSettingsSelected)
             {
-                NavigationService.Navigate(typeof(SettingsPage), NavigationScope.Internal);
+                NavigationService.Navigate(typeof(ExerciseSettingsPage), NavigationScope.Internal);
                 return;
             }
 

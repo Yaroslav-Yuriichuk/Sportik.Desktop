@@ -150,7 +150,7 @@
     <Compile Include="ViewModels\Exercises\ParallelExerciseViewModel.cs" />
     <Compile Include="ViewModels\Exercises\ReminderModeOption.cs" />
     <Compile Include="ViewModels\Exercises\SequentialExerciseViewModel.cs" />
-    <Compile Include="ViewModels\Extra\ExtraExercisesViewModel.cs" />
+    <Compile Include="ViewModels\Extra\ExtraSetsViewModel.cs" />
     <Compile Include="ViewModels\Extra\SetViewModel.cs" />
     <Compile Include="ViewModels\ILazyCommand.cs" />
     <Compile Include="ViewModels\IntOption.cs" />
@@ -174,8 +174,8 @@
     <Compile Include="Views\Internal\ExercisesPage.xaml.cs">
       <DependentUpon>ExercisesPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Internal\ExtraExercisesPage.xaml.cs">
-      <DependentUpon>ExtraExercisesPage.xaml</DependentUpon>
+    <Compile Include="Views\Internal\ExtraSetsPage.xaml.cs">
+      <DependentUpon>ExtraSetsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Internal\ExerciseSettingsPage.xaml.cs">
       <DependentUpon>ExerciseSettingsPage.xaml</DependentUpon>
@@ -272,7 +272,7 @@
     <Page Include="Views\Internal\ExercisesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Internal\ExtraExercisesPage.xaml">
+    <Page Include="Views\Internal\ExtraSetsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Internal\ExerciseSettingsPage.xaml">

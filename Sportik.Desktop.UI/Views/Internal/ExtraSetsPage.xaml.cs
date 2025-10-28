@@ -4,9 +4,9 @@ using Sportik.Desktop.UI.ViewModels.Extra;
 
 namespace Sportik.Desktop.UI.Views.Internal
 {
-    public sealed partial class ExtraExercisesPage : Page
+    public sealed partial class ExtraSetsPage : Page
     {
-        public ExtraExercisesPage()
+        public ExtraSetsPage()
         {
             this.InitializeComponent();
         }
@@ -15,19 +15,19 @@ namespace Sportik.Desktop.UI.Views.Internal
         {
             base.OnNavigatedTo(e);
 
-            if (DataContext is ExtraExercisesViewModel extraExercisesViewModel)
+            if (DataContext is ExtraSetsViewModel extraExercisesViewModel)
             {
                 extraExercisesViewModel.Dispose();
             }
 
-            DataContext = new ExtraExercisesViewModel();
+            DataContext = new ExtraSetsViewModel();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
 
-            if (DataContext is ExtraExercisesViewModel extraExercisesViewModel)
+            if (DataContext is ExtraSetsViewModel extraExercisesViewModel)
             {
                 extraExercisesViewModel.Dispose();
             }

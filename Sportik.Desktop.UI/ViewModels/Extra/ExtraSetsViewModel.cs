@@ -12,7 +12,7 @@ using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Extra
 {
-    internal sealed class ExtraExercisesViewModel : ViewModel, IDisposable
+    internal sealed class ExtraSetsViewModel : ViewModel, IDisposable
     {
         private ObservableCollection<ExerciseOption> _exercisesOptions;
 
@@ -84,7 +84,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
         private readonly CancellationTokenSource _saveCts = new CancellationTokenSource();
 
-        public ExtraExercisesViewModel()
+        public ExtraSetsViewModel()
         {
             RepetitionsOptions = new ObservableCollection<IntOption>(
                 AutomationConstants.TargetRepetitions.Select(repetitions => new IntOption(repetitions)));

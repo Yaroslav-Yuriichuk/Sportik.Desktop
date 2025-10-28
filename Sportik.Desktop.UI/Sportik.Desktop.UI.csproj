@@ -136,6 +136,7 @@
     <Compile Include="Converters\DateTimeOffsetToStringConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EnumTargetValueToVisibilityConverter.cs" />
+    <Compile Include="Converters\GuidToStringConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesSecondsStringConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesStringConverter.cs" />
     <Compile Include="Helpers\UIThreadHelper.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\FrameNavigationService.cs" />
     <Compile Include="Services\Interfaces\INavigationService.cs" />
+    <Compile Include="ViewModels\Account\AccountViewModel.cs" />
     <Compile Include="ViewModels\ExerciseOption.cs" />
     <Compile Include="ViewModels\Exercises\ExercisesViewModel.cs" />
     <Compile Include="ViewModels\Exercises\ParallelExerciseViewModel.cs" />
@@ -166,6 +168,9 @@
     <Compile Include="ViewModels\Statistics\WeekStatisticsViewModel.cs" />
     <Compile Include="ViewModels\TimeSpanOption.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
+    <Compile Include="Views\Internal\AccountPage.xaml.cs">
+      <DependentUpon>AccountPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Internal\ExercisesPage.xaml.cs">
       <DependentUpon>ExercisesPage.xaml</DependentUpon>
     </Compile>
@@ -197,6 +202,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Account\User.png" />
     <Content Include="Assets\Logo\LargeTile.scale-100.png" />
     <Content Include="Assets\Logo\LargeTile.scale-125.png" />
     <Content Include="Assets\Logo\LargeTile.scale-150.png" />
@@ -260,6 +266,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\Internal\AccountPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Internal\ExercisesPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -60,5 +60,33 @@ namespace Sportik.Desktop.Infrastructure.Helpers
             expiresAt = new DateTimeOffset(jwtToken.ValidTo, TimeSpan.Zero);
             return true;
         }
+
+        public static bool TryGetEmail(string accessToken, out string email)
+        {
+            email = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                return false;
+            }
+
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+
+            if (!handler.CanReadToken(accessToken))
+            {
+                return false;
+            }
+
+            JwtSecurityToken jwtToken = handler.ReadJwtToken(accessToken);
+            Claim emailClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email);
+
+            if (emailClaim == null)
+            {
+                return false;
+            }
+
+            email = emailClaim.Value;
+            return true;
+        }
     }
 }

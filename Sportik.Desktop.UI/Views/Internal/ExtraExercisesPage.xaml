@@ -27,7 +27,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-                   Text="Extra exercises"
+                   Text="Extra Sets"
                    FontSize="32"
                    Margin="15 15 15 0"/>
 
@@ -156,7 +156,6 @@
             </ListView.ItemTemplate>
 
         </ListView>
-
 
         <StackPanel Grid.Row="3"
                     Orientation="Horizontal"

@@ -160,10 +160,18 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
             try
             {
                 _runtimeCacheService.Remove<AccessTokenCache>();
-                _secureCacheService.Remove<RefreshTokenCache>();
 
-                // TODO: Revoke refresh token on the server.
-                await Task.CompletedTask;
+                if (!_secureCacheService.TryGet(out RefreshTokenCache refreshTokenCache))
+                {
+                    return OperationResult.Success();
+                }
+
+                await _apiService.PostAsync(
+                    "api/Auth/revoke",
+                    new RevokeTokenRequestDto(refreshTokenCache.RefreshToken),
+                    cancellationToken: cancellationToken);
+
+                _secureCacheService.Remove<RefreshTokenCache>();
 
                 _eventsService.RaiseEvent(new UserLoggedOutEventArgs());
 

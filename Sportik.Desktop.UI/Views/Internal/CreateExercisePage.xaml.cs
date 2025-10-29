@@ -1,12 +1,13 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Sportik.Desktop.UI.ViewModels.Settings;
+using Sportik.Desktop.UI.ViewModels.Create;
+using Sportik.Desktop.UI.ViewModels.Extra;
 
 namespace Sportik.Desktop.UI.Views.Internal
 {
-    public sealed partial class SettingsPage : Page
+    public sealed partial class CreateExercisePage : Page
     {
-        public SettingsPage()
+        public CreateExercisePage()
         {
             this.InitializeComponent();
         }
@@ -15,21 +16,21 @@ namespace Sportik.Desktop.UI.Views.Internal
         {
             base.OnNavigatedTo(e);
 
-            if (DataContext is SettingsViewModel settingsViewModel)
+            if (DataContext is CreateExerciseViewModel createExerciseViewModel)
             {
-                settingsViewModel.Dispose();
+                createExerciseViewModel.Dispose();
             }
 
-            DataContext = new SettingsViewModel();
+            DataContext = new CreateExerciseViewModel();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
 
-            if (DataContext is SettingsViewModel settingsViewModel)
+            if (DataContext is CreateExerciseViewModel createExerciseViewModel)
             {
-                settingsViewModel.Dispose();
+                createExerciseViewModel.Dispose();
             }
         }
     }

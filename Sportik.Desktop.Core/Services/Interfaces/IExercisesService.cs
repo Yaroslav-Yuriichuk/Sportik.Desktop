@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Settings;
 
 namespace Sportik.Desktop.Core.Services.Interfaces
 {
@@ -14,5 +15,7 @@ namespace Sportik.Desktop.Core.Services.Interfaces
         Task<OperationResult<Exercise>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
         Task<OperationResult<IEnumerable<Exercise>>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
+
+        Task<OperationResult<Exercise>> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default);
     }
 }

@@ -47,26 +47,31 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
         {
             SelectionChangedCommand = new LazyRelayCommand<NavigationViewSelectionChangedEventArgs>(HandleSelection);
 
-            MenuItemOptions = new ObservableCollection<NavigationOption>()
+            MenuItemOptions = new ObservableCollection<NavigationOption>
             {
                 new NavigationOption { Name = "Exercises", Icon = Symbol.AllApps, PageType = typeof(ExercisesPage), },
-                new NavigationOption { Name = "Statistics", Icon = Symbol.ViewAll, PageType = typeof(StatisticsPage), },
-                new NavigationOption { Name = "Extra", Icon = Symbol.Favorite, PageType = typeof(ExtraExercisesPage), },
+                new NavigationOption { Name = "Create Exercise", Icon = Symbol.Add, PageType = typeof(CreateExercisePage), },
+                new NavigationOption { Name = "Exercise Statistics", Icon = Symbol.ViewAll, PageType = typeof(ExerciseStatisticsPage), },
+                new NavigationOption { Name = "Extra Sets", Icon = Symbol.Favorite, PageType = typeof(ExtraSetsPage), },
+                new NavigationOption { Name = "Exercise Settings", Icon = Symbol.Edit, PageType = typeof(ExerciseSettingsPage), },
+                new NavigationOption { Name = "Account", Icon = Symbol.Contact, PageType = typeof(AccountPage), },
             };
 
             EventsService.AddListener<ReminderNotificationAcceptedEventArgs>(EventsService_Event);
+            EventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
         }
 
         public void Dispose()
         {
             EventsService.RemoveListener<ReminderNotificationAcceptedEventArgs>(EventsService_Event);
+            EventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
         }
 
         private void HandleSelection(NavigationViewSelectionChangedEventArgs args)
         {
             if (args.IsSettingsSelected)
             {
-                NavigationService.Navigate(typeof(SettingsPage), NavigationScope.Internal);
+                NavigationService.Navigate(typeof(ExerciseSettingsPage), NavigationScope.Internal);
                 return;
             }
 
@@ -77,6 +82,19 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
         }
 
         private void EventsService_Event(ReminderNotificationAcceptedEventArgs args)
+        {
+            NavigationOption option = MenuItemOptions.FirstOrDefault(o => o.PageType == typeof(ExercisesPage));
+
+            if (option != null && SelectedMenuItem != option)
+            {
+                _ = UIThreadHelper.RunOnUIThreadAsync(() =>
+                {
+                    SelectedMenuItem = option;
+                });
+            }
+        }
+
+        private void EventsService_Event(ExerciseCreatedEventArgs args)
         {
             NavigationOption option = MenuItemOptions.FirstOrDefault(o => o.PageType == typeof(ExercisesPage));
 

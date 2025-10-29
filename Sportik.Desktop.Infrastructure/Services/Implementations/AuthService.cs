@@ -127,6 +127,34 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
             }
         }
 
+        public async Task<OperationResult<Guid>> GetUserIdAsync(CancellationToken cancellationToken = default)
+        {
+            OperationResult<string> result = await GetTokenAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                return OperationResult<Guid>.Failure(result.Errors);
+            }
+
+            return JwtTokenHelper.TryGetUserId(result.Value, out Guid userId)
+                ? OperationResult<Guid>.Success(userId)
+                : OperationResult<Guid>.Failure(new[] { "Unable to parse user ID from access token.", });
+        }
+
+        public async Task<OperationResult<string>> GetEmailAsync(CancellationToken cancellationToken = default)
+        {
+            OperationResult<string> result = await GetTokenAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                return OperationResult<string>.Failure(result.Errors);
+            }
+
+            return JwtTokenHelper.TryGetEmail(result.Value, out string email)
+                ? OperationResult<string>.Success(email)
+                : OperationResult<string>.Failure(new[] { "Unable to parse email from access token.", });
+        }
+
         public async Task<OperationResult> LogoutAsync(CancellationToken cancellationToken = default)
         {
             try

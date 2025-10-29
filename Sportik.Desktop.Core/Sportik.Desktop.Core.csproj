@@ -140,6 +140,7 @@
     <Compile Include="DependencyInjection.cs" />
     <Compile Include="Events\ApplicationStateChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseCreatedEventArgs.cs" />
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseIsEnabledChangedEventArgs.cs" />

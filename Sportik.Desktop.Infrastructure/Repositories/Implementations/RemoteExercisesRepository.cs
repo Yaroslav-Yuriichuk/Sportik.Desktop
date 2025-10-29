@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Infrastructure.DTOs.Exercises;
@@ -73,6 +74,30 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return exercises
                 .Where(e => idsSet.Contains(e.Id))
                 .Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
+        }
+
+        public async Task<Exercise> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(name);
+            }
+
+            name = name.Trim();
+
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
+
+            AddExerciseDto addExerciseDto = ExerciseMapper.ToDto(name, settings);
+
+            ExerciseDto exercise = await _apiService.PostAsync<ExerciseDto>(
+                "/api/Exercises",
+                addExerciseDto,
+                authResult.Value,
+                cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            return ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id));
         }
     }
 }

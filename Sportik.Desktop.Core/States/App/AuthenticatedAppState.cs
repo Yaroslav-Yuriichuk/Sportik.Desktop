@@ -34,6 +34,7 @@ namespace Sportik.Desktop.Core.States.App
         {
             _eventsService.AddListener<UserLoggedOutEventArgs>(EventsService_Event);
             _eventsService.AddListener<UserRefreshFailedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
             ReminderMode reminderMode = ReminderMode.Parallel;
             bool toStartReminders = true;
@@ -70,6 +71,8 @@ namespace Sportik.Desktop.Core.States.App
         protected override void HandleExit()
         {
             _eventsService.RemoveListener<UserLoggedOutEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<UserRefreshFailedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
             ReminderCache reminderCache = new ReminderCache
             {
@@ -91,6 +94,11 @@ namespace Sportik.Desktop.Core.States.App
         private void EventsService_Event(UserRefreshFailedEventArgs args)
         {
             Context.Switch(Context.LoginAppState);
+        }
+
+        private void EventsService_Event(ExerciseCreatedEventArgs args)
+        {
+            _reminderService.AddExercise(args.Exercise.Id);
         }
     }
 }

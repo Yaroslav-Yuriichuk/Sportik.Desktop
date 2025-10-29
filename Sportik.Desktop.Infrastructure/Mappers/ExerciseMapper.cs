@@ -1,5 +1,5 @@
 ﻿using Sportik.Desktop.Core.Models;
-using Sportik.Desktop.Infrastructure.DTOs;
+using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Infrastructure.DTOs.Exercises;
 
 namespace Sportik.Desktop.Infrastructure.Mappers
@@ -12,6 +12,13 @@ namespace Sportik.Desktop.Infrastructure.Mappers
                 id: dto.Id,
                 name: dto.Name,
                 settings: ExerciseSettingsMapper.ToDomain(dto.Settings, isEnabled));
+        }
+
+        public static AddExerciseDto ToDto(string name, ExerciseSettings settings)
+        {
+            return new AddExerciseDto(
+                name,
+                ExerciseSettingsMapper.ToDto(settings));
         }
     }
 }

@@ -13,5 +13,13 @@ namespace Sportik.Desktop.Infrastructure.Mappers
                 dto.TimeBetweenSets,
                 dto.ExecutionTime);
         }
+
+        public static AddExerciseSettingsDto ToDto(ExerciseSettings settings)
+        {
+            return new AddExerciseSettingsDto(
+                settings.TargetRepetitions,
+                settings.TimeBetweenSets,
+                settings.ExecutionTime);
+        }
     }
 }

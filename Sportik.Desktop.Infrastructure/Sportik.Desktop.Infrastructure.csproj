@@ -134,6 +134,7 @@
     <Compile Include="DTOs\Auth\AuthTokensDto.cs" />
     <Compile Include="DTOs\Auth\LoginRequestDto.cs" />
     <Compile Include="DTOs\Auth\RefreshTokenRequestDto.cs" />
+    <Compile Include="DTOs\Auth\RevokeTokenRequestDto.cs" />
     <Compile Include="DTOs\Exercises\AddExerciseDto.cs" />
     <Compile Include="DTOs\Exercises\AddExerciseSettingsDto.cs" />
     <Compile Include="DTOs\Exercises\ExerciseDto.cs" />

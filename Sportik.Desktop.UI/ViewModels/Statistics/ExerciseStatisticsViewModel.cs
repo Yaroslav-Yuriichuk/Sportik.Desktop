@@ -31,7 +31,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         public ExerciseStatisticsViewModel(ExerciseStatistics exerciseStatistics)
         {
-            Name = "Unknown";
+            Name = exerciseStatistics.Exercise.Name;
             Sets = exerciseStatistics.Sets.Count;
             Repetitions = exerciseStatistics.Sets.Aggregate(0, (sum, set) => sum + set.Repetitions);
         }

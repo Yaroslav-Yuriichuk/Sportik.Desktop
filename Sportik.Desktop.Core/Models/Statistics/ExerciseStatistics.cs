@@ -5,13 +5,13 @@ namespace Sportik.Desktop.Core.Models.Statistics
 {
     public sealed class ExerciseStatistics
     {
-        public Guid ExerciseId { get; }
+        public Exercise Exercise { get; }
 
         public List<ExerciseSet> Sets { get; }
 
-        public ExerciseStatistics(Guid exerciseId, List<ExerciseSet> sets)
+        public ExerciseStatistics(Exercise exercise, List<ExerciseSet> sets)
         {
-            ExerciseId = exerciseId;
+            Exercise = exercise;
             Sets = sets;
         }
     }

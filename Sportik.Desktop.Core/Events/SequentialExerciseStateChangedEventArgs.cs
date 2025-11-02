@@ -1,5 +1,4 @@
 ﻿using System;
-using Sportik.Desktop.Core.States;
 using Sportik.Desktop.Core.States.Exercises;
 
 namespace Sportik.Desktop.Core.Events

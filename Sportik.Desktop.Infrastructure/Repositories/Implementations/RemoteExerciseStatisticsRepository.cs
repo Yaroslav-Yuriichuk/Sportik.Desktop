@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Infrastructure.DTOs.Statistics;
 using Sportik.Desktop.Infrastructure.Mappers.Statistics;
+using Sportik.Desktop.Infrastructure.Models;
 using Sportik.Desktop.Infrastructure.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
@@ -18,11 +20,14 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
     {
         private readonly IApiService _apiService;
         private readonly IAuthService _authService;
+        private readonly IPersistentCacheService _persistentCacheService;
 
-        public RemoteExerciseStatisticsRepository(IApiService apiService, IAuthService authService)
+        public RemoteExerciseStatisticsRepository(IApiService apiService, IAuthService authService,
+            IPersistentCacheService persistentCacheService)
         {
             _apiService = apiService;
             _authService = authService;
+            _persistentCacheService = persistentCacheService;
         }
 
         public async Task<IEnumerable<WeekStatistics>> GetWeeklyAsync(CancellationToken cancellationToken = default)
@@ -36,7 +41,9 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 authResult.Value,
                 cancellationToken);
 
-            return weekStatistics.Select(WeekStatisticsMapper.ToDomain);
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            return weekStatistics.Select(ws => WeekStatisticsMapper.ToDomain(ws, enabledExercisesCache.IncludesExercise));
         }
 
         public async Task<ExerciseSet> AddSetAsync(ExerciseSet set, Guid exerciseId, CancellationToken cancellationToken = default)

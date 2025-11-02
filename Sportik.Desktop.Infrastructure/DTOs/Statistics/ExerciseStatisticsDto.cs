@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Sportik.Desktop.Infrastructure.DTOs.Exercises;
 
 namespace Sportik.Desktop.Infrastructure.DTOs.Statistics
 {
     internal sealed class ExerciseStatisticsDto
     {
-        public Guid ExerciseId { get; }
+        public ExerciseDto Exercise { get; }
 
         public List<SetDto> Sets { get; }
 
-        public ExerciseStatisticsDto(Guid exerciseId, List<SetDto> sets)
+        public ExerciseStatisticsDto(ExerciseDto exercise, List<SetDto> sets)
         {
-            ExerciseId = exerciseId;
+            Exercise = exercise;
             Sets = sets;
         }
     }

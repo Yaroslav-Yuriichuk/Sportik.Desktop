@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -12,9 +14,17 @@ namespace Sportik.Desktop.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
+            string assembleName = typeof(DependencyInjection).Assembly.GetName().Name;
+
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile(Path.Combine(assembleName, "appsettings.json"), optional: false, reloadOnChange: true);
+
+            IConfigurationRoot configuration = configurationBuilder.Build();
+
             services.AddHttpClient<IApiService, HttpApiService>(client =>
             {
-                client.BaseAddress = new Uri("");
+                client.BaseAddress = new Uri(configuration["ApiSettings:BaseUrl"]!);
                 client.Timeout = TimeSpan.FromSeconds(30);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             });

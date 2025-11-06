@@ -23,9 +23,17 @@
     -->
     <Assembly Name="*Application*" Dynamic="Required All" />
     
-    
     <!-- Add your application specific runtime directives here. -->
 
+	<Assembly Name="Sportik.Desktop.UI" Dynamic="Required All" />
+    <Assembly Name="Sportik.Desktop.Core" Dynamic="Required All" />
+    <Assembly Name="Sportik.Desktop.Infrastructure" Dynamic="Required All" />
+
+	<Assembly Name="Microsoft.Extensions.DependencyInjection" Dynamic="Required All" />
+    <Assembly Name="Microsoft.Extensions.Options" Dynamic="Required All" />
+    <Assembly Name="Microsoft.Extensions.Http" Dynamic="Required All" />
+    <Assembly Name="Microsoft.Extensions.Configuration" Dynamic="Required All" />
+    <Assembly Name="Microsoft.Extensions.Logging" Dynamic="Required All" />
 
   </Application>
 </Directives>

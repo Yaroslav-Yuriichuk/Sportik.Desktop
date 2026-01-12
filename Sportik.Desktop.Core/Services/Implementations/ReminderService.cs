@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States.Exercises;
@@ -17,6 +18,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly HashSet<Guid> _exerciseIds = new HashSet<Guid>();
 
         private IStatesRunner _runner;
+        private ReminderMode _mode = ReminderMode.Parallel;
 
         public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService, IRuntimeCacheService runtimeCacheService,
             Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
@@ -28,51 +30,62 @@ namespace Sportik.Desktop.Core.Services.Implementations
             _notificationServiceFactory = notificationServiceFactory;
         }
 
+        public event Action<ReminderModeChangedEventArgs> ModeChanged;
+
         public bool IsRunning => _runner != null;
 
         public ReminderMode Mode
         {
-            get => _runner?.Mode ?? ReminderMode.Parallel;
+            get => _mode;
             set
             {
-                if (_runner == null || _runner.Mode == value)
+                if (value == _mode)
                 {
                     return;
                 }
 
-                foreach (Guid exerciseId in _exerciseIds)
+                _mode = value;
+
+                if (_runner != null)
                 {
-                    _runner.RemoveExercise(exerciseId);
+                    foreach (Guid exerciseId in _exerciseIds)
+                    {
+                        _runner.RemoveExercise(exerciseId);
+                    }
+
+                    _runner.Dispose();
+
+                    _runner = value switch
+                    {
+                        ReminderMode.Sequential => new SequentialStatesRunner(_eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
+                        ReminderMode.Parallel => new ParallelStatesRunner(_eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
+                        _ => throw new ArgumentException($"Mode {value} is not supported.")
+                    };
+
+                    foreach (Guid exerciseId in _exerciseIds)
+                    {
+                        _runner.AddExercise(exerciseId);
+                    }
                 }
 
-                _runner.Dispose();
-
-                _runner = value switch
-                {
-                    ReminderMode.Sequential => new SequentialStatesRunner(_eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
-                    ReminderMode.Parallel => new ParallelStatesRunner(_eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
-                    _ => throw new ArgumentException($"Mode {value} is not supported.")
-                };
-
-                foreach (Guid exerciseId in _exerciseIds)
-                {
-                    _runner.AddExercise(exerciseId);
-                }
+                ModeChanged?.Invoke(new ReminderModeChangedEventArgs(value));
             }
         }
 
-        public void Start(ReminderMode mode = default)
+        public void Start(ReminderMode? mode = null)
         {
             if (IsRunning)
             {
                 return;
             }
 
-            _runner = mode switch
+            Mode = mode ?? Mode;
+
+            _runner = Mode switch
             {
                 ReminderMode.Sequential => new SequentialStatesRunner(_eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
                 ReminderMode.Parallel => new ParallelStatesRunner(_eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
-                _ => throw new ArgumentException($"Mode {mode} is not supported.")
+                _ => throw new ArgumentException($"Mode {Mode} is not supported.")
             };
 
             foreach (Guid exerciseId in _exerciseIds)

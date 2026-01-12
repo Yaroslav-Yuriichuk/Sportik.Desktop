@@ -20,12 +20,12 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IEventsService _eventsService;
 
         public AppStatesContext(IEventsService eventsService, IReminderService reminderService,
-            IRuntimeCacheService runtimeCacheService, IPersistentCacheService persistentCacheService,
-            Func<IExercisesService> exercisesServiceFactory, Func<IAuthService> authServiceFactory)
+            IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory,
+            Func<IAuthService> authServiceFactory)
         {
             _eventsService = eventsService;
             DeterminingAppState = new DeterminingAppState(this, authServiceFactory);
-            AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory);
+            AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, exercisesServiceFactory);
             LoginAppState = new LoginAppState(this, eventsService);
             RegistrationAppState = new RegistrationAppState(this, eventsService);
 

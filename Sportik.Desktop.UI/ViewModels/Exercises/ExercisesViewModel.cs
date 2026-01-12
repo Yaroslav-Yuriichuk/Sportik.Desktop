@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -54,11 +55,6 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 if (SetField(ref _selectedReminderModeOption, value))
                 {
                     ReminderService.Mode = value.Mode;
-
-                    _loadCts?.Cancel();
-                    _loadCts = new CancellationTokenSource();
-
-                    _ = LoadExercisesAsync(value.Mode, _loadCts.Token);
                 }
             }
         }
@@ -97,12 +93,18 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             SetField(ref _selectedReminderModeOption, selectedReminderModeOption);
             ReminderMode = ReminderService.Mode;
 
+            ReminderService.ModeChanged += ReminderService_ModeChanged;
+
             _ = LoadExercisesAsync(ReminderService.Mode, _loadCts.Token);
         }
 
         public void Dispose()
         {
+            ReminderService.ModeChanged -= ReminderService_ModeChanged;
+
             _loadCts.Cancel();
+            _loadCts.Dispose();
+            _loadCts = null;
 
             foreach (ParallelExerciseViewModel exerciseViewModel in ParallelExercises)
             {
@@ -135,6 +137,21 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 PauseCommand.RaiseCanExecuteChanged();
                 ResumeCommand.RaiseCanExecuteChanged();
             }
+        }
+
+        private void ReminderService_ModeChanged(ReminderModeChangedEventArgs args)
+        {
+            _loadCts.Cancel();
+            _loadCts.Dispose();
+            _loadCts = new CancellationTokenSource();
+
+            ReminderModeOption selectedReminderModeOption = ReminderModeOptions.FirstOrDefault(option => option.Mode == args.CurrentMode)
+                                                            ?? ReminderModeOptions[0];
+
+            SetField(ref _selectedReminderModeOption, selectedReminderModeOption);
+            ReminderMode = ReminderService.Mode;
+
+            _ = LoadExercisesAsync(args.CurrentMode, _loadCts.Token);
         }
 
         private async Task LoadExercisesAsync(ReminderMode reminderMode, CancellationToken cancellationToken)

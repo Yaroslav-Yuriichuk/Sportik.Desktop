@@ -15,17 +15,15 @@ namespace Sportik.Desktop.Core.States.App
 
         private readonly IEventsService _eventsService;
         private readonly IReminderService _reminderService;
-        private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly IPersistentCacheService _persistentCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
 
         public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
-            IReminderService reminderService, IRuntimeCacheService runtimeCacheService,
-            IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory) : base(context)
+            IReminderService reminderService, IPersistentCacheService persistentCacheService,
+            Func<IExercisesService> exercisesServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
-            _runtimeCacheService = runtimeCacheService;
             _persistentCacheService = persistentCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
         }
@@ -36,13 +34,12 @@ namespace Sportik.Desktop.Core.States.App
             _eventsService.AddListener<UserRefreshFailedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
-            ReminderMode reminderMode = ReminderMode.Parallel;
+            ReminderMode reminderMode = _reminderService.Mode;
             bool toStartReminders = true;
 
-            if (_runtimeCacheService.TryGet(out ReminderCache cache) || _persistentCacheService.TryGet(out cache))
+            if (_persistentCacheService.TryGet(out ReminderCache cache))
             {
                 toStartReminders = cache.IsActive;
-                reminderMode = cache.Mode;
             }
 
             if (toStartReminders)
@@ -81,7 +78,6 @@ namespace Sportik.Desktop.Core.States.App
             };
 
             _persistentCacheService.Set(reminderCache);
-            _runtimeCacheService.Set(reminderCache);
 
             _reminderService.Stop();
         }

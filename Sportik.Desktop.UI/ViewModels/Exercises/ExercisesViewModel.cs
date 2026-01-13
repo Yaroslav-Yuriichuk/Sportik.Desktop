@@ -90,7 +90,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             ReminderModeOption selectedReminderModeOption = ReminderModeOptions.FirstOrDefault(option => option.Mode == ReminderService.Mode)
                 ?? ReminderModeOptions[0];
 
-            SetField(ref _selectedReminderModeOption, selectedReminderModeOption);
+            SetField(ref _selectedReminderModeOption, selectedReminderModeOption, nameof(SelectedReminderModeOption));
             ReminderMode = ReminderService.Mode;
 
             ReminderService.ModeChanged += ReminderService_ModeChanged;
@@ -148,7 +148,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             ReminderModeOption selectedReminderModeOption = ReminderModeOptions.FirstOrDefault(option => option.Mode == args.CurrentMode)
                                                             ?? ReminderModeOptions[0];
 
-            SetField(ref _selectedReminderModeOption, selectedReminderModeOption);
+            SetField(ref _selectedReminderModeOption, selectedReminderModeOption, nameof(SelectedReminderModeOption));
             ReminderMode = ReminderService.Mode;
 
             _ = LoadExercisesAsync(args.CurrentMode, _loadCts.Token);

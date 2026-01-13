@@ -44,6 +44,27 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             set => SetField(ref _selectedDate, value);
         }
 
+        private TimeSpan _selectedTime;
+
+        public TimeSpan SelectedTime
+        {
+            get => _selectedTime;
+            set
+            {
+                if (SetField(ref _selectedTime, value))
+                {
+                    SelectedDate = new DateTimeOffset(
+                        SelectedDate.Year,
+                        SelectedDate.Month,
+                        SelectedDate.Day,
+                        value.Hours,
+                        value.Minutes,
+                        value.Seconds,
+                        SelectedDate.Offset);
+                }
+            }
+        }
+
         private ObservableCollection<IntOption> _repetitionsOptions;
 
         public ObservableCollection<IntOption> RepetitionsOptions
@@ -90,6 +111,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
                 AutomationConstants.TargetRepetitions.Select(repetitions => new IntOption(repetitions)));
 
             SelectedDate = DateTimeOffset.Now;
+            SelectedTime = DateTimeOffset.Now.TimeOfDay;
 
             AddSetCommand = new ReactiveRelayCommand(AddSet);
             SaveSetsCommand = new ReactiveRelayCommand(SaveSets, false);

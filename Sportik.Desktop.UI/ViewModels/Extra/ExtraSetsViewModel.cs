@@ -23,7 +23,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             {
                 if (SetField(ref _exercisesOptions, value))
                 {
-                    SetField(ref _selectedExerciseOption, value[0], nameof(SelectedExerciseOption));
+                    SelectedExerciseOption = value[0];
                 }
             }
         }
@@ -33,7 +33,19 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
         public ExerciseOption SelectedExerciseOption
         {
             get => _selectedExerciseOption;
-            set => SetField(ref _selectedExerciseOption, value);
+            set
+            {
+                if (SetField(ref _selectedExerciseOption, value) && value != null)
+                {
+                    int targetRepetitions = value.Exercise.Settings.TargetRepetitions;
+                    IntOption targetRepetitionsOption = RepetitionsOptions?.FirstOrDefault(o => o.IntValue == targetRepetitions);
+
+                    if (targetRepetitionsOption != null)
+                    {
+                        SelectedRepetitionsOption = targetRepetitionsOption;
+                    }
+                }
+            }
         }
 
         private DateTimeOffset _selectedDate;

@@ -92,7 +92,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             _exerciseId = exercise.Id;
 
             Name = exercise.Name;
-            SetField(ref _isEnabled, exercise.Settings.IsEnabled);
+            SetField(ref _isEnabled, exercise.Settings.IsEnabled, nameof(IsEnabled));
 
             CompleteCommand = new ReactiveRelayCommand(CompleteExercise, false);
             ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise);

@@ -132,7 +132,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             IntOption selectedTargetRepetitionsOption = TargetRepetitionsOptions.FirstOrDefault(o => o.IntValue == exercise.Settings.TargetRepetitions)
                                                         ?? TargetRepetitionsOptions[0];
 
-            SetField(ref _selectedTargetRepetitionsOption, selectedTargetRepetitionsOption);
+            SetField(ref _selectedTargetRepetitionsOption, selectedTargetRepetitionsOption, nameof(SelectedTargetRepetitionsOption));
 
             TimeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>(
                 AutomationConstants.TimesBetweenSets.Select(time => new TimeSpanOption(time)));
@@ -140,7 +140,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             TimeSpanOption selectedTimeBetweenSetsOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpanValue == exercise.Settings.TimeBetweenSets)
                                                            ?? TimeBetweenSetsOptions[0];
 
-            SetField(ref _selectedTimeBetweenSetsOption, selectedTimeBetweenSetsOption);
+            SetField(ref _selectedTimeBetweenSetsOption, selectedTimeBetweenSetsOption, nameof(SelectedTimeBetweenSetsOption));
 
             ExecutionTimeOptions = new ObservableCollection<TimeSpanOption>(
                 AutomationConstants.ExecutionTimes.Select(time => new TimeSpanOption(time)));
@@ -148,7 +148,7 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             TimeSpanOption selectedExecutionTimeOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpanValue == exercise.Settings.ExecutionTime)
                                                          ?? ExecutionTimeOptions[0];
 
-            SetField(ref _selectedExecutionTimeOption, selectedExecutionTimeOption);
+            SetField(ref _selectedExecutionTimeOption, selectedExecutionTimeOption, nameof(SelectedExecutionTimeOption));
         }
 
         public void Dispose()

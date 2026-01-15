@@ -35,7 +35,7 @@ namespace Sportik.Desktop.UI.Views.Main
             DataContext = new InternalNavigationViewModel();
 
             _navigationViewCollapseBehavior?.Dispose();
-            _navigationViewCollapseBehavior = new NavigationViewCollapseBehavior(PagesNavigationView, 850);
+            _navigationViewCollapseBehavior = new NavigationViewCollapseBehavior(PagesNavigationView, 960);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

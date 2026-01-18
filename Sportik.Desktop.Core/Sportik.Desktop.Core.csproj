@@ -229,6 +229,7 @@
     <Compile Include="States\Exercises\Sequential\SequentialExerciseState.cs" />
     <Compile Include="States\Exercises\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
     <Compile Include="States\Exercises\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
+    <Compile Include="States\Training\TrainingExerciseState.cs" />
     <EmbeddedResource Include="Properties\Sportik.Desktop.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -239,7 +240,6 @@
       <Version>6.2.14</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -16,6 +16,7 @@ namespace Sportik.Desktop.Core
             services.AddSingleton<IEventsService, EventsService>();
             services.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
             services.AddSingleton<IReminderService, ReminderService>();
+            services.AddSingleton<ITrainingService, TrainingService>();
             services.AddSingleton<IApplicationStatesService, ApplicationStatesService>();
             services.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
             services.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);

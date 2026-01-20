@@ -154,6 +154,9 @@
     <Compile Include="Events\ReminderNotificationDismissedEventArgs.cs" />
     <Compile Include="Events\ReminderNotificationShownEventArgs.cs" />
     <Compile Include="Events\SequentialExerciseStateChangedEventArgs.cs" />
+    <Compile Include="Events\TrainingRunningStateChangedEventArgs.cs" />
+    <Compile Include="Events\TrainingSetCompleteRequestedEventArgs.cs" />
+    <Compile Include="Events\TrainingSetStateChangedEventArgs.cs" />
     <Compile Include="Events\UserLoggedInEventArgs.cs" />
     <Compile Include="Events\UserLoggedOutEventArgs.cs" />
     <Compile Include="Events\UserRefreshFailedEventArgs.cs" />
@@ -163,6 +166,7 @@
     <Compile Include="Helpers\CompareHelper.cs" />
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
+    <Compile Include="Helpers\TrainingSetsSequenceHelper.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\Exercise.cs" />
     <Compile Include="Models\ExerciseSet.cs" />
@@ -177,6 +181,8 @@
     <Compile Include="Models\Statistics\ExerciseStatistics.cs" />
     <Compile Include="Models\Statistics\WeekStatistics.cs" />
     <Compile Include="Models\Statistics\WeekStatisticsOrder.cs" />
+    <Compile Include="Models\Training\TrainingSet.cs" />
+    <Compile Include="Models\Training\TrainingStopReason.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
@@ -188,6 +194,7 @@
     <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
     <Compile Include="Services\Implementations\ExerciseTimersService.cs" />
     <Compile Include="Services\Implementations\ReminderService.cs" />
+    <Compile Include="Services\Implementations\TrainingService.cs" />
     <Compile Include="Services\Interfaces\IApplicationStatesService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\IEventsService.cs" />
@@ -201,6 +208,7 @@
     <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
     <Compile Include="Services\Interfaces\ISecureCacheService.cs" />
     <Compile Include="Services\Interfaces\ISoundService.cs" />
+    <Compile Include="Services\Interfaces\ITrainingService.cs" />
     <Compile Include="Services\Interfaces\IUsersService.cs" />
     <Compile Include="States\App\ApplicationState.cs" />
     <Compile Include="States\App\AppState.cs" />
@@ -229,6 +237,12 @@
     <Compile Include="States\Exercises\Sequential\SequentialExerciseState.cs" />
     <Compile Include="States\Exercises\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
     <Compile Include="States\Exercises\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
+    <Compile Include="States\Training\CompletedTrainingSetState.cs" />
+    <Compile Include="States\Training\ExecutingTrainingSetState.cs" />
+    <Compile Include="States\Training\QueuedTrainingSetState.cs" />
+    <Compile Include="States\Training\TrainingSetState.cs" />
+    <Compile Include="States\Training\TrainingSetStateBase.cs" />
+    <Compile Include="States\Training\TrainingSetStatesContext.cs" />
     <EmbeddedResource Include="Properties\Sportik.Desktop.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -239,7 +253,6 @@
       <Version>6.2.14</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

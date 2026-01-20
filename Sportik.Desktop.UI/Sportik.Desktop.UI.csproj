@@ -168,6 +168,11 @@
     <Compile Include="ViewModels\Statistics\StatisticsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\WeekStatisticsViewModel.cs" />
     <Compile Include="ViewModels\TimeSpanOption.cs" />
+    <Compile Include="ViewModels\Training\SetupSetViewModel.cs" />
+    <Compile Include="ViewModels\Training\TrainingExecutionViewModel.cs" />
+    <Compile Include="ViewModels\Training\TrainingSetupViewModel.cs" />
+    <Compile Include="ViewModels\Training\ExecutionSetViewModel.cs" />
+    <Compile Include="ViewModels\Training\TrainingViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="Views\Internal\AccountPage.xaml.cs">
       <DependentUpon>AccountPage.xaml</DependentUpon>
@@ -186,6 +191,9 @@
     </Compile>
     <Compile Include="Views\Internal\ExerciseStatisticsPage.xaml.cs">
       <DependentUpon>ExerciseStatisticsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Internal\TrainingPage.xaml.cs">
+      <DependentUpon>TrainingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
@@ -286,6 +294,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Internal\ExerciseStatisticsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Internal\TrainingPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Main\LoginPage.xaml">

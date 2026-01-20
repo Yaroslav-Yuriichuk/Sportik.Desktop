@@ -144,6 +144,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public void Dispose()
         {
             _updateCts?.Cancel();
+            _completeCts?.Cancel();
 
             _exerciseReminderUpdateTimer.Stop();
             _exerciseExecutionUpdateTimer.Stop();

@@ -1,4 +1,7 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Training
 {
@@ -9,7 +12,7 @@ namespace Sportik.Desktop.UI.ViewModels.Training
         public TrainingSetupViewModel TrainingSetupViewModel
         {
             get => _trainingSetupViewModel;
-            set => SetField(ref _trainingSetupViewModel, value);
+            private set => SetField(ref _trainingSetupViewModel, value);
         }
 
         private TrainingExecutionViewModel _trainingExecutionViewModel;
@@ -17,19 +20,40 @@ namespace Sportik.Desktop.UI.ViewModels.Training
         public TrainingExecutionViewModel TrainingExecutionViewModel
         {
             get => _trainingExecutionViewModel;
-            set => SetField(ref _trainingExecutionViewModel, value);
+            private set => SetField(ref _trainingExecutionViewModel, value);
         }
+
+        private bool _isTrainingRunning;
+
+        public bool IsTrainingRunning
+        {
+            get => _isTrainingRunning;
+            private set => SetField(ref _isTrainingRunning, value);
+        }
+
+        private ITrainingService TrainingService => App.ServiceProvider.GetRequiredService<ITrainingService>();
 
         public TrainingViewModel()
         {
             TrainingSetupViewModel = new TrainingSetupViewModel();
             TrainingExecutionViewModel = new TrainingExecutionViewModel();
+
+            IsTrainingRunning = TrainingService.IsRunning;
+
+            TrainingService.RunningStateChanged += SwitchMode;
         }
 
         public void Dispose()
         {
+            TrainingService.RunningStateChanged -= SwitchMode;
+
             TrainingSetupViewModel.Dispose();
             TrainingExecutionViewModel.Dispose();
+        }
+
+        private void SwitchMode(TrainingRunningStateChangedEventArgs args)
+        {
+            IsTrainingRunning = args.IsRunning;
         }
     }
 }

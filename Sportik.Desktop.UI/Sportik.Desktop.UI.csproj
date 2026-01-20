@@ -168,11 +168,10 @@
     <Compile Include="ViewModels\Statistics\StatisticsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\WeekStatisticsViewModel.cs" />
     <Compile Include="ViewModels\TimeSpanOption.cs" />
-    <Compile Include="ViewModels\Training\ExecutionSetViewModel.cs" />
     <Compile Include="ViewModels\Training\SetupSetViewModel.cs" />
     <Compile Include="ViewModels\Training\TrainingExecutionViewModel.cs" />
-    <Compile Include="ViewModels\Training\TrainingExerciseViewModel.cs" />
     <Compile Include="ViewModels\Training\TrainingSetupViewModel.cs" />
+    <Compile Include="ViewModels\Training\ExecutionSetViewModel.cs" />
     <Compile Include="ViewModels\Training\TrainingViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="Views\Internal\AccountPage.xaml.cs">

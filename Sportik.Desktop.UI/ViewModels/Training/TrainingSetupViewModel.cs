@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Backend.Domain.Common;
 using Sportik.Desktop.Core.Constants;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Training;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Training
@@ -18,7 +20,7 @@ namespace Sportik.Desktop.UI.ViewModels.Training
         public ObservableCollection<ExerciseOption> ExercisesOptions
         {
             get => _exercisesOptions;
-            set
+            private set
             {
                 if (SetField(ref _exercisesOptions, value))
                 {
@@ -52,7 +54,7 @@ namespace Sportik.Desktop.UI.ViewModels.Training
         public ObservableCollection<IntOption> RepetitionsOptions
         {
             get => _repetitionsOptions;
-            set
+            private set
             {
                 if (SetField(ref _repetitionsOptions, value))
                 {
@@ -69,12 +71,12 @@ namespace Sportik.Desktop.UI.ViewModels.Training
             set => SetField(ref _selectedRepetitionsOption, value);
         }
 
-        private ObservableCollection<SetupSetViewModel> _sets;
+        private ObservableCollection<SetupSetViewModel> _sets = new ObservableCollection<SetupSetViewModel>();
 
         public ObservableCollection<SetupSetViewModel> Sets
         {
             get => _sets;
-            set => SetField(ref _sets, value);
+            private set => SetField(ref _sets, value);
         }
 
         public IReactiveCommand AddSetCommand { get; }
@@ -82,6 +84,7 @@ namespace Sportik.Desktop.UI.ViewModels.Training
         public IReactiveCommand StartTrainingCommand { get; }
 
         private IExercisesService ExercisesService => App.ServiceProvider.GetRequiredService<IExercisesService>();
+        private ITrainingService TrainingService => App.ServiceProvider.GetRequiredService<ITrainingService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -90,10 +93,12 @@ namespace Sportik.Desktop.UI.ViewModels.Training
             RepetitionsOptions = new ObservableCollection<IntOption>(
                 AutomationConstants.TargetRepetitions.Select(repetitions => new IntOption(repetitions)));
 
-            AddSetCommand = new ReactiveRelayCommand(AddSet);
+            AddSetCommand = new ReactiveRelayCommand(AddSet, !TrainingService.IsRunning);
             StartTrainingCommand = new ReactiveRelayCommand(StartTraining, false);
 
             Sets = new ObservableCollection<SetupSetViewModel>();
+
+            TrainingService.RunningStateChanged += HandleRunningStateChanged;
 
             _ = LoadExercisesAsync(_loadCts.Token);
         }
@@ -101,6 +106,16 @@ namespace Sportik.Desktop.UI.ViewModels.Training
         public void Dispose()
         {
             _loadCts.Cancel();
+
+            TrainingService.RunningStateChanged -= HandleRunningStateChanged;
+        }
+
+        private void HandleRunningStateChanged(TrainingRunningStateChangedEventArgs args)
+        {
+            Sets.Clear();
+
+            AddSetCommand.IsExecutable = !args.IsRunning;
+            StartTrainingCommand.IsExecutable = false;
         }
 
         private async Task LoadExercisesAsync(CancellationToken cancellationToken)
@@ -132,6 +147,8 @@ namespace Sportik.Desktop.UI.ViewModels.Training
 
         private void StartTraining()
         {
+            IEnumerable<TrainingSet> sets = Sets.Select(s => new TrainingSet(s.Exercise.Id, s.Repetitions));
+            TrainingService.Start(sets);
         }
     }
 }

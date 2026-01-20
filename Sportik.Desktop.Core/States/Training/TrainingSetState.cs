@@ -1,6 +1,6 @@
 ﻿namespace Sportik.Desktop.Core.States.Training
 {
-    public enum TrainingExerciseState
+    public enum TrainingSetState
     {
         Unknown,
         Completed,

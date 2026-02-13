@@ -122,8 +122,10 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             RepetitionsOptions = new ObservableCollection<IntOption>(
                 AutomationConstants.TargetRepetitions.Select(repetitions => new IntOption(repetitions)));
 
-            SelectedDate = DateTimeOffset.Now;
-            SelectedTime = DateTimeOffset.Now.TimeOfDay;
+            DateTimeOffset now = DateTimeOffset.Now;
+
+            SelectedDate = now;
+            SelectedTime = now.TimeOfDay;
 
             AddSetCommand = new ReactiveRelayCommand(AddSet);
             SaveSetsCommand = new ReactiveRelayCommand(SaveSets, false);
@@ -160,7 +162,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
                 return;
             }
 
-            SetViewModel set = new SetViewModel(SelectedExerciseOption.Exercise, SelectedRepetitionsOption.IntValue, SelectedDate);
+            SetViewModel set = new SetViewModel(SelectedExerciseOption.Exercise, SelectedRepetitionsOption.IntValue, SelectedDate.ToUniversalTime());
             Sets.Add(set);
 
             SaveSetsCommand.IsExecutable = Sets.Count > 0;

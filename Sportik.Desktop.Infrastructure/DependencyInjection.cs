@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Infrastructure.Persistence;
 using Sportik.Desktop.Infrastructure.Repositories.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Interfaces;
@@ -27,6 +29,11 @@ namespace Sportik.Desktop.Infrastructure
                 client.BaseAddress = new Uri(configuration["ApiSettings:BaseUrl"]!);
                 client.Timeout = TimeSpan.FromSeconds(30);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
             });
 
             services.AddTransient<IExercisesRepository, RemoteExercisesRepository>();

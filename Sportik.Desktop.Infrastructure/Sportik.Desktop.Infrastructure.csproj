@@ -160,6 +160,7 @@
     <Compile Include="Models\AccessTokenCache.cs" />
     <Compile Include="Models\EnabledExercisesCache.cs" />
     <Compile Include="Models\RefreshTokenCache.cs" />
+    <Compile Include="Persistence\AppDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Implementations\RemoteExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Implementations\RemoteExercisesRepository.cs" />
@@ -176,6 +177,12 @@
     <EmbeddedResource Include="Properties\Sportik.Desktop.Infrastructure.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore">
+      <Version>3.1.32</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
+      <Version>3.1.32</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration">
       <Version>9.0.10</Version>
     </PackageReference>

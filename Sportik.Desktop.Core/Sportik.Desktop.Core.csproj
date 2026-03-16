@@ -168,6 +168,7 @@
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="Helpers\TrainingSetsSequenceHelper.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
+    <Compile Include="Models\DataSource.cs" />
     <Compile Include="Models\Exercise.cs" />
     <Compile Include="Models\ExerciseSet.cs" />
     <Compile Include="Models\ReminderCache.cs" />

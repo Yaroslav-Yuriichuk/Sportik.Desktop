@@ -16,9 +16,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IExercisesRepository _exercisesRepository;
         private readonly IEventsService _eventsService;
 
-        public ExercisesService(IExercisesRepository exercisesRepository, IEventsService eventsService)
+        public ExercisesService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory, IEventsService eventsService)
         {
-            _exercisesRepository = exercisesRepository;
+            _exercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
             _eventsService = eventsService;
         }
 

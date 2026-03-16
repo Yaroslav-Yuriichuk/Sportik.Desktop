@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sportik.Desktop.Infrastructure.Persistence.Entities;
 
 namespace Sportik.Desktop.Infrastructure.Persistence
 {
@@ -6,5 +7,7 @@ namespace Sportik.Desktop.Infrastructure.Persistence
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
+
+        public DbSet<UserExercise> Exercises { get; set; } = null!;
     }
 }

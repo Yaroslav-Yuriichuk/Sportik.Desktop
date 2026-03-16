@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Infrastructure.Persistence;
@@ -36,7 +37,6 @@ namespace Sportik.Desktop.Infrastructure
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddTransient<IExercisesRepository, RemoteExercisesRepository>();
             services.AddTransient<IExerciseStatisticsRepository, RemoteExerciseStatisticsRepository>();
             services.AddTransient<IExerciseSettingsRepository, RemoteExerciseSettingsRepository>();
             services.AddTransient<INotificationService, ToastNotificationService>();
@@ -47,10 +47,22 @@ namespace Sportik.Desktop.Infrastructure
             services.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();
             services.AddSingleton<IPersistentCacheService, PersistentCacheService>();
             services.AddSingleton<ISecureCacheService, SecureCacheService>();
-            services.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
-            services.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);
-            services.AddSingleton<Func<IExercisesService>>(sp => sp.GetService<IExercisesService>);
-            services.AddSingleton<Func<IAuthService>>(sp => sp.GetService<IAuthService>);
+
+            services.AddTransient<RemoteExercisesRepository>();
+            services.AddTransient<LocalExercisesRepository>();
+
+            services.AddTransient<Func<DataSource, IExercisesRepository>>(serviceProvider =>
+            {
+                return dataSource =>
+                {
+                    return dataSource switch
+                    {
+                        DataSource.Remote => serviceProvider.GetRequiredService<RemoteExercisesRepository>(),
+                        DataSource.Local => serviceProvider.GetRequiredService<LocalExercisesRepository>(),
+                        _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
+                    };
+                };
+            });
 
             return services;
         }

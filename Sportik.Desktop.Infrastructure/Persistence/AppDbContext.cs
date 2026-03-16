@@ -9,5 +9,7 @@ namespace Sportik.Desktop.Infrastructure.Persistence
             : base(options) { }
 
         public DbSet<UserExercise> Exercises { get; set; } = null!;
+
+        public DbSet<UserExerciseSettings> ExerciseSettings { get; set; } = null!;
     }
 }

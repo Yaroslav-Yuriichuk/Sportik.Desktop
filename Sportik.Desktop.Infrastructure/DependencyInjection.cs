@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Infrastructure.Persistence;
 using Sportik.Desktop.Infrastructure.Repositories.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Interfaces;
@@ -29,9 +32,11 @@ namespace Sportik.Desktop.Infrastructure
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
-            services.AddTransient<IExercisesRepository, RemoteExercisesRepository>();
-            services.AddTransient<IExerciseStatisticsRepository, RemoteExerciseStatisticsRepository>();
-            services.AddTransient<IExerciseSettingsRepository, RemoteExerciseSettingsRepository>();
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+            });
+
             services.AddTransient<INotificationService, ToastNotificationService>();
             services.AddTransient<ISoundService, SoundService>();
             services.AddTransient<IAuthService, AuthService>();
@@ -40,10 +45,52 @@ namespace Sportik.Desktop.Infrastructure
             services.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();
             services.AddSingleton<IPersistentCacheService, PersistentCacheService>();
             services.AddSingleton<ISecureCacheService, SecureCacheService>();
-            services.AddSingleton<Func<IExerciseSettingsService>>(sp => sp.GetService<IExerciseSettingsService>);
-            services.AddSingleton<Func<INotificationService>>(sp => sp.GetService<INotificationService>);
-            services.AddSingleton<Func<IExercisesService>>(sp => sp.GetService<IExercisesService>);
-            services.AddSingleton<Func<IAuthService>>(sp => sp.GetService<IAuthService>);
+
+            services.AddTransient<RemoteExercisesRepository>();
+            services.AddTransient<LocalExercisesRepository>();
+            services.AddTransient<RemoteExerciseSettingsRepository>();
+            services.AddTransient<LocalExerciseSettingsRepository>();
+            services.AddTransient<RemoteExerciseStatisticsRepository>();
+            services.AddTransient<LocalExerciseStatisticsRepository>();
+
+            services.AddTransient<Func<DataSource, IExercisesRepository>>(serviceProvider =>
+            {
+                return dataSource =>
+                {
+                    return dataSource switch
+                    {
+                        DataSource.Remote => serviceProvider.GetRequiredService<RemoteExercisesRepository>(),
+                        DataSource.Local => serviceProvider.GetRequiredService<LocalExercisesRepository>(),
+                        _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
+                    };
+                };
+            });
+
+            services.AddTransient<Func<DataSource, IExerciseSettingsRepository>>(serviceProvider =>
+            {
+                return dataSource =>
+                {
+                    return dataSource switch
+                    {
+                        DataSource.Remote => serviceProvider.GetRequiredService<RemoteExerciseSettingsRepository>(),
+                        DataSource.Local => serviceProvider.GetRequiredService<LocalExerciseSettingsRepository>(),
+                        _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
+                    };
+                };
+            });
+
+            services.AddTransient<Func<DataSource, IExerciseStatisticsRepository>>(serviceProvider =>
+            {
+                return dataSource =>
+                {
+                    return dataSource switch
+                    {
+                        DataSource.Remote => serviceProvider.GetRequiredService<RemoteExerciseStatisticsRepository>(),
+                        DataSource.Local => serviceProvider.GetRequiredService<LocalExerciseStatisticsRepository>(),
+                        _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
+                    };
+                };
+            });
 
             return services;
         }

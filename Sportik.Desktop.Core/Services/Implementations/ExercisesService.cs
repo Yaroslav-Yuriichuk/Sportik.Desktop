@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
@@ -16,9 +16,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IExercisesRepository _exercisesRepository;
         private readonly IEventsService _eventsService;
 
-        public ExercisesService(IExercisesRepository exercisesRepository, IEventsService eventsService)
+        public ExercisesService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory, IEventsService eventsService)
         {
-            _exercisesRepository = exercisesRepository;
+            _exercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
             _eventsService = eventsService;
         }
 

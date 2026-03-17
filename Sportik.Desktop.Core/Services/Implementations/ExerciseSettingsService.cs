@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -14,9 +15,10 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IExerciseSettingsRepository _exerciseSettingsRepository;
         private readonly IEventsService _eventsService;
 
-        public ExerciseSettingsService(IExerciseSettingsRepository exerciseSettingsRepository, IEventsService eventsService)
+        public ExerciseSettingsService(Func<DataSource, IExerciseSettingsRepository> exerciseSettingsRepositoryFactory,
+            IEventsService eventsService)
         {
-            _exerciseSettingsRepository = exerciseSettingsRepository;
+            _exerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Remote);
             _eventsService = eventsService;
         }
 

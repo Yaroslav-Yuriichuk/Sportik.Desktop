@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Sportik.Backend.Domain.Common
+namespace Sportik.Desktop.Core.Common
 {
     public class OperationResult
     {

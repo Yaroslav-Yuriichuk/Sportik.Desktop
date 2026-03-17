@@ -11,5 +11,7 @@ namespace Sportik.Desktop.Infrastructure.Persistence
         public DbSet<UserExercise> Exercises { get; set; } = null!;
 
         public DbSet<UserExerciseSettings> ExerciseSettings { get; set; } = null!;
+
+        public DbSet<UserSet> Sets { get; set; } = null!;
     }
 }

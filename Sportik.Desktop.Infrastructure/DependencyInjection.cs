@@ -37,7 +37,6 @@ namespace Sportik.Desktop.Infrastructure
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddTransient<IExerciseStatisticsRepository, RemoteExerciseStatisticsRepository>();
             services.AddTransient<INotificationService, ToastNotificationService>();
             services.AddTransient<ISoundService, SoundService>();
             services.AddTransient<IAuthService, AuthService>();
@@ -49,8 +48,10 @@ namespace Sportik.Desktop.Infrastructure
 
             services.AddTransient<RemoteExercisesRepository>();
             services.AddTransient<LocalExercisesRepository>();
-            services.AddTransient<RemoteExercisesRepository>();
-            services.AddTransient<LocalExercisesRepository>();
+            services.AddTransient<RemoteExerciseSettingsRepository>();
+            services.AddTransient<LocalExerciseSettingsRepository>();
+            services.AddTransient<RemoteExerciseStatisticsRepository>();
+            services.AddTransient<LocalExerciseStatisticsRepository>();
 
             services.AddTransient<Func<DataSource, IExercisesRepository>>(serviceProvider =>
             {
@@ -73,6 +74,19 @@ namespace Sportik.Desktop.Infrastructure
                     {
                         DataSource.Remote => serviceProvider.GetRequiredService<RemoteExerciseSettingsRepository>(),
                         DataSource.Local => serviceProvider.GetRequiredService<LocalExerciseSettingsRepository>(),
+                        _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
+                    };
+                };
+            });
+
+            services.AddTransient<Func<DataSource, IExerciseStatisticsRepository>>(serviceProvider =>
+            {
+                return dataSource =>
+                {
+                    return dataSource switch
+                    {
+                        DataSource.Remote => serviceProvider.GetRequiredService<RemoteExerciseStatisticsRepository>(),
+                        DataSource.Local => serviceProvider.GetRequiredService<LocalExerciseStatisticsRepository>(),
                         _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
                     };
                 };

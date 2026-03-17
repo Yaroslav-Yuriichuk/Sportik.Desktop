@@ -130,6 +130,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\Grouping.cs" />
     <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Common\StateMachine\IState.cs" />
     <Compile Include="Common\StateMachine\IStatesContext.cs" />

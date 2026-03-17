@@ -4,13 +4,13 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Entities
 {
     internal sealed class UserExercise
     {
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
 
-        public string Name { get; }
+        public string Name { get; private set; }
 
-        public Guid SettingsId { get; }
+        public Guid SettingsId { get; private set; }
 
-        public UserExerciseSettings Settings { get; } = null!;
+        public UserExerciseSettings Settings { get; private set; } = null!;
 
         public UserExercise(Guid id, string name, Guid settingsId)
         {

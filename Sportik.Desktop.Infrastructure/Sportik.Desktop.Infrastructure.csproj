@@ -163,11 +163,14 @@
     <Compile Include="Persistence\AppDbContext.cs" />
     <Compile Include="Persistence\Entities\UserExercise.cs" />
     <Compile Include="Persistence\Entities\UserExerciseSettings.cs" />
+    <Compile Include="Persistence\Entities\UserSet.cs" />
     <Compile Include="Persistence\Mappers\ExerciseMapper.cs" />
     <Compile Include="Persistence\Mappers\ExerciseSettingsMapper.cs" />
+    <Compile Include="Persistence\Mappers\SetMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Implementations\LocalExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Implementations\LocalExercisesRepository.cs" />
+    <Compile Include="Repositories\Implementations\LocalExerciseStatisticsRepository.cs" />
     <Compile Include="Repositories\Implementations\RemoteExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Implementations\RemoteExercisesRepository.cs" />
     <Compile Include="Repositories\Implementations\RemoteExerciseStatisticsRepository.cs" />

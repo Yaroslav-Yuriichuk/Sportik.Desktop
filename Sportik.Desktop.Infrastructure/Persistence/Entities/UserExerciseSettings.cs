@@ -4,7 +4,7 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Entities
 {
     internal sealed class UserExerciseSettings
     {
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
 
         public int TargetRepetitions { get; set; }
 

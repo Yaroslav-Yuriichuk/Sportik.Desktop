@@ -30,6 +30,8 @@ namespace Sportik.Desktop.UI.ViewModels.Login
 
         public IReactiveCommand RegisterCommand { get; }
 
+        public IReactiveCommand UseOfflineModeCommand { get; }
+
         private IAuthService AuthService => App.ServiceProvider.GetService<IAuthService>();
         private IEventsService EventsService => App.ServiceProvider.GetService<IEventsService>();
 
@@ -42,6 +44,7 @@ namespace Sportik.Desktop.UI.ViewModels.Login
 
             LoginCommand = new ReactiveRelayCommand(Login);
             RegisterCommand = new ReactiveRelayCommand(Register);
+            UseOfflineModeCommand = new ReactiveRelayCommand(UseOfflineMode);
         }
 
         public void Dispose()
@@ -59,12 +62,19 @@ namespace Sportik.Desktop.UI.ViewModels.Login
             EventsService.RaiseEvent(new RegistrationRequestedEventArgs());
         }
 
+        private void UseOfflineMode()
+        {
+        }
+
         private async Task LoginAsync(CancellationToken cancellationToken)
         {
             LoginCommand.IsExecutable = false;
+            UseOfflineModeCommand.IsExecutable = false;
 
             OperationResult<string> result = await AuthService.LoginAsync(Email, Password, cancellationToken);
+
             LoginCommand.IsExecutable = !result.Succeeded;
+            UseOfflineModeCommand.IsExecutable = !result.Succeeded;
         }
     }
 }

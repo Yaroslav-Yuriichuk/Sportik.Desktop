@@ -21,6 +21,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -65,6 +66,13 @@
                 Margin="0,15,0,0"
                 HorizontalAlignment="Center"
                 Command="{Binding RegisterCommand}" />
+
+        <HyperlinkButton Grid.Row="7"
+                         Content="Continue in offline mode"
+                         Width="250"
+                         Margin="0,15,0,0"
+                         HorizontalAlignment="Center"
+                         Command="{Binding UseOfflineModeCommand}" />
 
     </Grid>
 </Page>

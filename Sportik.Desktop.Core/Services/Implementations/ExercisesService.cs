@@ -22,12 +22,12 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             get
             {
-                if (!_runtimeCacheService.TryGet(out AppModeCache cache))
+                if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache))
                 {
                     return _localExercisesRepository;
                 }
 
-                return cache.IsOffline ? _localExercisesRepository : _remoteExercisesRepository;
+                return appModeCache.IsOffline ? _localExercisesRepository : _remoteExercisesRepository;
             }
         }
 

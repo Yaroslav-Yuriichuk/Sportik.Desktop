@@ -31,7 +31,7 @@ namespace Sportik.Desktop.Core.States.App
             AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, runtimeCacheService, exercisesServiceFactory);
             LoginAppState = new LoginAppState(this, eventsService);
             RegistrationAppState = new RegistrationAppState(this, eventsService);
-            OfflineAppState = new OfflineAppState(this, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory);
+            OfflineAppState = new OfflineAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory);
 
             Switch(DeterminingAppState);
         }

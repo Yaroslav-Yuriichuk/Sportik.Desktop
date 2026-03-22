@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -10,6 +11,7 @@ namespace Sportik.Desktop.Core.States.App
 {
     internal sealed class OfflineAppState : AppState
     {
+        private readonly IEventsService _eventsService;
         private readonly IReminderService _reminderService;
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly IPersistentCacheService _persistentCacheService;
@@ -17,10 +19,11 @@ namespace Sportik.Desktop.Core.States.App
 
         public override ApplicationState ApplicationState => ApplicationState.Offline;
 
-        public OfflineAppState(AppStatesContext context, IReminderService reminderService,
-            IRuntimeCacheService runtimeCacheService, IPersistentCacheService persistentCacheService,
-            Func<IExercisesService> exercisesServiceFactory) : base(context)
+        public OfflineAppState(AppStatesContext context, IEventsService eventsService,
+            IReminderService reminderService, IRuntimeCacheService runtimeCacheService,
+            IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory) : base(context)
         {
+            _eventsService = eventsService;
             _reminderService = reminderService;
             _runtimeCacheService = runtimeCacheService;
             _persistentCacheService = persistentCacheService;
@@ -33,6 +36,8 @@ namespace Sportik.Desktop.Core.States.App
             {
                 IsOffline = true,
             });
+
+            _eventsService.AddListener<LoginRequestedEventArgs>(EventService_Event);
 
             ReminderMode reminderMode = _reminderService.Mode;
             bool toStartReminders = true;
@@ -69,6 +74,8 @@ namespace Sportik.Desktop.Core.States.App
         {
             _runtimeCacheService.Remove<AppModeCache>();
 
+            _eventsService.RemoveListener<LoginRequestedEventArgs>(EventService_Event);
+
             ReminderCache reminderCache = new ReminderCache
             {
                 IsActive = _reminderService.IsRunning,
@@ -78,6 +85,11 @@ namespace Sportik.Desktop.Core.States.App
             _persistentCacheService.Set(reminderCache);
 
             _reminderService.Stop();
+        }
+
+        private void EventService_Event(LoginRequestedEventArgs args)
+        {
+            Context.Switch(Context.LoginAppState);
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Account
@@ -25,16 +27,37 @@ namespace Sportik.Desktop.UI.ViewModels.Account
             set => SetField(ref _email, value);
         }
 
-        public ReactiveRelayCommand LogOutCommand { get; }
+        private bool _isLoggedIn;
 
-        private IAuthService AuthService => App.ServiceProvider.GetService<IAuthService>();
+        public bool IsLoggedIn
+        {
+            get => _isLoggedIn;
+            set => SetField(ref _isLoggedIn, value);
+        }
+
+        public ReactiveRelayCommand LogOutCommand { get; }
+        public ReactiveRelayCommand LogInCommand { get; }
+
+        private IAuthService AuthService => App.ServiceProvider.GetRequiredService<IAuthService>();
+        private IRuntimeCacheService RuntimeCacheService => App.ServiceProvider.GetRequiredService<IRuntimeCacheService>();
+        private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
-        private readonly CancellationTokenSource _logOutCts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _logoutCts = new CancellationTokenSource();
 
         public AccountViewModel()
         {
-            LogOutCommand = new ReactiveRelayCommand(LogOut);
+            bool isLoggedIn = false;
+
+            if (RuntimeCacheService.TryGet(out AppModeCache appModeCache))
+            {
+                isLoggedIn = !appModeCache.IsOffline;
+            }
+
+            IsLoggedIn = isLoggedIn;
+
+            LogOutCommand = new ReactiveRelayCommand(LogOut, isLoggedIn);
+            LogInCommand = new ReactiveRelayCommand(LogIn, !isLoggedIn);
 
             _ = LoadAccountAsync(_loadCts.Token);
         }
@@ -42,12 +65,18 @@ namespace Sportik.Desktop.UI.ViewModels.Account
         public void Dispose()
         {
             _loadCts.Cancel();
-            _logOutCts.Cancel();
+            _logoutCts.Cancel();
         }
 
         private void LogOut()
         {
-            _ = LogOutAsync(_logOutCts.Token);
+            _ = LogOutAsync(_logoutCts.Token);
+        }
+
+        private void LogIn()
+        {
+            LogInCommand.IsExecutable = false;
+            EventsService.RaiseEvent(new LoginRequestedEventArgs());
         }
 
         private async Task LoadAccountAsync(CancellationToken cancellationToken)

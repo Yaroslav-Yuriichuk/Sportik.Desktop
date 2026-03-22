@@ -31,8 +31,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
-        public ExercisesService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory, IRuntimeCacheService runtimeCacheService,
-            IEventsService eventsService)
+        public ExercisesService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory,
+            IRuntimeCacheService runtimeCacheService, IEventsService eventsService)
         {
             _remoteExercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
             _localExercisesRepository = exercisesRepositoryFactory(DataSource.Local);

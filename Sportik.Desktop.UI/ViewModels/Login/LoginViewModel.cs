@@ -64,6 +64,7 @@ namespace Sportik.Desktop.UI.ViewModels.Login
 
         private void UseOfflineMode()
         {
+            EventsService.RaiseEvent(new OfflineModeRequestedEventArgs());
         }
 
         private async Task LoginAsync(CancellationToken cancellationToken)

@@ -16,20 +16,27 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IEventsService _eventsService;
         private readonly IReminderService _reminderService;
         private readonly IPersistentCacheService _persistentCacheService;
+        private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
 
         public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
             IReminderService reminderService, IPersistentCacheService persistentCacheService,
-            Func<IExercisesService> exercisesServiceFactory) : base(context)
+            IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
             _persistentCacheService = persistentCacheService;
+            _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
         }
 
         protected override void HandleEnter()
         {
+            _runtimeCacheService.Set(new AppModeCache
+            {
+                IsOffline = false,
+            });
+
             _eventsService.AddListener<UserLoggedOutEventArgs>(EventsService_Event);
             _eventsService.AddListener<UserRefreshFailedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
@@ -67,6 +74,8 @@ namespace Sportik.Desktop.Core.States.App
 
         protected override void HandleExit()
         {
+            _runtimeCacheService.Remove<AppModeCache>();
+
             _eventsService.RemoveListener<UserLoggedOutEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<UserRefreshFailedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);

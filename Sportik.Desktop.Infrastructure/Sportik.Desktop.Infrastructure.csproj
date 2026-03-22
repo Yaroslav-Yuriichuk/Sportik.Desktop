@@ -148,6 +148,7 @@
     <Compile Include="DTOs\Statistics\WeekStatisticsDto.cs" />
     <Compile Include="DTOs\Users\RegisterRequestDto.cs" />
     <Compile Include="DTOs\Users\RegisterResultDto.cs" />
+    <Compile Include="Extensions\InfrastructureInitializationExtension.cs" />
     <Compile Include="Helpers\JwtTokenHelper.cs" />
     <Compile Include="Mappers\ExerciseMapper.cs" />
     <Compile Include="Mappers\ExerciseSettingsDeltaMapper.cs" />

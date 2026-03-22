@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Sportik.Desktop.Core;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Infrastructure;
+using Sportik.Desktop.Infrastructure.Extensions;
 using Sportik.Desktop.UI.Behaviors;
 using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.Services.Implementations;
@@ -36,6 +37,8 @@ namespace Sportik.Desktop.UI
             services.AddSingleton<INavigationService, FrameNavigationService>();
 
             ServiceProvider = services.BuildServiceProvider();
+
+            ServiceProvider.InitializeInfrastructure();
 
             ApplicationLanguages.PrimaryLanguageOverride = "en-US";
         }

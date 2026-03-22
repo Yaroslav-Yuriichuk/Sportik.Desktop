@@ -6,5 +6,6 @@
         Authenticated,
         Login,
         Registration,
+        Offline,
     }
 }

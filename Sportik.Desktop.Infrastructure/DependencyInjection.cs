@@ -35,7 +35,7 @@ namespace Sportik.Desktop.Infrastructure
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
-            });
+            }, ServiceLifetime.Transient);
 
             services.AddTransient<INotificationService, ToastNotificationService>();
             services.AddTransient<ISoundService, SoundService>();

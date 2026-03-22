@@ -12,13 +12,30 @@ namespace Sportik.Desktop.Core.Services.Implementations
 {
     internal sealed class ExerciseSettingsService : IExerciseSettingsService
     {
-        private readonly IExerciseSettingsRepository _exerciseSettingsRepository;
+        private readonly IExerciseSettingsRepository _remoteExerciseSettingsRepository;
+        private readonly IExerciseSettingsRepository _localExerciseSettingsRepository;
+        private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly IEventsService _eventsService;
 
-        public ExerciseSettingsService(Func<DataSource, IExerciseSettingsRepository> exerciseSettingsRepositoryFactory,
-            IEventsService eventsService)
+        private IExerciseSettingsRepository ExerciseSettingsRepository
         {
-            _exerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Remote);
+            get
+            {
+                if (!_runtimeCacheService.TryGet(out AppModeCache cache))
+                {
+                    return _localExerciseSettingsRepository;
+                }
+
+                return cache.IsOffline ? _localExerciseSettingsRepository : _remoteExerciseSettingsRepository;
+            }
+        }
+
+        public ExerciseSettingsService(Func<DataSource, IExerciseSettingsRepository> exerciseSettingsRepositoryFactory,
+            IRuntimeCacheService runtimeCacheService, IEventsService eventsService)
+        {
+            _remoteExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Remote);
+            _localExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Local);
+            _runtimeCacheService = runtimeCacheService;
             _eventsService = eventsService;
         }
 
@@ -28,7 +45,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             try
             {
                 ExerciseSettings updatedSettings =
-                    await _exerciseSettingsRepository.UpdateAsync(delta, exerciseId, cancellationToken);
+                    await ExerciseSettingsRepository.UpdateAsync(delta, exerciseId, cancellationToken);
 
                 ExerciseSettingsChange change = delta.Change;
 

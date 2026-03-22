@@ -13,12 +13,30 @@ namespace Sportik.Desktop.Core.Services.Implementations
 {
     internal sealed class ExercisesService : IExercisesService
     {
-        private readonly IExercisesRepository _exercisesRepository;
+        private readonly IExercisesRepository _remoteExercisesRepository;
+        private readonly IExercisesRepository _localExercisesRepository;
+        private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly IEventsService _eventsService;
 
-        public ExercisesService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory, IEventsService eventsService)
+        private IExercisesRepository ExercisesRepository
         {
-            _exercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
+            get
+            {
+                if (!_runtimeCacheService.TryGet(out AppModeCache cache))
+                {
+                    return _localExercisesRepository;
+                }
+
+                return cache.IsOffline ? _localExercisesRepository : _remoteExercisesRepository;
+            }
+        }
+
+        public ExercisesService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory,
+            IRuntimeCacheService runtimeCacheService, IEventsService eventsService)
+        {
+            _remoteExercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
+            _localExercisesRepository = exercisesRepositoryFactory(DataSource.Local);
+            _runtimeCacheService = runtimeCacheService;
             _eventsService = eventsService;
         }
 
@@ -26,7 +44,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             try
             {
-                IEnumerable<Exercise> exercises = await _exercisesRepository.GetAllAsync(cancellationToken);
+                IEnumerable<Exercise> exercises = await ExercisesRepository.GetAllAsync(cancellationToken);
                 return OperationResult<IEnumerable<Exercise>>.Success(exercises);
             }
             catch (OperationCanceledException)
@@ -43,7 +61,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             try
             {
-                Exercise exercise = await _exercisesRepository.GetByIdAsync(id, cancellationToken);
+                Exercise exercise = await ExercisesRepository.GetByIdAsync(id, cancellationToken);
                 return OperationResult<Exercise>.Success(exercise);
             }
             catch (OperationCanceledException)
@@ -60,7 +78,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             try
             {
-                IEnumerable<Exercise> exercises = await _exercisesRepository.GetByIdsAsync(ids, cancellationToken);
+                IEnumerable<Exercise> exercises = await ExercisesRepository.GetByIdsAsync(ids, cancellationToken);
                 return OperationResult<IEnumerable<Exercise>>.Success(exercises);
             }
             catch (OperationCanceledException)
@@ -77,7 +95,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             try
             {
-                Exercise exercise = await _exercisesRepository.AddAsync(name, settings, cancellationToken);
+                Exercise exercise = await ExercisesRepository.AddAsync(name, settings, cancellationToken);
                 _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise));
 
                 return OperationResult<Exercise>.Success(exercise);

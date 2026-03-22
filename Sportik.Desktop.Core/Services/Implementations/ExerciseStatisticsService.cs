@@ -12,18 +12,36 @@ namespace Sportik.Desktop.Core.Services.Implementations
 {
     internal sealed class ExerciseStatisticsService : IExerciseStatisticsService
     {
-        private readonly IExerciseStatisticsRepository _exerciseStatisticsRepository;
+        private readonly IExerciseStatisticsRepository _remoteExerciseStatisticsRepository;
+        private readonly IExerciseStatisticsRepository _localExerciseStatisticsRepository;
+        private readonly IRuntimeCacheService _runtimeCacheService;
 
-        public ExerciseStatisticsService(IExerciseStatisticsRepository exerciseStatisticsRepository)
+        private IExerciseStatisticsRepository ExerciseStatisticsRepository
         {
-            _exerciseStatisticsRepository = exerciseStatisticsRepository;
+            get
+            {
+                if (!_runtimeCacheService.TryGet(out AppModeCache cache))
+                {
+                    return _localExerciseStatisticsRepository;
+                }
+
+                return cache.IsOffline ? _localExerciseStatisticsRepository : _remoteExerciseStatisticsRepository;
+            }
+        }
+
+        public ExerciseStatisticsService(Func<DataSource, IExerciseStatisticsRepository> exerciseStatisticsRepositoryFactory,
+             IRuntimeCacheService runtimeCacheService)
+        {
+            _remoteExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Remote);
+            _localExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Local);
+            _runtimeCacheService = runtimeCacheService;
         }
 
         public async Task<OperationResult<IEnumerable<WeekStatistics>>> GetWeeklyAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                IEnumerable<WeekStatistics> weekStatistics = await _exerciseStatisticsRepository.GetWeeklyAsync(cancellationToken);
+                IEnumerable<WeekStatistics> weekStatistics = await ExerciseStatisticsRepository.GetWeeklyAsync(cancellationToken);
                 return OperationResult<IEnumerable<WeekStatistics>>.Success(weekStatistics);
             }
             catch (OperationCanceledException)
@@ -40,7 +58,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             try
             {
-                ExerciseSet addedSet = await _exerciseStatisticsRepository.AddSetAsync(set, exerciseId, cancellationToken);
+                ExerciseSet addedSet = await ExerciseStatisticsRepository.AddSetAsync(set, exerciseId, cancellationToken);
                 return OperationResult<ExerciseSet>.Success(addedSet);
             }
             catch (OperationCanceledException)

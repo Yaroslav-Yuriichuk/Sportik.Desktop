@@ -1,32 +1,29 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
-using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.App
 {
-    internal sealed class AuthenticatedAppState : AppState
+    internal sealed class OfflineAppState : AppState
     {
-        public override ApplicationState ApplicationState => ApplicationState.Authenticated;
-
-        private readonly IEventsService _eventsService;
         private readonly IReminderService _reminderService;
-        private readonly IPersistentCacheService _persistentCacheService;
         private readonly IRuntimeCacheService _runtimeCacheService;
+        private readonly IPersistentCacheService _persistentCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
 
-        public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
-            IReminderService reminderService, IPersistentCacheService persistentCacheService,
-            IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory) : base(context)
+        public override ApplicationState ApplicationState => ApplicationState.Offline;
+
+        public OfflineAppState(AppStatesContext context, IReminderService reminderService,
+            IRuntimeCacheService runtimeCacheService, IPersistentCacheService persistentCacheService,
+            Func<IExercisesService> exercisesServiceFactory) : base(context)
         {
-            _eventsService = eventsService;
             _reminderService = reminderService;
-            _persistentCacheService = persistentCacheService;
             _runtimeCacheService = runtimeCacheService;
+            _persistentCacheService = persistentCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
         }
 
@@ -34,12 +31,8 @@ namespace Sportik.Desktop.Core.States.App
         {
             _runtimeCacheService.Set(new AppModeCache
             {
-                IsOffline = false,
+                IsOffline = true,
             });
-
-            _eventsService.AddListener<UserLoggedOutEventArgs>(EventsService_Event);
-            _eventsService.AddListener<UserRefreshFailedEventArgs>(EventsService_Event);
-            _eventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
             ReminderMode reminderMode = _reminderService.Mode;
             bool toStartReminders = true;
@@ -76,10 +69,6 @@ namespace Sportik.Desktop.Core.States.App
         {
             _runtimeCacheService.Remove<AppModeCache>();
 
-            _eventsService.RemoveListener<UserLoggedOutEventArgs>(EventsService_Event);
-            _eventsService.RemoveListener<UserRefreshFailedEventArgs>(EventsService_Event);
-            _eventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
-
             ReminderCache reminderCache = new ReminderCache
             {
                 IsActive = _reminderService.IsRunning,
@@ -89,21 +78,6 @@ namespace Sportik.Desktop.Core.States.App
             _persistentCacheService.Set(reminderCache);
 
             _reminderService.Stop();
-        }
-
-        private void EventsService_Event(UserLoggedOutEventArgs  args)
-        {
-            Context.Switch(Context.LoginAppState);
-        }
-
-        private void EventsService_Event(UserRefreshFailedEventArgs args)
-        {
-            Context.Switch(Context.LoginAppState);
-        }
-
-        private void EventsService_Event(ExerciseCreatedEventArgs args)
-        {
-            _reminderService.AddExercise(args.Exercise.Id);
         }
     }
 }

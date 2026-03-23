@@ -76,7 +76,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 .Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
         }
 
-        public async Task<Exercise> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
+        public async Task<Exercise> AddAsync(Guid? id, string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -87,7 +87,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
             OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
-            AddExerciseDto addExerciseDto = ExerciseMapper.ToDto(name, settings);
+            AddExerciseDto addExerciseDto = ExerciseMapper.ToDto(id, name, settings);
 
             ExerciseDto exercise = await _apiService.PostAsync<ExerciseDto>(
                 "/api/Exercises",

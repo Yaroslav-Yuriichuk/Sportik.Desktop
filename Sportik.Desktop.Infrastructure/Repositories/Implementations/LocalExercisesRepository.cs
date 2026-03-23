@@ -69,14 +69,14 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return entities.Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
         }
 
-        public async Task<Exercise> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
+        public async Task<Exercise> AddAsync(Guid? id, string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            UserExercise entity = ExerciseMapper.ToEntity(name, settings);
+            UserExercise entity = ExerciseMapper.ToEntity(id, name, settings);
 
             await _dbContext.Exercises.AddAsync(entity, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);

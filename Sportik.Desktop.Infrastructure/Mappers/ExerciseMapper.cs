@@ -15,12 +15,12 @@ namespace Sportik.Desktop.Infrastructure.Mappers
                 settings: ExerciseSettingsMapper.ToDomain(dto.Settings, isEnabled));
         }
 
-        public static AddExerciseDto ToDto(Guid? id, string name, ExerciseSettings settings)
+        public static AddExerciseDto ToDto(AddExerciseModel exercise)
         {
             return new AddExerciseDto(
-                id,
-                name,
-                ExerciseSettingsMapper.ToDto(settings));
+                exercise.Id,
+                exercise.Name,
+                ExerciseSettingsMapper.ToDto(exercise.Settings));
         }
     }
 }

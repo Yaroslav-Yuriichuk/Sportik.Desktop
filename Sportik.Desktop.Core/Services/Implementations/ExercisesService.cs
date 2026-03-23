@@ -95,7 +95,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             try
             {
-                Exercise exercise = await ExercisesRepository.AddAsync(null, name, settings, cancellationToken);
+                Exercise exercise = await ExercisesRepository.AddAsync(new AddExerciseModel(null, name, settings), cancellationToken);
                 _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise));
 
                 return OperationResult<Exercise>.Success(exercise);

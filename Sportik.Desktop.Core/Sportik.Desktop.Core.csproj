@@ -169,6 +169,7 @@
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="Helpers\TrainingSetsSequenceHelper.cs" />
+    <Compile Include="Models\AddExerciseModel.cs" />
     <Compile Include="Models\AppModeCache.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\DataSource.cs" />

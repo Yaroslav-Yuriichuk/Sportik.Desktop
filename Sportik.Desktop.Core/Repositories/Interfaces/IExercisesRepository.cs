@@ -15,6 +15,8 @@ namespace Sportik.Desktop.Core.Repositories.Interfaces
 
         Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
 
-        Task<Exercise> AddAsync(Guid? id, string name, ExerciseSettings settings, CancellationToken cancellationToken = default);
+        Task<Exercise> AddAsync(AddExerciseModel exercise, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Exercise>> AddRangeAsync(IEnumerable<AddExerciseModel> exercises, CancellationToken cancellationToken = default);
     }
 }

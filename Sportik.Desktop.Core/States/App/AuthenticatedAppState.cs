@@ -70,6 +70,11 @@ namespace Sportik.Desktop.Core.States.App
                     _reminderService.AddExercise(exercise.Id);
                 }
             });
+
+            Task.Run(async () =>
+            {
+                await exercisesService.SyncAsync(ActiveCancellationToken);
+            });
         }
 
         protected override void HandleExit()

@@ -163,7 +163,11 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 IsEnabled = IsEnabled,
             };
 
-            await ExerciseSettingsService.UpdateAsync(exerciseSettingsDelta, _exerciseId, cancellationToken);
+            UpdateExerciseSettingsModel updateModel = new UpdateExerciseSettingsModel(
+                _exerciseId,
+                exerciseSettingsDelta);
+
+            await ExerciseSettingsService.UpdateAsync(updateModel, cancellationToken);
         }
 
         private void EventsService_Event(SequentialExerciseStateChangedEventArgs args)

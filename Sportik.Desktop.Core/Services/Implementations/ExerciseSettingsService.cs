@@ -14,6 +14,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
 {
     internal sealed class ExerciseSettingsService : IExerciseSettingsService
     {
+        private readonly IExercisesRepository _localExercisesRepository;
         private readonly IExerciseSettingsRepository _remoteExerciseSettingsRepository;
         private readonly IExerciseSettingsRepository _localExerciseSettingsRepository;
         private readonly IRuntimeCacheService _runtimeCacheService;
@@ -32,9 +33,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
-        public ExerciseSettingsService(Func<DataSource, IExerciseSettingsRepository> exerciseSettingsRepositoryFactory,
+        public ExerciseSettingsService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory,
+            Func<DataSource, IExerciseSettingsRepository> exerciseSettingsRepositoryFactory,
             IRuntimeCacheService runtimeCacheService, IEventsService eventsService)
         {
+            _localExercisesRepository = exercisesRepositoryFactory(DataSource.Local);
             _remoteExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Remote);
             _localExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Local);
             _runtimeCacheService = runtimeCacheService;
@@ -125,6 +128,42 @@ namespace Sportik.Desktop.Core.Services.Implementations
             catch (Exception)
             {
                 return OperationResult<IEnumerable<Exercise>>.Failure(new[] { "An unexpected error occurred while updating exercise settings." });
+            }
+        }
+
+        public async Task<OperationResult> SyncAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                IEnumerable<Exercise> localExercises = await _localExercisesRepository.GetAllAsync(cancellationToken);
+
+                List<UpdateExerciseSettingsModel> updateModels = localExercises.Select(e =>
+                    {
+                        ExerciseSettingsDelta delta = new ExerciseSettingsDelta
+                        {
+                            Change = ExerciseSettingsChange.IsEnabled | ExerciseSettingsChange.TargetRepetitions |
+                                     ExerciseSettingsChange.TimeBetweenSets | ExerciseSettingsChange.ExecutionTime,
+                            IsEnabled = e.Settings.IsEnabled,
+                            TargetRepetitions = e.Settings.TargetRepetitions,
+                            TimeBetweenSets = e.Settings.TimeBetweenSets,
+                            ExecutionTime = e.Settings.ExecutionTime
+                        };
+
+                        return new UpdateExerciseSettingsModel(e.Id, delta);
+                    })
+                    .ToList();
+
+                await _remoteExerciseSettingsRepository.UpdateRangeAsync(updateModels, cancellationToken);
+
+                return OperationResult.Success();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult.Failure(new[] { "Failed to sync exercise settings." });
             }
         }
     }

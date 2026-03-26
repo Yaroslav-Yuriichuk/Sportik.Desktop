@@ -46,6 +46,18 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.Select(ws => WeekStatisticsMapper.ToDomain(ws, enabledExercisesCache.IncludesExercise));
         }
 
+        public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
+
+            IEnumerable<SetDto> sets = await _apiService.GetAsync<IEnumerable<SetDto>>(
+                "/api/ExerciseStatistics/sets",
+                authResult.Value,
+                cancellationToken);
+
+            return sets.Select(SetMapper.ToDomain);
+        }
+
         public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
         {
             OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);

@@ -77,6 +77,15 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate);
         }
 
+        public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            List<UserSet> setEntities = await _dbContext.Sets
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            return setEntities.Select(SetMapper.ToDomain);
+        }
+
         public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
         {
             UserExercise exerciseEntity = await _dbContext.Exercises

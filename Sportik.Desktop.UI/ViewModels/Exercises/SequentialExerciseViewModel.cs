@@ -285,8 +285,8 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             Exercise exercise = result.Value;
 
-            ExerciseSet set = new ExerciseSet(exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow);
-            await ExerciseStatisticsService.AddSetAsync(set, exercise.Id, cancellationToken);
+            AddExerciseSetModel addModel = new AddExerciseSetModel(null, exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow);
+            await ExerciseStatisticsService.AddSetAsync(addModel, exercise.Id, cancellationToken);
 
             EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(_exerciseId));
 

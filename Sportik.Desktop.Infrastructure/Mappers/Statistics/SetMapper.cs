@@ -8,12 +8,12 @@ namespace Sportik.Desktop.Infrastructure.Mappers.Statistics
     {
         public static ExerciseSet ToDomain(SetDto dto)
         {
-            return new ExerciseSet(dto.Repetitions, dto.LoggedAt);
+            return new ExerciseSet(dto.Id, dto.Repetitions, dto.LoggedAt);
         }
 
-        public static AddSetDto ToDto(ExerciseSet domain, Guid exerciseId)
+        public static AddSetDto ToDto(AddExerciseSetModel addModel, Guid exerciseId)
         {
-            return new AddSetDto(exerciseId, domain.Repetitions, domain.LoggedAt);
+            return new AddSetDto(addModel.Id, exerciseId, addModel.Repetitions, addModel.LoggedAt);
         }
     }
 }

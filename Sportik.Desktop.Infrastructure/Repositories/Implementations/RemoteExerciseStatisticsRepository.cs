@@ -46,11 +46,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.Select(ws => WeekStatisticsMapper.ToDomain(ws, enabledExercisesCache.IncludesExercise));
         }
 
-        public async Task<ExerciseSet> AddSetAsync(ExerciseSet set, Guid exerciseId, CancellationToken cancellationToken = default)
+        public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, Guid exerciseId, CancellationToken cancellationToken = default)
         {
             OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
-            AddSetDto addSetDto = SetMapper.ToDto(set, exerciseId);
+            AddSetDto addSetDto = SetMapper.ToDto(addModel, exerciseId);
 
             SetDto addedSet = await _apiService.PostAsync<SetDto>(
                 "/api/ExerciseStatistics/sets",

@@ -12,6 +12,6 @@ namespace Sportik.Desktop.Core.Services.Interfaces
     {
         Task<OperationResult<IEnumerable<WeekStatistics>>> GetWeeklyAsync(CancellationToken cancellationToken = default);
 
-        Task<OperationResult<ExerciseSet>> AddSetAsync(ExerciseSet set, Guid exerciseId, CancellationToken cancellationToken = default);
+        Task<OperationResult<ExerciseSet>> AddSetAsync(AddExerciseSetModel addModel, Guid exerciseId, CancellationToken cancellationToken = default);
     }
 }

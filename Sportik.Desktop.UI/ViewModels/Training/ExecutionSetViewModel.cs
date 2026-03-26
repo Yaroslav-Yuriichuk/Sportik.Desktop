@@ -144,8 +144,8 @@ namespace Sportik.Desktop.UI.ViewModels.Training
         {
             CompleteCommand.IsExecutable = false;
 
-            ExerciseSet set = new ExerciseSet(_trainingSet.Repetitions, DateTimeOffset.UtcNow);
-            await ExerciseStatisticsService.AddSetAsync(set, _trainingSet.ExerciseId, cancellationToken);
+            AddExerciseSetModel addModel = new AddExerciseSetModel(null, _trainingSet.Repetitions, DateTimeOffset.UtcNow);
+            await ExerciseStatisticsService.AddSetAsync(addModel, _trainingSet.ExerciseId, cancellationToken);
 
             EventsService.RaiseEvent(new TrainingSetCompleteRequestedEventArgs(_trainingSet.Id));
 

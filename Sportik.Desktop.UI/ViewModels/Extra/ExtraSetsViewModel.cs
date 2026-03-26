@@ -182,8 +182,8 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
 
             foreach (SetViewModel setViewModel in setViewModels)
             {
-                ExerciseSet set = new ExerciseSet(setViewModel.Repetitions, setViewModel.Date);
-                await ExerciseStatisticsService.AddSetAsync(set, setViewModel.Exercise.Id, cancellationToken);
+                AddExerciseSetModel addModel = new AddExerciseSetModel(null, setViewModel.Repetitions, setViewModel.Date);
+                await ExerciseStatisticsService.AddSetAsync(addModel, setViewModel.Exercise.Id, cancellationToken);
 
                 Sets.Remove(setViewModel);
             }

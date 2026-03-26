@@ -77,7 +77,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate);
         }
 
-        public async Task<ExerciseSet> AddSetAsync(ExerciseSet set, Guid exerciseId, CancellationToken cancellationToken = default)
+        public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, Guid exerciseId, CancellationToken cancellationToken = default)
         {
             UserExercise exerciseEntity = await _dbContext.Exercises
                 .AsNoTracking()
@@ -88,7 +88,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 return null;
             }
 
-            UserSet setEntity = SetMapper.ToEntity(set, exerciseId);
+            UserSet setEntity = SetMapper.ToEntity(addModel, exerciseId);
 
             _dbContext.Sets.Add(setEntity);
             await _dbContext.SaveChangesAsync(cancellationToken);

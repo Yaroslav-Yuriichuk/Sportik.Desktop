@@ -54,11 +54,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
-        public async Task<OperationResult<ExerciseSet>> AddSetAsync(AddExerciseSetModel addModel, Guid exerciseId, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<ExerciseSet>> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
         {
             try
             {
-                ExerciseSet addedSet = await ExerciseStatisticsRepository.AddSetAsync(addModel, exerciseId, cancellationToken);
+                ExerciseSet addedSet = await ExerciseStatisticsRepository.AddSetAsync(addModel, cancellationToken);
                 return OperationResult<ExerciseSet>.Success(addedSet);
             }
             catch (OperationCanceledException)

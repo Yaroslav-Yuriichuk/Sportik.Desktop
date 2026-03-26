@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Models;
@@ -11,6 +10,8 @@ namespace Sportik.Desktop.Core.Repositories.Interfaces
     {
         Task<IEnumerable<WeekStatistics>> GetWeeklyAsync(CancellationToken cancellationToken = default);
 
-        Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, Guid exerciseId, CancellationToken cancellationToken = default);
+        Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<ExerciseSet>> AddRangeAsync(IEnumerable<AddExerciseSetModel> addModels, CancellationToken cancellationToken = default);
     }
 }

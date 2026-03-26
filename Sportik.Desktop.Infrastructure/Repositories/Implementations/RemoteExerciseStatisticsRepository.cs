@@ -46,11 +46,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.Select(ws => WeekStatisticsMapper.ToDomain(ws, enabledExercisesCache.IncludesExercise));
         }
 
-        public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, Guid exerciseId, CancellationToken cancellationToken = default)
+        public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
         {
             OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
-            AddSetDto addSetDto = SetMapper.ToDto(addModel, exerciseId);
+            AddSetDto addSetDto = SetMapper.ToDto(addModel);
 
             SetDto addedSet = await _apiService.PostAsync<SetDto>(
                 "/api/ExerciseStatistics/sets",
@@ -59,6 +59,22 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 cancellationToken);
 
             return SetMapper.ToDomain(addedSet);
+        }
+
+        public async Task<IEnumerable<ExerciseSet>> AddRangeAsync(IEnumerable<AddExerciseSetModel> addModels,
+            CancellationToken cancellationToken = default)
+        {
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
+
+            IEnumerable<AddSetDto> addSetDtos = addModels.Select(SetMapper.ToDto);
+
+            IEnumerable<SetDto> addedSets = await _apiService.PostAsync<IEnumerable<SetDto>>(
+                "/api/ExerciseStatistics/sets/batch",
+                addSetDtos,
+                authResult.Value,
+                cancellationToken);
+
+            return addedSets.Select(SetMapper.ToDomain);
         }
     }
 }

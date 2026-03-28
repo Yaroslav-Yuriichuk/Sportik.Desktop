@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Constants;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -21,14 +22,14 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             private set => SetField(ref _name, value);
         }
 
-        private ObservableCollection<IntOption> _targetRepetitionsOptions;
+        private ObservableCollection<IntOption> _targetRepetitionsOptions = new ObservableCollection<IntOption>();
 
         public ObservableCollection<IntOption> TargetRepetitionsOptions
         {
             get => _targetRepetitionsOptions;
             private set
             {
-                if (SetField(ref _targetRepetitionsOptions, value))
+                if (SetField(ref _targetRepetitionsOptions, value) && value.Count > 0)
                 {
                     SetField(ref _selectedTargetRepetitionsOption, value[0], nameof(SelectedTargetRepetitionsOption));
                 }
@@ -52,14 +53,14 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             }
         }
 
-        private ObservableCollection<TimeSpanOption> _timeBetweenSetsOptions;
+        private ObservableCollection<TimeSpanOption> _timeBetweenSetsOptions = new ObservableCollection<TimeSpanOption>();
 
         public ObservableCollection<TimeSpanOption> TimeBetweenSetsOptions
         {
             get => _timeBetweenSetsOptions;
             private set
             {
-                if (SetField(ref _timeBetweenSetsOptions, value))
+                if (SetField(ref _timeBetweenSetsOptions, value) && value.Count > 0)
                 {
                     SetField(ref _selectedTimeBetweenSetsOption, value[0], nameof(SelectedTimeBetweenSetsOption));
                 }
@@ -83,14 +84,14 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             }
         }
 
-        private ObservableCollection<TimeSpanOption> _executionTimeOptions;
+        private ObservableCollection<TimeSpanOption> _executionTimeOptions = new ObservableCollection<TimeSpanOption>();
 
         public ObservableCollection<TimeSpanOption> ExecutionTimeOptions
         {
             get => _executionTimeOptions;
             private set
             {
-                if (SetField(ref _executionTimeOptions, value))
+                if (SetField(ref _executionTimeOptions, value) && value.Count > 0)
                 {
                     SetField(ref _selectedExecutionTimeOption, value[0], nameof(SelectedExecutionTimeOption));
                 }
@@ -114,7 +115,8 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
             }
         }
 
-        private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
+        private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetRequiredService<IExerciseSettingsService>();
+        private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
 
         private readonly Guid _exerciseId;
 
@@ -149,16 +151,52 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
                                                          ?? ExecutionTimeOptions[0];
 
             SetField(ref _selectedExecutionTimeOption, selectedExecutionTimeOption, nameof(SelectedExecutionTimeOption));
+
+            EventsService.AddListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
+            EventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
         }
 
         public void Dispose()
         {
+            EventsService.RemoveListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
+            EventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
+
             _updateCts?.Cancel();
+        }
+
+        private void EventsService_Event(ExerciseTimeBetweenSetsChangedEventArgs args)
+        {
+            if (args.ExerciseId != _exerciseId)
+            {
+                return;
+            }
+
+            TimeSpanOption targetOption = TimeBetweenSetsOptions.FirstOrDefault(o => o.TimeSpanValue == args.TimeBetweenSets);
+
+            if (targetOption != null)
+            {
+                SetField(ref _selectedTimeBetweenSetsOption, targetOption, nameof(SelectedTimeBetweenSetsOption));
+            }
+        }
+
+        private void EventsService_Event(ExerciseExecutionTimeChangedEventArgs args)
+        {
+            if (args.ExerciseId != _exerciseId)
+            {
+                return;
+            }
+
+            TimeSpanOption targetOption = ExecutionTimeOptions.FirstOrDefault(o => o.TimeSpanValue == args.ExecutionTime);
+
+            if (targetOption != null)
+            {
+                SetField(ref _selectedExecutionTimeOption, targetOption, nameof(SelectedExecutionTimeOption));
+            }
         }
 
         private async Task UpdateExerciseSettingsAsync(CancellationToken cancellationToken)
         {
-            ExerciseSettingsDelta exerciseSettingsDelta = new ExerciseSettingsDelta()
+            ExerciseSettingsDelta exerciseSettingsDelta = new ExerciseSettingsDelta
             {
                 Change = ExerciseSettingsChange.TargetRepetitions | ExerciseSettingsChange.TimeBetweenSets | ExerciseSettingsChange.ExecutionTime,
                 TargetRepetitions = SelectedTargetRepetitionsOption.IntValue,

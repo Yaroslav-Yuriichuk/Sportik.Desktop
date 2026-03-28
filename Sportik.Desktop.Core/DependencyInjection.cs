@@ -12,6 +12,7 @@ namespace Sportik.Desktop.Core
             services.AddTransient<IExercisesService, ExercisesService>();
             services.AddTransient<IExerciseStatisticsService, ExerciseStatisticsService>();
             services.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
+            services.AddTransient<ISynchronizationService, SynchronizationService>();
 
             services.AddSingleton<IEventsService, EventsService>();
             services.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
@@ -24,6 +25,7 @@ namespace Sportik.Desktop.Core
             services.AddTransient<Func<IExercisesService>>(sp => sp.GetRequiredService<IExercisesService>);
             services.AddTransient<Func<IAuthService>>(sp => sp.GetRequiredService<IAuthService>);
             services.AddTransient<Func<IExerciseStatisticsService>>(sp => sp.GetRequiredService<IExerciseStatisticsService>);
+            services.AddTransient<Func<ISynchronizationService>>(sp => sp.GetRequiredService<ISynchronizationService>);
 
             return services;
         }

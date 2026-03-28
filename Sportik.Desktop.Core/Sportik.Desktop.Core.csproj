@@ -201,6 +201,7 @@
     <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
     <Compile Include="Services\Implementations\ExerciseTimersService.cs" />
     <Compile Include="Services\Implementations\ReminderService.cs" />
+    <Compile Include="Services\Implementations\SynchronizationService.cs" />
     <Compile Include="Services\Implementations\TrainingService.cs" />
     <Compile Include="Services\Interfaces\IApplicationStatesService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
     <Compile Include="Services\Interfaces\ISecureCacheService.cs" />
     <Compile Include="Services\Interfaces\ISoundService.cs" />
+    <Compile Include="Services\Interfaces\ISynchronizationService.cs" />
     <Compile Include="Services\Interfaces\ITrainingService.cs" />
     <Compile Include="Services\Interfaces\IUsersService.cs" />
     <Compile Include="States\App\ApplicationState.cs" />

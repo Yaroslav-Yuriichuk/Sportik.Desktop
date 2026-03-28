@@ -110,49 +110,5 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 return OperationResult<Exercise>.Failure(new[] { "Failed to add exercise." });
             }
         }
-
-        public async Task<OperationResult> SyncAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                Task<IEnumerable<Exercise>> remoteExercisesTask = _remoteExercisesRepository.GetAllAsync(cancellationToken);
-                Task<IEnumerable<Exercise>> localExercisesTask = _localExercisesRepository.GetAllAsync(cancellationToken);
-
-                await Task.WhenAll(remoteExercisesTask, localExercisesTask);
-
-                IEnumerable<Exercise> remoteExercises = remoteExercisesTask.Result.ToList();
-                IEnumerable<Exercise> localExercises = localExercisesTask.Result.ToList();
-
-                HashSet<Guid> remoteExerciseIds = remoteExercises.Select(e => e.Id).ToHashSet();
-
-                List<AddExerciseModel> localExercisesToAdd = localExercises
-                    .Where(e => !remoteExerciseIds.Contains(e.Id))
-                    .Select(e => new AddExerciseModel(e.Id, e.Name, e.Settings))
-                    .ToList();
-
-                Task<IEnumerable<Exercise>> addLocalExercisesTask = _remoteExercisesRepository.AddRangeAsync(localExercisesToAdd, cancellationToken);
-
-                HashSet<Guid> localExerciseIds = localExercises.Select(e => e.Id).ToHashSet();
-
-                List<AddExerciseModel> remoteExercisesToAdd = remoteExercises
-                    .Where(e => !localExerciseIds.Contains(e.Id))
-                    .Select(e => new AddExerciseModel(e.Id, e.Name, e.Settings))
-                    .ToList();
-
-                Task<IEnumerable<Exercise>> addRemoteExercisesTask = _localExercisesRepository.AddRangeAsync(remoteExercisesToAdd, cancellationToken);
-
-                await Task.WhenAll(addLocalExercisesTask, addRemoteExercisesTask);
-
-                return OperationResult.Success();
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                return OperationResult.Failure(new[] { "Failed to sync exercises." });
-            }
-        }
     }
 }

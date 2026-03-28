@@ -69,27 +69,48 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return entities.Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
         }
 
-        public async Task<Exercise> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
+        public async Task<Exercise> AddAsync(AddExerciseModel exercise, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            UserExercise entity = ExerciseMapper.ToEntity(name, settings);
+            UserExercise entity = ExerciseMapper.ToEntity(exercise);
 
             await _dbContext.Exercises.AddAsync(entity, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
 
-            if (settings.IsEnabled)
+            if (exercise.Settings.IsEnabled)
             {
                 enabledExercisesCache.AddExercise(entity.Id);
                 _persistentCacheService.Set(enabledExercisesCache);
             }
 
             return ExerciseMapper.ToDomain(entity, enabledExercisesCache.IncludesExercise(entity.Id));
+        }
+
+        public async Task<IEnumerable<Exercise>> AddRangeAsync(IEnumerable<AddExerciseModel> exercises, CancellationToken cancellationToken = default)
+        {
+            IList<AddExerciseModel> exerciseModels = exercises as IList<AddExerciseModel> ?? exercises.ToList();
+            IList<UserExercise> entities = exerciseModels.Select(ExerciseMapper.ToEntity).ToList();
+
+            await _dbContext.Exercises.AddRangeAsync(entities, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            for (int i = 0; i < exerciseModels.Count; i++)
+            {
+                AddExerciseModel exercise = exerciseModels[i];
+                UserExercise entity = entities[i];
+
+                if (exercise.Settings.IsEnabled)
+                {
+                    enabledExercisesCache.AddExercise(entity.Id);
+                }
+            }
+
+            _persistentCacheService.Set(enabledExercisesCache);
+
+            return entities.Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
         }
     }
 }

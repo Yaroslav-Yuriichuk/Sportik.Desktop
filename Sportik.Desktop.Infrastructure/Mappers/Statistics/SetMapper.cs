@@ -1,5 +1,4 @@
-﻿using System;
-using Sportik.Desktop.Core.Models;
+﻿using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Infrastructure.DTOs.Statistics;
 
 namespace Sportik.Desktop.Infrastructure.Mappers.Statistics
@@ -8,12 +7,12 @@ namespace Sportik.Desktop.Infrastructure.Mappers.Statistics
     {
         public static ExerciseSet ToDomain(SetDto dto)
         {
-            return new ExerciseSet(dto.Repetitions, dto.LoggedAt);
+            return new ExerciseSet(dto.Id, dto.Repetitions, dto.LoggedAt, dto.ExerciseId);
         }
 
-        public static AddSetDto ToDto(ExerciseSet domain, Guid exerciseId)
+        public static AddSetDto ToDto(AddExerciseSetModel addModel)
         {
-            return new AddSetDto(exerciseId, domain.Repetitions, domain.LoggedAt);
+            return new AddSetDto(addModel.Id, addModel.ExerciseId, addModel.Repetitions, addModel.LoggedAt);
         }
     }
 }

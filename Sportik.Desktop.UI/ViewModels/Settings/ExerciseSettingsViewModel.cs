@@ -166,7 +166,11 @@ namespace Sportik.Desktop.UI.ViewModels.Settings
                 ExecutionTime = SelectedExecutionTimeOption.TimeSpanValue,
             };
 
-            await ExerciseSettingsService.UpdateAsync(exerciseSettingsDelta, _exerciseId, cancellationToken);
+            UpdateExerciseSettingsModel updateModel = new UpdateExerciseSettingsModel(
+                _exerciseId,
+                exerciseSettingsDelta);
+
+            await ExerciseSettingsService.UpdateAsync(updateModel, cancellationToken);
         }
     }
 }

@@ -77,23 +77,64 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate);
         }
 
-        public async Task<ExerciseSet> AddSetAsync(ExerciseSet set, Guid exerciseId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            List<UserSet> setEntities = await _dbContext.Sets
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            return setEntities.Select(SetMapper.ToDomain);
+        }
+
+        public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
         {
             UserExercise exerciseEntity = await _dbContext.Exercises
                 .AsNoTracking()
-                .FirstOrDefaultAsync(e => e.Id == exerciseId, cancellationToken);
+                .FirstOrDefaultAsync(e => e.Id == addModel.ExerciseId, cancellationToken);
 
             if (exerciseEntity is null)
             {
                 return null;
             }
 
-            UserSet setEntity = SetMapper.ToEntity(set, exerciseId);
+            UserSet setEntity = SetMapper.ToEntity(addModel);
 
             _dbContext.Sets.Add(setEntity);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return SetMapper.ToDomain(setEntity);
+        }
+
+        public async Task<IEnumerable<ExerciseSet>> AddRangeAsync(IEnumerable<AddExerciseSetModel> addModels,
+            CancellationToken cancellationToken = default)
+        {
+            addModels = addModels as IList<AddExerciseSetModel> ?? addModels.ToList();
+            List<Guid> exerciseIds = addModels.Select(m => m.ExerciseId).Distinct().ToList();
+
+            HashSet<Guid> existingExerciseIds = (await _dbContext.Exercises
+                    .AsNoTracking()
+                    .Where(e => exerciseIds.Contains(e.Id))
+                    .Select(e => e.Id)
+                    .ToListAsync(cancellationToken))
+                .ToHashSet();
+
+            List<UserSet> setEntities = new List<UserSet>();
+
+            foreach (AddExerciseSetModel addModel in addModels)
+            {
+                if (!existingExerciseIds.Contains(addModel.ExerciseId))
+                {
+                    continue;
+                }
+
+                UserSet setEntity = SetMapper.ToEntity(addModel);
+                setEntities.Add(setEntity);
+            }
+
+            _dbContext.Sets.AddRange(setEntities);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return setEntities.Select(SetMapper.ToDomain);
         }
     }
 }

@@ -6,20 +6,22 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Mappers
 {
     internal static class SetMapper
     {
-        public static UserSet ToEntity(ExerciseSet set, Guid exerciseId)
+        public static UserSet ToEntity(AddExerciseSetModel addModel)
         {
             return new UserSet(
-                Guid.NewGuid(),
-                set.Repetitions,
-                set.LoggedAt,
-                exerciseId);
+                addModel.Id ?? Guid.NewGuid(),
+                addModel.Repetitions,
+                addModel.LoggedAt,
+                addModel.ExerciseId);
         }
 
         public static ExerciseSet ToDomain(UserSet set)
         {
             return new ExerciseSet(
+                set.Id,
                 set.Repetitions,
-                set.LoggedAt);
+                set.LoggedAt,
+                set.ExerciseId);
         }
     }
 }

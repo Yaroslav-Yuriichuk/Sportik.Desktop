@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 
-namespace Sportik.Desktop.Infrastructure.DTOs.Statistics
+namespace Sportik.Desktop.Core.Models
 {
-    internal sealed class SetDto
+    public sealed class AddExerciseSetModel
     {
-        public Guid Id { get; }
+        public Guid? Id { get; }
 
         public int Repetitions { get; }
 
@@ -12,7 +12,7 @@ namespace Sportik.Desktop.Infrastructure.DTOs.Statistics
 
         public Guid ExerciseId { get; }
 
-        public SetDto(Guid id, int repetitions, DateTimeOffset loggedAt, Guid exerciseId)
+        public AddExerciseSetModel(Guid? id, int repetitions, DateTimeOffset loggedAt, Guid exerciseId)
         {
             Id = id;
             Repetitions = repetitions;

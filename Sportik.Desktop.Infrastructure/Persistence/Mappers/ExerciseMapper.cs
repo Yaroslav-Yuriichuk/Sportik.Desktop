@@ -15,12 +15,12 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Mappers
                 ExerciseSettingsMapper.ToDomain(entity.Settings, isEnabled));
         }
 
-        public static UserExercise ToEntity(string name, ExerciseSettings settings)
+        public static UserExercise ToEntity(AddExerciseModel exercise)
         {
             return new UserExercise(
-                Guid.NewGuid(),
-                name,
-                ExerciseSettingsMapper.ToEntity(settings));
+                exercise.Id ?? Guid.NewGuid(),
+                exercise.Name,
+                ExerciseSettingsMapper.ToEntity(exercise.Settings));
         }
     }
 }

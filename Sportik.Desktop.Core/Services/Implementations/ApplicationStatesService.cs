@@ -18,12 +18,15 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IAuthService> _authServiceFactory;
+        private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
+        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
 
         private AppStatesContext _appStatesContext;
 
         public ApplicationStatesService(IEventsService eventsService, IReminderService reminderService,
             IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory,
-            IRuntimeCacheService runtimeCacheService, Func<IAuthService> authServiceFactory)
+            IRuntimeCacheService runtimeCacheService, Func<IAuthService> authServiceFactory,
+            Func<IExerciseSettingsService> exerciseSettingsServiceFactory, Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
@@ -31,6 +34,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
             _exercisesServiceFactory = exercisesServiceFactory;
             _runtimeCacheService = runtimeCacheService;
             _authServiceFactory = authServiceFactory;
+            _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
+            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
         }
 
         public void Start()
@@ -41,7 +46,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
 
             _appStatesContext = new AppStatesContext(_eventsService, _reminderService, _persistentCacheService,
-                _exercisesServiceFactory, _runtimeCacheService, _authServiceFactory);
+                _exercisesServiceFactory, _runtimeCacheService, _authServiceFactory, _exerciseSettingsServiceFactory,
+                _exerciseStatisticsServiceFactory);
         }
 
         public void Stop()

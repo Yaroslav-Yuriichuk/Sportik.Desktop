@@ -160,7 +160,11 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 IsEnabled = IsEnabled,
             };
 
-            await ExerciseSettingsService.UpdateAsync(exerciseSettingsDelta, _exerciseId, cancellationToken);
+            UpdateExerciseSettingsModel updateModel = new UpdateExerciseSettingsModel(
+                _exerciseId,
+                exerciseSettingsDelta);
+
+            await ExerciseSettingsService.UpdateAsync(updateModel, cancellationToken);
         }
 
         private void EventsService_Event(ParallelExerciseStateChangedEventArgs args)
@@ -275,8 +279,8 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             Exercise exercise = result.Value;
 
-            ExerciseSet set = new ExerciseSet(exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow);
-            await ExerciseStatisticsService.AddSetAsync(set, exercise.Id, cancellationToken);
+            AddExerciseSetModel addModel = new AddExerciseSetModel(null, exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow, exercise.Id);
+            await ExerciseStatisticsService.AddSetAsync(addModel, cancellationToken);
 
             EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(_exerciseId));
 

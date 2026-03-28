@@ -23,6 +23,7 @@ namespace Sportik.Desktop.Core
             services.AddTransient<Func<INotificationService>>(sp => sp.GetRequiredService<INotificationService>);
             services.AddTransient<Func<IExercisesService>>(sp => sp.GetRequiredService<IExercisesService>);
             services.AddTransient<Func<IAuthService>>(sp => sp.GetRequiredService<IAuthService>);
+            services.AddTransient<Func<IExerciseStatisticsService>>(sp => sp.GetRequiredService<IExerciseStatisticsService>);
 
             return services;
         }

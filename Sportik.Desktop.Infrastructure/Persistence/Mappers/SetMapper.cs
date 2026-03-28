@@ -20,7 +20,8 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Mappers
             return new ExerciseSet(
                 set.Id,
                 set.Repetitions,
-                set.LoggedAt);
+                set.LoggedAt,
+                set.ExerciseId);
         }
     }
 }

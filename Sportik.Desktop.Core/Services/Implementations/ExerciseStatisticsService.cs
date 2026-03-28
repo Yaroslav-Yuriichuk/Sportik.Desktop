@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
@@ -68,6 +69,50 @@ namespace Sportik.Desktop.Core.Services.Implementations
             catch (Exception)
             {
                 return OperationResult<ExerciseSet>.Failure(new[] { "Failed to add the exercise set." });
+            }
+        }
+
+        public async Task<OperationResult> SyncAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                Task<IEnumerable<ExerciseSet>> remoteSetsTask = _remoteExerciseStatisticsRepository.GetAllAsync(cancellationToken);
+                Task<IEnumerable<ExerciseSet>> localSetsTask = _localExerciseStatisticsRepository.GetAllAsync(cancellationToken);
+
+                await Task.WhenAll(remoteSetsTask, localSetsTask);
+
+                IEnumerable<ExerciseSet> remoteSets = remoteSetsTask.Result.ToList();
+                IEnumerable<ExerciseSet> localSets = localSetsTask.Result.ToList();
+
+                HashSet<Guid> remoteSetIds = remoteSets.Select(set => set.Id).ToHashSet();
+
+                List<AddExerciseSetModel> localSetsToAdd = localSets
+                    .Where(set => !remoteSetIds.Contains(set.Id))
+                    .Select(set => new AddExerciseSetModel(set.Id, set.Repetitions, set.LoggedAt, set.ExerciseId))
+                    .ToList();
+
+                Task<IEnumerable<ExerciseSet>> addLocalSetsTask = _remoteExerciseStatisticsRepository.AddRangeAsync(localSetsToAdd, cancellationToken);
+
+                HashSet<Guid> localSetIds = localSets.Select(set => set.Id).ToHashSet();
+
+                List<AddExerciseSetModel> remoteSetsToAdd = remoteSets
+                    .Where(set => !localSetIds.Contains(set.Id))
+                    .Select(set => new AddExerciseSetModel(set.Id, set.Repetitions, set.LoggedAt, set.ExerciseId))
+                    .ToList();
+
+                Task<IEnumerable<ExerciseSet>> addRemoteSetsTask = _localExerciseStatisticsRepository.AddRangeAsync(remoteSetsToAdd, cancellationToken);
+
+                await Task.WhenAll(addLocalSetsTask, addRemoteSetsTask);
+
+                return OperationResult.Success();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult.Failure(new[] { "An error occurred during synchronization of exercise statistics." });
             }
         }
     }

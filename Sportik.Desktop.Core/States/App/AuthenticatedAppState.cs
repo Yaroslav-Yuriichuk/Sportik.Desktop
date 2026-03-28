@@ -19,11 +19,13 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
+        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
 
         public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
             IReminderService reminderService, IPersistentCacheService persistentCacheService,
             IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory) : base(context)
+            Func<IExerciseSettingsService> exerciseSettingsServiceFactory,
+            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
@@ -31,6 +33,7 @@ namespace Sportik.Desktop.Core.States.App
             _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
             _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
+            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
         }
 
         protected override void HandleEnter()
@@ -59,6 +62,7 @@ namespace Sportik.Desktop.Core.States.App
 
             IExercisesService exercisesService = _exercisesServiceFactory();
             IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
+            IExerciseStatisticsService exerciseStatisticsService = _exerciseStatisticsServiceFactory();
 
             Task.Run(async () =>
             {
@@ -79,6 +83,7 @@ namespace Sportik.Desktop.Core.States.App
             {
                 await exercisesService.SyncAsync(ActiveCancellationToken);
                 await exerciseSettingsService.SyncAsync(ActiveCancellationToken);
+                await exerciseStatisticsService.SyncAsync(ActiveCancellationToken);
             });
         }
 

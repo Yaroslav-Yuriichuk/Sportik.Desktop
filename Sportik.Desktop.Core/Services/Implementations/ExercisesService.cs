@@ -130,7 +130,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     .Select(e => new AddExerciseModel(e.Id, e.Name, e.Settings))
                     .ToList();
 
-                Task<IEnumerable<Exercise>> addedLocalExercises = _remoteExercisesRepository.AddRangeAsync(localExercisesToAdd, cancellationToken);
+                Task<IEnumerable<Exercise>> addLocalExercisesTask = _remoteExercisesRepository.AddRangeAsync(localExercisesToAdd, cancellationToken);
 
                 HashSet<Guid> localExerciseIds = localExercises.Select(e => e.Id).ToHashSet();
 
@@ -139,9 +139,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     .Select(e => new AddExerciseModel(e.Id, e.Name, e.Settings))
                     .ToList();
 
-                Task<IEnumerable<Exercise>> addedRemoteExercises = _localExercisesRepository.AddRangeAsync(remoteExercisesToAdd, cancellationToken);
+                Task<IEnumerable<Exercise>> addRemoteExercisesTask = _localExercisesRepository.AddRangeAsync(remoteExercisesToAdd, cancellationToken);
 
-                await Task.WhenAll(addedLocalExercises, addedRemoteExercises);
+                await Task.WhenAll(addLocalExercisesTask, addRemoteExercisesTask);
 
                 return OperationResult.Success();
             }

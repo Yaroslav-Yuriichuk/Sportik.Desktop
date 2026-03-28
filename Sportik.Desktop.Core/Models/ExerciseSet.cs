@@ -10,11 +10,14 @@ namespace Sportik.Desktop.Core.Models
 
         public DateTimeOffset LoggedAt { get; }
 
-        public ExerciseSet(Guid id, int repetitions, DateTimeOffset loggedAt)
+        public Guid ExerciseId { get; }
+
+        public ExerciseSet(Guid id, int repetitions, DateTimeOffset loggedAt, Guid exerciseId)
         {
             Id = id;
             Repetitions = repetitions;
             LoggedAt = loggedAt;
+            ExerciseId = exerciseId;
         }
     }
 }

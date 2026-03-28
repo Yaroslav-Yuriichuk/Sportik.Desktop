@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Constants;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -14,14 +15,14 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
 {
     internal sealed class ExtraSetsViewModel : ViewModel, IDisposable
     {
-        private ObservableCollection<ExerciseOption> _exercisesOptions;
+        private ObservableCollection<ExerciseOption> _exercisesOptions = new ObservableCollection<ExerciseOption>();
 
         public ObservableCollection<ExerciseOption> ExercisesOptions
         {
             get => _exercisesOptions;
             set
             {
-                if (SetField(ref _exercisesOptions, value))
+                if (SetField(ref _exercisesOptions, value) && value.Count > 0)
                 {
                     SelectedExerciseOption = value[0];
                 }
@@ -77,14 +78,14 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             }
         }
 
-        private ObservableCollection<IntOption> _repetitionsOptions;
+        private ObservableCollection<IntOption> _repetitionsOptions = new ObservableCollection<IntOption>();
 
         public ObservableCollection<IntOption> RepetitionsOptions
         {
             get => _repetitionsOptions;
             set
             {
-                if (SetField(ref _repetitionsOptions, value))
+                if (SetField(ref _repetitionsOptions, value) && value.Count > 0)
                 {
                     SetField(ref _selectedRepetitionsOption, value[0], nameof(SelectedRepetitionsOption));
                 }
@@ -99,7 +100,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             set => SetField(ref _selectedRepetitionsOption, value);
         }
 
-        private ObservableCollection<SetViewModel> _sets;
+        private ObservableCollection<SetViewModel> _sets = new ObservableCollection<SetViewModel>();
 
         public ObservableCollection<SetViewModel> Sets
         {
@@ -111,8 +112,9 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
 
         public IReactiveCommand SaveSetsCommand { get; }
 
-        private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
-        private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetService<IExerciseStatisticsService>();
+        private IExercisesService ExercisesService => App.ServiceProvider.GetRequiredService<IExercisesService>();
+        private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
+        private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
         private readonly CancellationTokenSource _saveCts = new CancellationTokenSource();
@@ -130,13 +132,15 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             AddSetCommand = new ReactiveRelayCommand(AddSet);
             SaveSetsCommand = new ReactiveRelayCommand(SaveSets, false);
 
-            Sets = new ObservableCollection<SetViewModel>();
+            EventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
             _ = LoadExercisesAsync(_loadCts.Token);
         }
 
         public void Dispose()
         {
+            EventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
+
             _loadCts.Cancel();
             _saveCts.Cancel();
         }
@@ -151,8 +155,41 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
                 return;
             }
 
-            ExercisesOptions = new ObservableCollection<ExerciseOption>(
-                result.Value.Select(e => new ExerciseOption(e)));
+            HashSet<Guid> existingExerciseIds = ExercisesOptions.Select(o => o.Exercise.Id).ToHashSet();
+
+            if (ExercisesOptions.Count > 0)
+            {
+                foreach (Exercise exercise in result.Value.Where(e => !existingExerciseIds.Contains(e.Id)))
+                {
+                    ExercisesOptions.Add(new ExerciseOption(exercise));
+                }
+            }
+            else
+            {
+                ExercisesOptions = new ObservableCollection<ExerciseOption>(result.Value.Select(e => new ExerciseOption(e)));
+            }
+        }
+
+        private void EventsService_Event(ExerciseCreatedEventArgs args)
+        {
+            ExerciseOption exerciseOption = ExercisesOptions.FirstOrDefault(o => o.Exercise.Id == args.Exercise.Id);
+
+            if (exerciseOption != null)
+            {
+                return;
+            }
+
+            if (ExercisesOptions.Count > 0)
+            {
+                ExercisesOptions.Add(new ExerciseOption(args.Exercise));
+            }
+            else
+            {
+                ExercisesOptions = new ObservableCollection<ExerciseOption>
+                {
+                    new ExerciseOption(args.Exercise)
+                };
+            }
         }
 
         private void AddSet()

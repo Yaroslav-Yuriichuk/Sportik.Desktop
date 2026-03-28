@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Repositories.Interfaces;
@@ -13,16 +14,22 @@ namespace Sportik.Desktop.Core.Services.Implementations
 {
     internal sealed class SynchronizationService : ISynchronizationService
     {
+        private readonly IRuntimeCacheService _runtimeCacheService;
+        private readonly IEventsService _eventsService;
         private readonly IExercisesRepository _remoteExercisesRepository;
         private readonly IExercisesRepository _localExercisesRepository;
         private readonly IExerciseSettingsRepository _remoteExerciseSettingsRepository;
         private readonly IExerciseStatisticsRepository _remoteExerciseStatisticsRepository;
         private readonly IExerciseStatisticsRepository _localExerciseStatisticsRepository;
 
-        public SynchronizationService(Func<DataSource, IExercisesRepository> exercisesRepositoryFactory,
+        public SynchronizationService(IRuntimeCacheService runtimeCacheService,
+            IEventsService eventsService,
+            Func<DataSource, IExercisesRepository> exercisesRepositoryFactory,
             Func<DataSource, IExerciseSettingsRepository> exerciseSettingsRepositoryFactory,
             Func<DataSource, IExerciseStatisticsRepository> exerciseStatisticsRepositoryFactory)
         {
+            _runtimeCacheService = runtimeCacheService;
+            _eventsService = eventsService;
             _remoteExercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
             _localExercisesRepository = exercisesRepositoryFactory(DataSource.Local);
             _remoteExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Remote);
@@ -32,6 +39,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
         public async Task<OperationResult> SyncAsync(CancellationToken cancellationToken = default)
         {
+            if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache) || appModeCache.IsOffline)
+            {
+                return OperationResult.Failure(new[] { "Cannot sync while in offline mode." });
+            }
+
             try
             {
                 Task<IEnumerable<Exercise>> remoteExercisesTask = _remoteExercisesRepository.GetAllAsync(cancellationToken);
@@ -61,6 +73,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 Task<IEnumerable<Exercise>> addRemoteExercisesTask = _localExercisesRepository.AddRangeAsync(remoteExercisesToAdd, cancellationToken);
 
                 await Task.WhenAll(addLocalExercisesTask, addRemoteExercisesTask);
+
+                foreach (Exercise exercise in addLocalExercisesTask.Result)
+                {
+                    _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise));
+                }
             }
             catch (OperationCanceledException)
             {

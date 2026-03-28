@@ -108,7 +108,14 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     })
                     .ToList();
 
-                await _remoteExerciseSettingsRepository.UpdateRangeAsync(updateModels, cancellationToken);
+                IEnumerable<Exercise> exercises = await _remoteExerciseSettingsRepository.UpdateRangeAsync(updateModels, cancellationToken);
+
+                foreach (Exercise exercise in exercises)
+                {
+                    _eventsService.RaiseEvent(new ExerciseIsEnabledChangedEventArgs(exercise.Id, exercise.Settings.IsEnabled));
+                    _eventsService.RaiseEvent(new ExerciseTimeBetweenSetsChangedEventArgs(exercise.Id, exercise.Settings.TimeBetweenSets));
+                    _eventsService.RaiseEvent(new ExerciseExecutionTimeChangedEventArgs(exercise.Id, exercise.Settings.ExecutionTime));
+                }
             }
             catch (OperationCanceledException)
             {

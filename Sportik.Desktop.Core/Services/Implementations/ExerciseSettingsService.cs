@@ -130,41 +130,5 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 return OperationResult<IEnumerable<Exercise>>.Failure(new[] { "An unexpected error occurred while updating exercise settings." });
             }
         }
-
-        public async Task<OperationResult> SyncAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                IEnumerable<Exercise> localExercises = await _localExercisesRepository.GetAllAsync(cancellationToken);
-
-                List<UpdateExerciseSettingsModel> updateModels = localExercises.Select(e =>
-                    {
-                        ExerciseSettingsDelta delta = new ExerciseSettingsDelta
-                        {
-                            Change = ExerciseSettingsChange.IsEnabled | ExerciseSettingsChange.TargetRepetitions |
-                                     ExerciseSettingsChange.TimeBetweenSets | ExerciseSettingsChange.ExecutionTime,
-                            IsEnabled = e.Settings.IsEnabled,
-                            TargetRepetitions = e.Settings.TargetRepetitions,
-                            TimeBetweenSets = e.Settings.TimeBetweenSets,
-                            ExecutionTime = e.Settings.ExecutionTime
-                        };
-
-                        return new UpdateExerciseSettingsModel(e.Id, delta);
-                    })
-                    .ToList();
-
-                await _remoteExerciseSettingsRepository.UpdateRangeAsync(updateModels, cancellationToken);
-
-                return OperationResult.Success();
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                return OperationResult.Failure(new[] { "Failed to sync exercise settings." });
-            }
-        }
     }
 }

@@ -18,22 +18,19 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IPersistentCacheService _persistentCacheService;
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
-        private readonly Func<IExerciseSettingsService> _exerciseSettingsServiceFactory;
-        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
+        private readonly Func<ISynchronizationService> _synchronizationServiceFactory;
 
         public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
             IReminderService reminderService, IPersistentCacheService persistentCacheService,
             IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory,
-            Func<IExerciseSettingsService> exerciseSettingsServiceFactory,
-            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory) : base(context)
+            Func<ISynchronizationService> synchronizationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
             _persistentCacheService = persistentCacheService;
             _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
-            _exerciseSettingsServiceFactory = exerciseSettingsServiceFactory;
-            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
+            _synchronizationServiceFactory = synchronizationServiceFactory;
         }
 
         protected override void HandleEnter()
@@ -61,8 +58,7 @@ namespace Sportik.Desktop.Core.States.App
             }
 
             IExercisesService exercisesService = _exercisesServiceFactory();
-            IExerciseSettingsService exerciseSettingsService = _exerciseSettingsServiceFactory();
-            IExerciseStatisticsService exerciseStatisticsService = _exerciseStatisticsServiceFactory();
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
 
             Task.Run(async () =>
             {
@@ -81,9 +77,7 @@ namespace Sportik.Desktop.Core.States.App
 
             Task.Run(async () =>
             {
-                await exercisesService.SyncAsync(ActiveCancellationToken);
-                await exerciseSettingsService.SyncAsync(ActiveCancellationToken);
-                await exerciseStatisticsService.SyncAsync(ActiveCancellationToken);
+                await synchronizationService.SyncAsync(ActiveCancellationToken);
             });
         }
 

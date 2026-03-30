@@ -6,7 +6,7 @@ using Sportik.Desktop.Core.Models.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
-    internal sealed class DayStatisticsViewModel : ViewModel
+    internal sealed class DayStatisticsViewModel : ViewModel, IDisposable
     {
         private DateTime _date;
 
@@ -39,10 +39,18 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             Date = dayStatistics.Date;
 
             ExerciseStatistics = new ObservableCollection<ExerciseStatisticsViewModel>(
-                               dayStatistics.ExerciseStatistics.Select(statistics => new ExerciseStatisticsViewModel(statistics)));
+                               dayStatistics.ExerciseStatistics.Select(statistics => new ExerciseStatisticsViewModel(statistics, dayStatistics.Date)));
 
             IsCollapsed = true;
             ToggleCollapsedCommand = new ReactiveRelayCommand(ToggleCollapsed);
+        }
+
+        public void Dispose()
+        {
+            foreach (ExerciseStatisticsViewModel exerciseStatisticsViewModel in ExerciseStatistics)
+            {
+                exerciseStatisticsViewModel.Dispose();
+            }
         }
 
         private void ToggleCollapsed()

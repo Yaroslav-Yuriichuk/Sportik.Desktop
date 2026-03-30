@@ -12,7 +12,5 @@ namespace Sportik.Desktop.Core.Services.Interfaces
 
         Task<OperationResult<IEnumerable<Exercise>>> UpdateRangeAsync(IEnumerable<UpdateExerciseSettingsModel> updateModels,
             CancellationToken cancellationToken = default);
-
-        Task<OperationResult> SyncAsync(CancellationToken cancellationToken = default);
     }
 }

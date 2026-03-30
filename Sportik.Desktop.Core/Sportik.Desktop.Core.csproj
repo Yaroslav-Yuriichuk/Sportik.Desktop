@@ -145,6 +145,7 @@
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseIsEnabledChangedEventArgs.cs" />
+    <Compile Include="Events\ExerciseSetAddedEventArgs.cs" />
     <Compile Include="Events\ExerciseSwitchRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseTimeBetweenSetsChangedEventArgs.cs" />
     <Compile Include="Events\LoginRequestedEventArgs.cs" />

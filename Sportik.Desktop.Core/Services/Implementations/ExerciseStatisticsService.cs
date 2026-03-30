@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Repositories.Interfaces;
@@ -16,6 +16,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IExerciseStatisticsRepository _remoteExerciseStatisticsRepository;
         private readonly IExerciseStatisticsRepository _localExerciseStatisticsRepository;
         private readonly IRuntimeCacheService _runtimeCacheService;
+        private readonly IEventsService _eventsService;
 
         private IExerciseStatisticsRepository ExerciseStatisticsRepository
         {
@@ -31,11 +32,12 @@ namespace Sportik.Desktop.Core.Services.Implementations
         }
 
         public ExerciseStatisticsService(Func<DataSource, IExerciseStatisticsRepository> exerciseStatisticsRepositoryFactory,
-             IRuntimeCacheService runtimeCacheService)
+             IRuntimeCacheService runtimeCacheService, IEventsService eventsService)
         {
             _remoteExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Remote);
             _localExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Local);
             _runtimeCacheService = runtimeCacheService;
+            _eventsService = eventsService;
         }
 
         public async Task<OperationResult<IEnumerable<WeekStatistics>>> GetWeeklyAsync(CancellationToken cancellationToken = default)
@@ -60,6 +62,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
             try
             {
                 ExerciseSet addedSet = await ExerciseStatisticsRepository.AddSetAsync(addModel, cancellationToken);
+                _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(addedSet));
+
                 return OperationResult<ExerciseSet>.Success(addedSet);
             }
             catch (OperationCanceledException)

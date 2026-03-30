@@ -6,7 +6,7 @@ using Sportik.Desktop.Core.Models.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
-    internal sealed class WeekStatisticsViewModel : ViewModel
+    internal sealed class WeekStatisticsViewModel : ViewModel, IDisposable
     {
         private DateTime _firstWeekDayDate;
 
@@ -39,6 +39,14 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             FirstWeekDayDate = StatisticsHelper.GetWeekFirstDayDate(weekStatistics);
             LastWeekDayDate = StatisticsHelper.GetWeekLastDayDate(weekStatistics);
+        }
+
+        public void Dispose()
+        {
+            foreach (DayStatisticsViewModel dayStatisticsViewModel in DayStatistics)
+            {
+                dayStatisticsViewModel.Dispose();
+            }
         }
     }
 }

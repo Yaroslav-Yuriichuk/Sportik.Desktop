@@ -155,6 +155,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 Task<IEnumerable<ExerciseSet>> addRemoteSetsTask = _localExerciseStatisticsRepository.AddRangeAsync(remoteSetsToAdd, cancellationToken);
 
                 await Task.WhenAll(addLocalSetsTask, addRemoteSetsTask);
+
+                foreach (ExerciseSet exerciseSet in addLocalSetsTask.Result)
+                {
+                    _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(exerciseSet));
+                }
             }
             catch (OperationCanceledException)
             {

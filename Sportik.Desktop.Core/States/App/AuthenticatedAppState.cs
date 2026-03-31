@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
@@ -19,11 +20,13 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<ISynchronizationService> _synchronizationServiceFactory;
+        private readonly ITrainingService _trainingService;
 
         public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
             IReminderService reminderService, IPersistentCacheService persistentCacheService,
             IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory,
-            Func<ISynchronizationService> synchronizationServiceFactory) : base(context)
+            Func<ISynchronizationService> synchronizationServiceFactory,
+            ITrainingService trainingService) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
@@ -31,6 +34,7 @@ namespace Sportik.Desktop.Core.States.App
             _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
             _synchronizationServiceFactory = synchronizationServiceFactory;
+            _trainingService = trainingService;
         }
 
         protected override void HandleEnter()
@@ -89,6 +93,11 @@ namespace Sportik.Desktop.Core.States.App
             _eventsService.RemoveListener<UserRefreshFailedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
+            if (_trainingService.IsRunning)
+            {
+                _trainingService.Stop();
+            }
+
             ReminderCache reminderCache = new ReminderCache
             {
                 IsActive = _reminderService.IsRunning,
@@ -97,10 +106,15 @@ namespace Sportik.Desktop.Core.States.App
 
             _persistentCacheService.Set(reminderCache);
 
+            foreach (Guid exerciseId in _reminderService.TrackedExerciseIds.ToArray())
+            {
+                _reminderService.RemoveExercise(exerciseId);
+            }
+
             _reminderService.Stop();
         }
 
-        private void EventsService_Event(UserLoggedOutEventArgs  args)
+        private void EventsService_Event(UserLoggedOutEventArgs args)
         {
             Context.Switch(Context.LoginAppState);
         }

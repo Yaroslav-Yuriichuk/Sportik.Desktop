@@ -20,7 +20,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IAuthService _authService;
         private readonly IExercisesRepository _remoteExercisesRepository;
         private readonly IExercisesRepository _localExercisesRepository;
-        private readonly IExerciseSettingsRepository _remoteExerciseSettingsRepository;
+        private readonly IExerciseSettingsRepository _localExerciseSettingsRepository;
         private readonly IExerciseStatisticsRepository _remoteExerciseStatisticsRepository;
         private readonly IExerciseStatisticsRepository _localExerciseStatisticsRepository;
 
@@ -38,12 +38,12 @@ namespace Sportik.Desktop.Core.Services.Implementations
             _authService = authService;
             _remoteExercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
             _localExercisesRepository = exercisesRepositoryFactory(DataSource.Local);
-            _remoteExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Remote);
+            _localExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Local);
             _remoteExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Remote);
             _localExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Local);
         }
 
-        public async Task<OperationResult> SyncAsync(CancellationToken cancellationToken = default)
+        public async Task<OperationResult> SyncAsync(SyncOption option, CancellationToken cancellationToken = default)
         {
             if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache) || appModeCache.IsOffline)
             {
@@ -69,6 +69,41 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 LastSyncedUserId = userId,
             });
 
+            if (option.HasFlag(SyncOption.Exercises))
+            {
+                OperationResult exercisesSyncResult = await SyncExercisesAsync(cancellationToken);
+
+                if (!exercisesSyncResult.Succeeded)
+                {
+                    return exercisesSyncResult;
+                }
+            }
+
+            if (option.HasFlag(SyncOption.ExerciseSettings))
+            {
+                OperationResult settingsSyncResult = await SyncExerciseSettingsAsync(cancellationToken);
+
+                if (!settingsSyncResult.Succeeded)
+                {
+                    return settingsSyncResult;
+                }
+            }
+
+            if (option.HasFlag(SyncOption.ExerciseStatistics))
+            {
+                OperationResult statisticsSyncResult = await SyncExerciseStatisticsAsync(cancellationToken);
+
+                if (!statisticsSyncResult.Succeeded)
+                {
+                    return statisticsSyncResult;
+                }
+            }
+
+            return OperationResult.Success();
+        }
+
+        private async Task<OperationResult> SyncExercisesAsync(CancellationToken cancellationToken)
+        {
             try
             {
                 Task<IEnumerable<Exercise>> remoteExercisesTask = _remoteExercisesRepository.GetAllAsync(cancellationToken);
@@ -103,6 +138,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 {
                     _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise));
                 }
+
+                return OperationResult.Success();
             }
             catch (OperationCanceledException)
             {
@@ -112,12 +149,15 @@ namespace Sportik.Desktop.Core.Services.Implementations
             {
                 return OperationResult.Failure(new[] { "Failed to sync exercises." });
             }
+        }
 
+        private async Task<OperationResult> SyncExerciseSettingsAsync(CancellationToken cancellationToken)
+        {
             try
             {
-                IEnumerable<Exercise> localExercises = await _localExercisesRepository.GetAllAsync(cancellationToken);
+                IEnumerable<Exercise> remoteExercises = await _remoteExercisesRepository.GetAllAsync(cancellationToken);
 
-                List<UpdateExerciseSettingsModel> updateModels = localExercises.Select(e =>
+                List<UpdateExerciseSettingsModel> updateModels = remoteExercises.Select(e =>
                     {
                         ExerciseSettingsDelta delta = new ExerciseSettingsDelta
                         {
@@ -133,14 +173,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     })
                     .ToList();
 
-                IEnumerable<Exercise> exercises = await _remoteExerciseSettingsRepository.UpdateRangeAsync(updateModels, cancellationToken);
+                await _localExerciseSettingsRepository.UpdateRangeAsync(updateModels, cancellationToken);
 
-                foreach (Exercise exercise in exercises)
-                {
-                    _eventsService.RaiseEvent(new ExerciseIsEnabledChangedEventArgs(exercise.Id, exercise.Settings.IsEnabled));
-                    _eventsService.RaiseEvent(new ExerciseTimeBetweenSetsChangedEventArgs(exercise.Id, exercise.Settings.TimeBetweenSets));
-                    _eventsService.RaiseEvent(new ExerciseExecutionTimeChangedEventArgs(exercise.Id, exercise.Settings.ExecutionTime));
-                }
+                return OperationResult.Success();
             }
             catch (OperationCanceledException)
             {
@@ -150,7 +185,10 @@ namespace Sportik.Desktop.Core.Services.Implementations
             {
                 return OperationResult.Failure(new[] { "Failed to sync exercise settings." });
             }
+        }
 
+        private async Task<OperationResult> SyncExerciseStatisticsAsync(CancellationToken cancellationToken)
+        {
             try
             {
                 Task<IEnumerable<ExerciseSet>> remoteSetsTask = _remoteExerciseStatisticsRepository.GetAllAsync(cancellationToken);
@@ -185,6 +223,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 {
                     _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(exerciseSet));
                 }
+
+                return OperationResult.Success();
             }
             catch (OperationCanceledException)
             {
@@ -194,8 +234,6 @@ namespace Sportik.Desktop.Core.Services.Implementations
             {
                 return OperationResult.Failure(new[] { "An error occurred during synchronization of exercise statistics." });
             }
-
-            return OperationResult.Success();
         }
     }
 }

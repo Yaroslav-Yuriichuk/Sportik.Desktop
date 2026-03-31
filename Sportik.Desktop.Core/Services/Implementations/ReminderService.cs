@@ -72,6 +72,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        public IEnumerable<Guid> TrackedExerciseIds => _exerciseIds;
+
         public void Start(ReminderMode? mode = null)
         {
             if (IsRunning)

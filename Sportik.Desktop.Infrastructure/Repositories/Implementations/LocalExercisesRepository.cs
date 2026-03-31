@@ -112,5 +112,26 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
             return entities.Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
         }
+
+        public async Task<IEnumerable<Exercise>> DeleteAllAsync(CancellationToken cancellationToken = default)
+        {
+            List<UserExercise> entities = await _dbContext.Exercises
+                .Include(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            _dbContext.Exercises.RemoveRange(entities);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            foreach (UserExercise entity in entities)
+            {
+                enabledExercisesCache.RemoveExercise(entity.Id);
+            }
+
+            _persistentCacheService.Set(enabledExercisesCache);
+
+            return entities.Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
+        }
     }
 }

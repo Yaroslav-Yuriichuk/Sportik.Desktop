@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models.Automation;
 
@@ -11,6 +12,8 @@ namespace Sportik.Desktop.Core.Services.Interfaces
         bool IsRunning { get; }
 
         ReminderMode Mode { get; set; }
+
+        IEnumerable<Guid> TrackedExerciseIds { get; }
 
         void Start(ReminderMode? mode = null);
 

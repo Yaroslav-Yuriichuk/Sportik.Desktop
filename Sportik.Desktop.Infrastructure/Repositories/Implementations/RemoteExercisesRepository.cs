@@ -114,5 +114,10 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
             return exerciseDtos.Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
         }
+
+        public Task<IEnumerable<Exercise>> DeleteAllAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException("Deleting exercises is not supported in the remote repository.");
+        }
     }
 }

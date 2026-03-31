@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Statistics;
 
 namespace Sportik.Desktop.Core.Helpers
@@ -34,6 +36,14 @@ namespace Sportik.Desktop.Core.Helpers
                 .Last();
 
             return dayStatistics.Date;
+        }
+
+        public static IEnumerable<ExerciseSet> GetAllSets(IEnumerable<WeekStatistics> weekStatistics)
+        {
+            return weekStatistics
+                .SelectMany(statistics => statistics.DayStatistics)
+                .SelectMany(statistics => statistics.ExerciseStatistics)
+                .SelectMany(statistics => statistics.Sets);
         }
     }
 }

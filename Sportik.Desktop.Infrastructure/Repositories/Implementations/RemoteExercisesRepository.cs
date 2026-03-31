@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
@@ -76,20 +76,18 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 .Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
         }
 
-        public async Task<Exercise> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
+        public async Task<Exercise> AddAsync(AddExerciseModel exercise, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(exercise.Name))
             {
-                throw new ArgumentNullException(name);
+                throw new ArgumentNullException(exercise.Name);
             }
-
-            name = name.Trim();
 
             OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
 
-            AddExerciseDto addExerciseDto = ExerciseMapper.ToDto(name, settings);
+            AddExerciseDto addExerciseDto = ExerciseMapper.ToDto(exercise);
 
-            ExerciseDto exercise = await _apiService.PostAsync<ExerciseDto>(
+            ExerciseDto exerciseDto = await _apiService.PostAsync<ExerciseDto>(
                 "/api/Exercises",
                 addExerciseDto,
                 authResult.Value,
@@ -97,7 +95,29 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
             EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
 
-            return ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id));
+            return ExerciseMapper.ToDomain(exerciseDto, enabledExercisesCache.IncludesExercise(exerciseDto.Id));
+        }
+
+        public async Task<IEnumerable<Exercise>> AddRangeAsync(IEnumerable<AddExerciseModel> exercises, CancellationToken cancellationToken = default)
+        {
+            OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);
+
+            IEnumerable<AddExerciseDto> addExerciseDtos = exercises.Select(ExerciseMapper.ToDto);
+
+            IEnumerable<ExerciseDto> exerciseDtos = await _apiService.PostAsync<IEnumerable<ExerciseDto>>(
+                "/api/Exercises/batch",
+                addExerciseDtos,
+                authResult.Value,
+                cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            return exerciseDtos.Select(e => ExerciseMapper.ToDomain(e, enabledExercisesCache.IncludesExercise(e.Id)));
+        }
+
+        public Task<IEnumerable<Exercise>> DeleteAllAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException("Deleting exercises is not supported in the remote repository.");
         }
     }
 }

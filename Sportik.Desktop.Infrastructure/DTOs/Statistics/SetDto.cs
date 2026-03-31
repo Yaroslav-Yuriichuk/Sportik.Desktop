@@ -10,11 +10,14 @@ namespace Sportik.Desktop.Infrastructure.DTOs.Statistics
 
         public DateTimeOffset LoggedAt { get; }
 
-        public SetDto(Guid id, int repetitions, DateTimeOffset loggedAt)
+        public Guid ExerciseId { get; }
+
+        public SetDto(Guid id, int repetitions, DateTimeOffset loggedAt, Guid exerciseId)
         {
             Id = id;
             Repetitions = repetitions;
             LoggedAt = loggedAt;
+            ExerciseId = exerciseId;
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Constants;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
@@ -15,7 +16,7 @@ namespace Sportik.Desktop.UI.ViewModels.Training
 {
     internal sealed class TrainingSetupViewModel : ViewModel
     {
-        private ObservableCollection<ExerciseOption> _exercisesOptions;
+        private ObservableCollection<ExerciseOption> _exercisesOptions = new ObservableCollection<ExerciseOption>();
 
         public ObservableCollection<ExerciseOption> ExercisesOptions
         {
@@ -49,7 +50,7 @@ namespace Sportik.Desktop.UI.ViewModels.Training
             }
         }
 
-        private ObservableCollection<IntOption> _repetitionsOptions;
+        private ObservableCollection<IntOption> _repetitionsOptions = new ObservableCollection<IntOption>();
 
         public ObservableCollection<IntOption> RepetitionsOptions
         {
@@ -85,6 +86,7 @@ namespace Sportik.Desktop.UI.ViewModels.Training
 
         private IExercisesService ExercisesService => App.ServiceProvider.GetRequiredService<IExercisesService>();
         private ITrainingService TrainingService => App.ServiceProvider.GetRequiredService<ITrainingService>();
+        private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -96,9 +98,9 @@ namespace Sportik.Desktop.UI.ViewModels.Training
             AddSetCommand = new ReactiveRelayCommand(AddSet, !TrainingService.IsRunning);
             StartTrainingCommand = new ReactiveRelayCommand(StartTraining, false);
 
-            Sets = new ObservableCollection<SetupSetViewModel>();
-
             TrainingService.RunningStateChanged += HandleRunningStateChanged;
+
+            EventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
             _ = LoadExercisesAsync(_loadCts.Token);
         }
@@ -118,6 +120,28 @@ namespace Sportik.Desktop.UI.ViewModels.Training
             StartTrainingCommand.IsExecutable = false;
         }
 
+        private void EventsService_Event(ExerciseCreatedEventArgs args)
+        {
+            ExerciseOption exerciseOption = ExercisesOptions.FirstOrDefault(o => o.Exercise.Id == args.Exercise.Id);
+
+            if (exerciseOption != null)
+            {
+                return;
+            }
+
+            if (ExercisesOptions.Count > 0)
+            {
+                ExercisesOptions.Add(new ExerciseOption(args.Exercise));
+            }
+            else
+            {
+                ExercisesOptions = new ObservableCollection<ExerciseOption>
+                {
+                    new ExerciseOption(args.Exercise)
+                };
+            }
+        }
+
         private async Task LoadExercisesAsync(CancellationToken cancellationToken)
         {
             OperationResult<IEnumerable<Exercise>> result = await ExercisesService.GetAllAsync(cancellationToken);
@@ -128,8 +152,19 @@ namespace Sportik.Desktop.UI.ViewModels.Training
                 return;
             }
 
-            ExercisesOptions = new ObservableCollection<ExerciseOption>(
-                result.Value.Select(e => new ExerciseOption(e)));
+            HashSet<Guid> existingExerciseIds = ExercisesOptions.Select(o => o.Exercise.Id).ToHashSet();
+
+            if (ExercisesOptions.Count > 0)
+            {
+                foreach (Exercise exercise in result.Value.Where(e => !existingExerciseIds.Contains(e.Id)))
+                {
+                    ExercisesOptions.Add(new ExerciseOption(exercise));
+                }
+            }
+            else
+            {
+                ExercisesOptions = new ObservableCollection<ExerciseOption>(result.Value.Select(e => new ExerciseOption(e)));
+            }
         }
 
         private void AddSet()

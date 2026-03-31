@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
@@ -16,23 +17,41 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IEventsService _eventsService;
         private readonly IReminderService _reminderService;
         private readonly IPersistentCacheService _persistentCacheService;
+        private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<ISynchronizationService> _synchronizationServiceFactory;
+        private readonly ITrainingService _trainingService;
 
         public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
             IReminderService reminderService, IPersistentCacheService persistentCacheService,
-            Func<IExercisesService> exercisesServiceFactory) : base(context)
+            IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory,
+            Func<ISynchronizationService> synchronizationServiceFactory,
+            ITrainingService trainingService) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
             _persistentCacheService = persistentCacheService;
+            _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _synchronizationServiceFactory = synchronizationServiceFactory;
+            _trainingService = trainingService;
         }
 
         protected override void HandleEnter()
         {
+            _runtimeCacheService.Set(new AppModeCache
+            {
+                IsOffline = false,
+            });
+
             _eventsService.AddListener<UserLoggedOutEventArgs>(EventsService_Event);
             _eventsService.AddListener<UserRefreshFailedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseTargetRepetitionsChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ExerciseSetAddedEventArgs>(EventsService_Event);
 
             ReminderMode reminderMode = _reminderService.Mode;
             bool toStartReminders = true;
@@ -48,6 +67,7 @@ namespace Sportik.Desktop.Core.States.App
             }
 
             IExercisesService exercisesService = _exercisesServiceFactory();
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
 
             Task.Run(async () =>
             {
@@ -63,13 +83,29 @@ namespace Sportik.Desktop.Core.States.App
                     _reminderService.AddExercise(exercise.Id);
                 }
             });
+
+            Task.Run(async () =>
+            {
+                await synchronizationService.SyncAsync(SyncOption.All, ActiveCancellationToken);
+            });
         }
 
         protected override void HandleExit()
         {
+            _runtimeCacheService.Remove<AppModeCache>();
+
             _eventsService.RemoveListener<UserLoggedOutEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<UserRefreshFailedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseSetAddedEventArgs>(EventsService_Event);
+
+            if (_trainingService.IsRunning)
+            {
+                _trainingService.Stop();
+            }
 
             ReminderCache reminderCache = new ReminderCache
             {
@@ -79,10 +115,15 @@ namespace Sportik.Desktop.Core.States.App
 
             _persistentCacheService.Set(reminderCache);
 
+            foreach (Guid exerciseId in _reminderService.TrackedExerciseIds.ToArray())
+            {
+                _reminderService.RemoveExercise(exerciseId);
+            }
+
             _reminderService.Stop();
         }
 
-        private void EventsService_Event(UserLoggedOutEventArgs  args)
+        private void EventsService_Event(UserLoggedOutEventArgs args)
         {
             Context.Switch(Context.LoginAppState);
         }
@@ -95,6 +136,63 @@ namespace Sportik.Desktop.Core.States.App
         private void EventsService_Event(ExerciseCreatedEventArgs args)
         {
             _reminderService.AddExercise(args.Exercise.Id);
+
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
+
+            Task.Run(async () =>
+            {
+                await synchronizationService.SyncAsync(SyncOption.Exercises, ActiveCancellationToken);
+            });
+        }
+
+        private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
+        {
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
+
+            Task.Run(async () =>
+            {
+                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+            });
+        }
+
+        private void EventsService_Event(ExerciseTargetRepetitionsChangedEventArgs args)
+        {
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
+
+            Task.Run(async () =>
+            {
+                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+            });
+        }
+
+        private void EventsService_Event(ExerciseTimeBetweenSetsChangedEventArgs args)
+        {
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
+
+            Task.Run(async () =>
+            {
+                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+            });
+        }
+
+        private void EventsService_Event(ExerciseExecutionTimeChangedEventArgs args)
+        {
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
+
+            Task.Run(async () =>
+            {
+                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+            });
+        }
+
+        private void EventsService_Event(ExerciseSetAddedEventArgs args)
+        {
+            ISynchronizationService synchronizationService = _synchronizationServiceFactory();
+
+            Task.Run(async () =>
+            {
+                await synchronizationService.SyncAsync(SyncOption.ExerciseStatistics, ActiveCancellationToken);
+            });
         }
     }
 }

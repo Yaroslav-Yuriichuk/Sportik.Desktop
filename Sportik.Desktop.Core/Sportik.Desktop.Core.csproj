@@ -130,6 +130,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\Grouping.cs" />
     <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Common\StateMachine\IState.cs" />
     <Compile Include="Common\StateMachine\IStatesContext.cs" />
@@ -144,9 +145,12 @@
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseIsEnabledChangedEventArgs.cs" />
+    <Compile Include="Events\ExerciseSetAddedEventArgs.cs" />
     <Compile Include="Events\ExerciseSwitchRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseTargetRepetitionsChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseTimeBetweenSetsChangedEventArgs.cs" />
     <Compile Include="Events\LoginRequestedEventArgs.cs" />
+    <Compile Include="Events\OfflineModeRequestedEventArgs.cs" />
     <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
     <Compile Include="Events\RegistrationRequestedEventArgs.cs" />
     <Compile Include="Events\ReminderModeChangedEventArgs.cs" />
@@ -167,7 +171,11 @@
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
     <Compile Include="Helpers\TrainingSetsSequenceHelper.cs" />
+    <Compile Include="Models\AddExerciseModel.cs" />
+    <Compile Include="Models\AddExerciseSetModel.cs" />
+    <Compile Include="Models\AppModeCache.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
+    <Compile Include="Models\DataSource.cs" />
     <Compile Include="Models\Exercise.cs" />
     <Compile Include="Models\ExerciseSet.cs" />
     <Compile Include="Models\ReminderCache.cs" />
@@ -181,8 +189,11 @@
     <Compile Include="Models\Statistics\ExerciseStatistics.cs" />
     <Compile Include="Models\Statistics\WeekStatistics.cs" />
     <Compile Include="Models\Statistics\WeekStatisticsOrder.cs" />
+    <Compile Include="Models\SyncedUserCache.cs" />
+    <Compile Include="Models\SyncOption.cs" />
     <Compile Include="Models\Training\TrainingSet.cs" />
     <Compile Include="Models\Training\TrainingStopReason.cs" />
+    <Compile Include="Models\UpdateExerciseSettingsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
@@ -194,6 +205,7 @@
     <Compile Include="Services\Implementations\ExerciseStatisticsService.cs" />
     <Compile Include="Services\Implementations\ExerciseTimersService.cs" />
     <Compile Include="Services\Implementations\ReminderService.cs" />
+    <Compile Include="Services\Implementations\SynchronizationService.cs" />
     <Compile Include="Services\Implementations\TrainingService.cs" />
     <Compile Include="Services\Interfaces\IApplicationStatesService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
@@ -208,6 +220,7 @@
     <Compile Include="Services\Interfaces\IRuntimeCacheService.cs" />
     <Compile Include="Services\Interfaces\ISecureCacheService.cs" />
     <Compile Include="Services\Interfaces\ISoundService.cs" />
+    <Compile Include="Services\Interfaces\ISynchronizationService.cs" />
     <Compile Include="Services\Interfaces\ITrainingService.cs" />
     <Compile Include="Services\Interfaces\IUsersService.cs" />
     <Compile Include="States\App\ApplicationState.cs" />
@@ -216,6 +229,7 @@
     <Compile Include="States\App\AuthenticatedAppState.cs" />
     <Compile Include="States\App\DeterminingAppState.cs" />
     <Compile Include="States\App\LoginAppState.cs" />
+    <Compile Include="States\App\OfflineAppState.cs" />
     <Compile Include="States\App\RegistrationAppState.cs" />
     <Compile Include="States\Exercises\IStatesRunner.cs" />
     <Compile Include="States\Exercises\ParallelExerciseState.cs" />

@@ -18,6 +18,7 @@ namespace Sportik.Desktop.UI.Behaviors
             { ApplicationState.Authenticated, typeof(MainPage) },
             { ApplicationState.Login, typeof(LoginPage) },
             { ApplicationState.Registration, typeof(RegistrationPage) },
+            { ApplicationState.Offline, typeof(MainPage) },
         };
 
         private readonly IApplicationStatesService _applicationStatesService;

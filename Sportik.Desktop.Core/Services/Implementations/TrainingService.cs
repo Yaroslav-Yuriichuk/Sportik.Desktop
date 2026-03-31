@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Training;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Core.States.Training;

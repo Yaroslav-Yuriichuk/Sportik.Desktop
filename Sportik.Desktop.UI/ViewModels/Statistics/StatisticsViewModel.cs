@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -13,7 +13,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
     internal sealed class StatisticsViewModel : ViewModel, IDisposable
     {
-        private ObservableCollection<WeekStatisticsViewModel> _weekStatistics;
+        private ObservableCollection<WeekStatisticsViewModel> _weekStatistics = new ObservableCollection<WeekStatisticsViewModel>();
 
         public ObservableCollection<WeekStatisticsViewModel> WeekStatistics
         {
@@ -21,7 +21,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             set => SetField(ref _weekStatistics, value);
         }
 
-        private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetService<IExerciseStatisticsService>();
+        private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -33,6 +33,11 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public void Dispose()
         {
             _loadCts.Cancel();
+
+            foreach (WeekStatisticsViewModel weekStatisticsViewModel in WeekStatistics)
+            {
+                weekStatisticsViewModel.Dispose();
+            }
         }
 
         private async Task LoadDayStatisticsAsync(CancellationToken cancellationToken)

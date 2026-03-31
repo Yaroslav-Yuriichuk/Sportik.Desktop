@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Models;
-using Sportik.Desktop.Core.Models.Settings;
 
 namespace Sportik.Desktop.Core.Repositories.Interfaces
 {
@@ -15,6 +14,10 @@ namespace Sportik.Desktop.Core.Repositories.Interfaces
 
         Task<IEnumerable<Exercise>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
 
-        Task<Exercise> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default);
+        Task<Exercise> AddAsync(AddExerciseModel exercise, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Exercise>> AddRangeAsync(IEnumerable<AddExerciseModel> exercises, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<Exercise>> DeleteAllAsync(CancellationToken cancellationToken = default);
     }
 }

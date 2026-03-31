@@ -5,11 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.Backend.Domain.Common;
+using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.UI.Helpers;
 
 namespace Sportik.Desktop.UI.ViewModels.Exercises
 {
@@ -71,8 +72,9 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         public ILazyCommand ResumeCommand { get; private set; }
 
-        private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
-        private IReminderService ReminderService => App.ServiceProvider.GetService<IReminderService>();
+        private IExercisesService ExercisesService => App.ServiceProvider.GetRequiredService<IExercisesService>();
+        private IReminderService ReminderService => App.ServiceProvider.GetRequiredService<IReminderService>();
+        private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
 
         private CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -95,12 +97,16 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             ReminderService.ModeChanged += ReminderService_ModeChanged;
 
+            EventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
+
             _ = LoadExercisesAsync(ReminderService.Mode, _loadCts.Token);
         }
 
         public void Dispose()
         {
             ReminderService.ModeChanged -= ReminderService_ModeChanged;
+
+            EventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
             _loadCts.Cancel();
             _loadCts.Dispose();
@@ -145,13 +151,48 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             _loadCts.Dispose();
             _loadCts = new CancellationTokenSource();
 
-            ReminderModeOption selectedReminderModeOption = ReminderModeOptions.FirstOrDefault(option => option.Mode == args.CurrentMode)
-                                                            ?? ReminderModeOptions[0];
+            _ = UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                ReminderModeOption selectedReminderModeOption = ReminderModeOptions.FirstOrDefault(option => option.Mode == args.CurrentMode)
+                                                                ?? ReminderModeOptions[0];
 
-            SetField(ref _selectedReminderModeOption, selectedReminderModeOption, nameof(SelectedReminderModeOption));
-            ReminderMode = ReminderService.Mode;
+                SetField(ref _selectedReminderModeOption, selectedReminderModeOption, nameof(SelectedReminderModeOption));
+                ReminderMode = ReminderService.Mode;
+            });
 
             _ = LoadExercisesAsync(args.CurrentMode, _loadCts.Token);
+        }
+
+        private void EventsService_Event(ExerciseCreatedEventArgs args)
+        {
+            Guid exerciseId = args.Exercise.Id;
+
+            _ = UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                switch (ReminderService.Mode)
+                {
+                    case ReminderMode.Parallel:
+                        ParallelExerciseViewModel exerciseViewModel = ParallelExercises.FirstOrDefault(vm => vm.ExerciseId == exerciseId);
+
+                        if (exerciseViewModel == null)
+                        {
+                            exerciseViewModel = new ParallelExerciseViewModel(args.Exercise);
+                            ParallelExercises.Add(exerciseViewModel);
+                        }
+                        break;
+                    case ReminderMode.Sequential:
+                        SequentialExerciseViewModel sequentialExerciseViewModel = SequentialExercises.FirstOrDefault(vm => vm.ExerciseId == exerciseId);
+
+                        if (sequentialExerciseViewModel == null)
+                        {
+                            sequentialExerciseViewModel = new SequentialExerciseViewModel(args.Exercise);
+                            SequentialExercises.Add(sequentialExerciseViewModel);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            });
         }
 
         private async Task LoadExercisesAsync(ReminderMode reminderMode, CancellationToken cancellationToken)
@@ -174,8 +215,13 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
                     SequentialExercises.Clear();
 
-                    ParallelExercises = new ObservableCollection<ParallelExerciseViewModel>(
-                        result.Value.Select(exercise => new ParallelExerciseViewModel(exercise)));
+                    HashSet<Guid> existingParallelExerciseIds = ParallelExercises.Select(vm => vm.ExerciseId).ToHashSet();
+
+                    foreach (Exercise exercise in result.Value.Where(e => !existingParallelExerciseIds.Contains(e.Id)))
+                    {
+                        ParallelExerciseViewModel exerciseViewModel = new ParallelExerciseViewModel(exercise);
+                        ParallelExercises.Add(exerciseViewModel);
+                    }
 
                     break;
                 case ReminderMode.Sequential:
@@ -186,8 +232,13 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
                     ParallelExercises.Clear();
 
-                    SequentialExercises = new ObservableCollection<SequentialExerciseViewModel>(
-                        result.Value.Select(exercise => new SequentialExerciseViewModel(exercise)));
+                    HashSet<Guid> existingSequentialExerciseIds = SequentialExercises.Select(vm => vm.ExerciseId).ToHashSet();
+
+                    foreach (Exercise exercise in result.Value.Where(e => !existingSequentialExerciseIds.Contains(e.Id)))
+                    {
+                        SequentialExerciseViewModel exerciseViewModel = new SequentialExerciseViewModel(exercise);
+                        SequentialExercises.Add(exerciseViewModel);
+                    }
 
                     break;
                 default:

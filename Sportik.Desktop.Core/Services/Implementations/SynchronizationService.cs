@@ -15,7 +15,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
     internal sealed class SynchronizationService : ISynchronizationService
     {
         private readonly IRuntimeCacheService _runtimeCacheService;
+        private readonly IPersistentCacheService _persistentCacheService;
         private readonly IEventsService _eventsService;
+        private readonly IAuthService _authService;
         private readonly IExercisesRepository _remoteExercisesRepository;
         private readonly IExercisesRepository _localExercisesRepository;
         private readonly IExerciseSettingsRepository _remoteExerciseSettingsRepository;
@@ -23,13 +25,17 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IExerciseStatisticsRepository _localExerciseStatisticsRepository;
 
         public SynchronizationService(IRuntimeCacheService runtimeCacheService,
+            IPersistentCacheService persistentCacheService,
             IEventsService eventsService,
+            IAuthService authService,
             Func<DataSource, IExercisesRepository> exercisesRepositoryFactory,
             Func<DataSource, IExerciseSettingsRepository> exerciseSettingsRepositoryFactory,
             Func<DataSource, IExerciseStatisticsRepository> exerciseStatisticsRepositoryFactory)
         {
             _runtimeCacheService = runtimeCacheService;
+            _persistentCacheService = persistentCacheService;
             _eventsService = eventsService;
+            _authService = authService;
             _remoteExercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
             _localExercisesRepository = exercisesRepositoryFactory(DataSource.Local);
             _remoteExerciseSettingsRepository = exerciseSettingsRepositoryFactory(DataSource.Remote);
@@ -43,6 +49,25 @@ namespace Sportik.Desktop.Core.Services.Implementations
             {
                 return OperationResult.Failure(new[] { "Cannot sync while in offline mode." });
             }
+
+            OperationResult<Guid> userIdResult = await _authService.GetUserIdAsync(cancellationToken);
+
+            if (!userIdResult.Succeeded)
+            {
+                return OperationResult.Failure(new[] { "Failed to retrieve user ID for synchronization." });
+            }
+
+            Guid userId = userIdResult.Value;
+
+            if (_persistentCacheService.TryGet(out SyncedUserCache syncedUserCache) && syncedUserCache.LastSyncedUserId != userId)
+            {
+                await _localExercisesRepository.DeleteAllAsync(cancellationToken);
+            }
+
+            _persistentCacheService.Set(new SyncedUserCache
+            {
+                LastSyncedUserId = userId,
+            });
 
             try
             {

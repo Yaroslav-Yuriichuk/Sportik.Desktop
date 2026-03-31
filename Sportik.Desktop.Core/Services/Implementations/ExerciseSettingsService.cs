@@ -59,6 +59,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     _eventsService.RaiseEvent(new ExerciseIsEnabledChangedEventArgs(updatedExercise.Id, updatedExercise.Settings.IsEnabled));
                 }
 
+                if (change.HasFlag(ExerciseSettingsChange.TargetRepetitions))
+                {
+                    _eventsService.RaiseEvent(new ExerciseTargetRepetitionsChangedEventArgs(updatedExercise.Id, updatedExercise.Settings.TargetRepetitions));
+                }
+
                 if (change.HasFlag(ExerciseSettingsChange.TimeBetweenSets))
                 {
                     _eventsService.RaiseEvent(new ExerciseTimeBetweenSetsChangedEventArgs(updatedExercise.Id, updatedExercise.Settings.TimeBetweenSets));
@@ -106,6 +111,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     if (change.HasFlag(ExerciseSettingsChange.IsEnabled))
                     {
                         _eventsService.RaiseEvent(new ExerciseIsEnabledChangedEventArgs(exercise.Id, exercise.Settings.IsEnabled));
+                    }
+
+                    if (change.HasFlag(ExerciseSettingsChange.TargetRepetitions))
+                    {
+                        _eventsService.RaiseEvent(new ExerciseTargetRepetitionsChangedEventArgs(exercise.Id, exercise.Settings.TargetRepetitions));
                     }
 
                     if (change.HasFlag(ExerciseSettingsChange.TimeBetweenSets))

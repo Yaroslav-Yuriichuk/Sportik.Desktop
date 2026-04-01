@@ -19,6 +19,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
         public void ShowReminder(Guid exerciseId, ReminderNotification reminderNotification)
         {
             ToastContentBuilder builder = new ToastContentBuilder()
+                .SetToastScenario(ToastScenario.Reminder)
                 .AddText(reminderNotification.Title)
                 .AddText(string.Join('\n', reminderNotification.Texts))
                 .AddButton(new ToastButton()
@@ -30,6 +31,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
 
             ToastNotification toast = new ToastNotification(builder.GetToastContent().GetXml())
             {
+                Priority = ToastNotificationPriority.High,
                 ExpirationTime = DateTimeOffset.Now + reminderNotification.ExpirationTime,
             };
 

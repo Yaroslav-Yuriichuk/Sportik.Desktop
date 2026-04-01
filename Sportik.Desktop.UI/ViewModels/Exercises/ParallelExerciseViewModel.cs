@@ -59,6 +59,14 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             set => SetField(ref _executionTime, value);
         }
 
+        private TimeSpan _snoozingTime;
+
+        public TimeSpan SnoozingTime
+        {
+            get => _snoozingTime;
+            set => SetField(ref _snoozingTime, value);
+        }
+
         private ParallelExerciseState _state;
 
         public ParallelExerciseState State
@@ -69,7 +77,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         public IReactiveCommand CompleteCommand { get; }
 
-        public ICommand ExecuteCommand { get; }
+        public IReactiveCommand ExecuteCommand { get; }
 
         public Guid ExerciseId { get; }
 
@@ -86,6 +94,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         private readonly ITimer _exerciseReminderUpdateTimer;
         private readonly ITimer _exerciseExecutionUpdateTimer;
+        private readonly ITimer _exerciseSnoozingUpdateTimer;
 
         public ParallelExerciseViewModel(Exercise exercise)
         {
@@ -95,7 +104,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             SetField(ref _isEnabled, exercise.Settings.IsEnabled, nameof(IsEnabled));
 
             CompleteCommand = new ReactiveRelayCommand(CompleteExercise, false);
-            ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise);
+            ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise, false);
 
             _exerciseReminderUpdateTimer = new DefaultTimerBuilder()
                 .SetInterval(TimeSpan.FromSeconds(0.5))
@@ -109,6 +118,12 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 .SetLoop()
                 .Build();
 
+            _exerciseSnoozingUpdateTimer = new DefaultTimerBuilder()
+                .SetInterval(TimeSpan.FromSeconds(0.5))
+                .SetCallback(UpdateSnoozingTime)
+                .SetLoop()
+                .Build();
+
             ParallelExerciseState state = ReminderService.GetExerciseState<ParallelExerciseState>(ExerciseId);
 
             switch (state)
@@ -117,12 +132,19 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 case ParallelExerciseState.Disabled:
                     break;
                 case ParallelExerciseState.WaitingBeforeForceExecution:
+                    _exerciseReminderUpdateTimer.Start();
+                    break;
                 case ParallelExerciseState.WaitingWithForceExecution:
+                    ExecuteCommand.IsExecutable = true;
                     _exerciseReminderUpdateTimer.Start();
                     break;
                 case ParallelExerciseState.Executing:
                     CompleteCommand.IsExecutable = true;
                     _exerciseExecutionUpdateTimer.Start();
+                    break;
+                case ParallelExerciseState.Snoozed:
+                    ExecuteCommand.IsExecutable = true;
+                    _exerciseSnoozingUpdateTimer.Start();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -184,12 +206,19 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                     case ParallelExerciseState.Disabled:
                         break;
                     case ParallelExerciseState.WaitingBeforeForceExecution:
+                        _exerciseReminderUpdateTimer.Stop();
+                        break;
                     case ParallelExerciseState.WaitingWithForceExecution:
+                        ExecuteCommand.IsExecutable = false;
                         _exerciseReminderUpdateTimer.Stop();
                         break;
                     case ParallelExerciseState.Executing:
                         CompleteCommand.IsExecutable = false;
                         _exerciseExecutionUpdateTimer.Stop();
+                        break;
+                    case ParallelExerciseState.Snoozed:
+                        ExecuteCommand.IsExecutable = false;
+                        _exerciseSnoozingUpdateTimer.Stop();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -203,12 +232,19 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                     case ParallelExerciseState.Disabled:
                         break;
                     case ParallelExerciseState.WaitingBeforeForceExecution:
+                        _exerciseReminderUpdateTimer.Start();
+                        break;
                     case ParallelExerciseState.WaitingWithForceExecution:
+                        ExecuteCommand.IsExecutable = true;
                         _exerciseReminderUpdateTimer.Start();
                         break;
                     case ParallelExerciseState.Executing:
                         CompleteCommand.IsExecutable = true;
                         _exerciseExecutionUpdateTimer.Start();
+                        break;
+                    case ParallelExerciseState.Snoozed:
+                        ExecuteCommand.IsExecutable = true;
+                        _exerciseSnoozingUpdateTimer.Start();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -248,6 +284,19 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 if (timer != null)
                 {
                     ExecutionTime = timer.Interval - timer.ElapsedTime;
+                }
+            });
+        }
+
+        private void UpdateSnoozingTime(object sender, EventArgs e)
+        {
+            _ = UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                ITimer timer = ExerciseTimersService.GetTimer(ExerciseId, ReminderMode.Parallel);
+
+                if (timer != null)
+                {
+                    SnoozingTime = timer.Interval - timer.ElapsedTime;
                 }
             });
         }

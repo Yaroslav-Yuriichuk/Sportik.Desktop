@@ -33,6 +33,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
             _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ReminderNotificationSnoozedEventArgs>(EventsService_Event);
 
             Task.Run(async () =>
             {
@@ -64,6 +65,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
             _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ReminderNotificationSnoozedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Parallel);
 
@@ -105,6 +107,14 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
             if (args.ExerciseId == Context.ExerciseId)
             {
                 Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
+            }
+        }
+
+        private void EventsService_Event(ReminderNotificationSnoozedEventArgs args)
+        {
+            if (args.ExerciseId == Context.ExerciseId)
+            {
+                Context.Switch(Context.SnoozedExerciseState);
             }
         }
 

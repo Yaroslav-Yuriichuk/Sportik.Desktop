@@ -154,6 +154,7 @@
     <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
     <Compile Include="Events\RegistrationRequestedEventArgs.cs" />
     <Compile Include="Events\ReminderModeChangedEventArgs.cs" />
+    <Compile Include="Events\ReminderNotificationSnoozedEventArgs.cs" />
     <Compile Include="Events\ReminderNotificationAcceptedEventArgs.cs" />
     <Compile Include="Events\ReminderNotificationDismissedEventArgs.cs" />
     <Compile Include="Events\ReminderNotificationShownEventArgs.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="States\Exercises\Parallel\ParallelExerciseState.cs" />
     <Compile Include="States\Exercises\Parallel\ParallelExerciseStatesContext.cs" />
     <Compile Include="States\Exercises\Parallel\DeterminingParallelExerciseState.cs" />
+    <Compile Include="States\Exercises\Parallel\SnoozedParallelExerciseState.cs" />
     <Compile Include="States\Exercises\Parallel\WaitingBeforeForceExecutionParallelExerciseState.cs" />
     <Compile Include="States\Exercises\Parallel\WaitingWithForceExecutionParallelExerciseState.cs" />
     <Compile Include="States\Exercises\SequentialExerciseState.cs" />

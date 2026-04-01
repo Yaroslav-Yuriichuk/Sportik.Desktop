@@ -154,6 +154,26 @@
 
                         </StackPanel>
 
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 15 15"
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Snoozed}">
+
+                            <TextBlock Margin="0 0 10 0"
+                                       VerticalAlignment="Center">
+                                <Run Text="Snoozed, next reminder in"></Run>
+                                <Run Text="{Binding SnoozingTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            </TextBlock>
+
+                            <SymbolIcon Symbol="Clock"
+                                        Margin="0 0 10 0" />
+
+                            <Button Content="Start executing"
+                                    MinWidth="140"
+                                    Command="{Binding ExecuteCommand}"/>
+
+                        </StackPanel>
+
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

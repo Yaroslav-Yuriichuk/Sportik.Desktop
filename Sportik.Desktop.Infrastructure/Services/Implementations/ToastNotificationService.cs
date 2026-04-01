@@ -26,6 +26,9 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
                     .SetContent("View")
                     .AddArgument("view"))
                 .AddButton(new ToastButton()
+                    .SetContent("Snooze")
+                    .AddArgument("snooze"))
+                .AddButton(new ToastButton()
                     .SetContent("Skip")
                     .AddArgument("dismiss"));
 
@@ -43,6 +46,9 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
                     {
                         case "view":
                             _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exerciseId));
+                            break;
+                        case "snooze":
+                            _eventsService.RaiseEvent(new ReminderNotificationSnoozedEventArgs(exerciseId));
                             break;
                         case "dismiss":
                             _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exerciseId));

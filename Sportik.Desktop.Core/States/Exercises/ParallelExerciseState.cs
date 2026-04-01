@@ -7,5 +7,6 @@
         WaitingBeforeForceExecution,
         WaitingWithForceExecution,
         Executing,
+        Snoozed,
     }
 }

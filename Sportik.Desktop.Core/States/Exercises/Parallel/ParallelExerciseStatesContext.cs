@@ -21,6 +21,8 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
 
         public ParallelExerciseState ExecutingExerciseState { get; }
 
+        public ParallelExerciseState SnoozedExerciseState { get; }
+
         public ParallelExerciseState CurrentState { get; private set; }
 
         public ParallelExerciseStatesContext(Guid exerciseId, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
@@ -35,6 +37,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
             WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
             WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
             ExecutingExerciseState = new ExecutingParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory);
+            SnoozedExerciseState = new SnoozedParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
 
             Switch(DeterminingExerciseState);
         }

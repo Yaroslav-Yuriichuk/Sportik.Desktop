@@ -35,6 +35,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
             _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseCompleteRequestedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ReminderNotificationDismissedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<ReminderNotificationSnoozedEventArgs>(EventsService_Event);
 
             Task.Run(async () =>
             {
@@ -188,6 +189,14 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
                     Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
                 }
             });
+        }
+
+        private void EventsService_Event(ReminderNotificationSnoozedEventArgs args)
+        {
+            if (args.ExerciseId == Context.ExerciseId)
+            {
+                Context.Switch(Context.SnoozedExerciseState);
+            }
         }
 
         private void Timer_Elapsed(object sender, EventArgs args)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Common.Timers;
@@ -170,6 +169,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             _exerciseReminderUpdateTimer.Stop();
             _exerciseExecutionUpdateTimer.Stop();
+            _exerciseSnoozingUpdateTimer.Stop();
 
             EventsService.RemoveListener<ParallelExerciseStateChangedEventArgs>(EventsService_Event);
         }

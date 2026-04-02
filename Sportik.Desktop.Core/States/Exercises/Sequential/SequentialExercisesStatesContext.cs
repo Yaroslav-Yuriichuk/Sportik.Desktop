@@ -27,6 +27,8 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
         public SequentialExerciseState QueuedExerciseState { get; }
 
+        public SequentialExerciseState SnoozedExerciseState { get; }
+
         public SequentialExerciseState CurrentState { get; private set; }
 
         public SequentialExercisesStatesContext(IEnumerable<Guid> exerciseIds, Guid exerciseId, Func<Guid, SequentialExercisesStatesContext> getContextCallback,
@@ -45,6 +47,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
             WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
             QueuedExerciseState = new QueuedSequentialExerciseState(this, eventsService);
             ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory);
+            SnoozedExerciseState = new SnoozedSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
 
             Switch(DeterminingState);
         }

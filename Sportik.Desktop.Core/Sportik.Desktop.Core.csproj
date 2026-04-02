@@ -251,6 +251,7 @@
     <Compile Include="States\Exercises\Sequential\QueuedSequentialExerciseState.cs" />
     <Compile Include="States\Exercises\Sequential\SequentialExercisesStatesContext.cs" />
     <Compile Include="States\Exercises\Sequential\SequentialExerciseState.cs" />
+    <Compile Include="States\Exercises\Sequential\SnoozedSequentialExerciseState.cs" />
     <Compile Include="States\Exercises\Sequential\WaitingBeforeForceExecutionSequentialExerciseState.cs" />
     <Compile Include="States\Exercises\Sequential\WaitingWithForceExecutionSequentialExerciseState.cs" />
     <Compile Include="States\Training\CompletedTrainingSetState.cs" />

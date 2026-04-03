@@ -15,19 +15,17 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
-        private readonly Func<INotificationService> _notificationServiceFactory;
 
         public override Exercises.ParallelExerciseState ExerciseState => Exercises.ParallelExerciseState.WaitingBeforeForceExecution;
 
         private ITimer _forceExecutionTimer;
 
-        public WaitingBeforeForceExecutionParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory) : base(context)
+        public WaitingBeforeForceExecutionParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService,
+            IExerciseTimersService exerciseTimersService, Func<IExercisesService> exercisesServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _exercisesServiceFactory = exercisesServiceFactory;
-            _notificationServiceFactory = notificationServiceFactory;
         }
 
         protected override void HandleEnter()
@@ -108,34 +106,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
 
         private void Timer_Elapsed(object sender, EventArgs args)
         {
-            IExercisesService exercisesService = _exercisesServiceFactory();
-            INotificationService notificationService = _notificationServiceFactory();
-
-            Task.Run(async () =>
-            {
-                OperationResult<Exercise> result = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
-
-                if (!result.Succeeded)
-                {
-                    // TODO: Handle error.
-                    return;
-                }
-
-                Exercise exercise = result.Value;
-
-                notificationService.ShowReminder(Context.ExerciseId, new ReminderNotification
-                {
-                    Title = $"{exercise.Name} reminder!",
-                    Texts = new[]
-                    {
-                        $"You have {exercise.Settings.ExecutionTime.TotalMinutes} minutes to complete {exercise.Name.ToLower()} exercise.",
-                        $"Target repetitions: {exercise.Settings.TargetRepetitions}.",
-                    },
-                    ExpirationTime = exercise.Settings.ExecutionTime,
-                });
-
-                Context.Switch(Context.ExecutingExerciseState);
-            });
+            Context.Switch(Context.ExecutingExerciseState);
         }
 
         private void ForceExecutionTimer_Elapsed(object sender, EventArgs e)

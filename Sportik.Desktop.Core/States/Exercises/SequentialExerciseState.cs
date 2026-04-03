@@ -8,5 +8,6 @@
         WaitingWithForceExecution,
         Queued,
         Executing,
+        Snoozed,
     }
 }

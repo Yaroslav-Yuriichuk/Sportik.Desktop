@@ -19,17 +19,22 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
         public void ShowReminder(Guid exerciseId, ReminderNotification reminderNotification)
         {
             ToastContentBuilder builder = new ToastContentBuilder()
+                .SetToastScenario(ToastScenario.Reminder)
                 .AddText(reminderNotification.Title)
                 .AddText(string.Join('\n', reminderNotification.Texts))
                 .AddButton(new ToastButton()
                     .SetContent("View")
                     .AddArgument("view"))
                 .AddButton(new ToastButton()
+                    .SetContent("Snooze")
+                    .AddArgument("snooze"))
+                .AddButton(new ToastButton()
                     .SetContent("Skip")
                     .AddArgument("dismiss"));
 
             ToastNotification toast = new ToastNotification(builder.GetToastContent().GetXml())
             {
+                Priority = ToastNotificationPriority.High,
                 ExpirationTime = DateTimeOffset.Now + reminderNotification.ExpirationTime,
             };
 
@@ -41,6 +46,9 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
                     {
                         case "view":
                             _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exerciseId));
+                            break;
+                        case "snooze":
+                            _eventsService.RaiseEvent(new ReminderNotificationSnoozedEventArgs(exerciseId));
                             break;
                         case "dismiss":
                             _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exerciseId));

@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Common.Timers;
+using Sportik.Desktop.Core.Constants;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
@@ -11,15 +12,15 @@ using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.Exercises.Sequential
 {
-    internal sealed class WaitingWithForceExecutionSequentialExerciseState : SequentialExerciseState
+    internal sealed class SnoozedSequentialExerciseState : SequentialExerciseState
     {
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
 
-        public override Exercises.SequentialExerciseState ExerciseState => Exercises.SequentialExerciseState.WaitingWithForceExecution;
+        public override Exercises.SequentialExerciseState ExerciseState => Exercises.SequentialExerciseState.Snoozed;
 
-        public WaitingWithForceExecutionSequentialExerciseState(SequentialExercisesStatesContext context, IEventsService eventsService,
+        public SnoozedSequentialExerciseState(SequentialExercisesStatesContext context, IEventsService eventsService,
             IExerciseTimersService exerciseTimersService, Func<IExercisesService> exercisesServiceFactory) : base(context)
         {
             _eventsService = eventsService;
@@ -29,44 +30,25 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
         protected override void HandleEnter()
         {
-            IExercisesService exercisesService = _exercisesServiceFactory();
-
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
-            _eventsService.AddListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseForceExecutionRequestedEventArgs>(EventsService_Event);
 
-            Task.Run(async () =>
+            ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Sequential);
+
+            timer.Loop = false;
+            timer.Interval = AutomationConstants.SnoozingTime;
+
+            timer.Elapsed += Timer_Elapsed;
+
+            if (!timer.IsRunning)
             {
-                OperationResult<Exercise> result = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
-
-                if (!result.Succeeded)
-                {
-                    // TODO: Handle error.
-                    return;
-                }
-
-                ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Sequential);
-
-                timer.Loop = false;
-                timer.Interval = result.Value.Settings.TimeBetweenSets;
-
-                timer.Elapsed += Timer_Elapsed;
-
-                if (timer.IsPaused)
-                {
-                    timer.Resume();
-                }
-                else
-                {
-                    timer.Start();
-                }
-            });
+                timer.Start();
+            }
         }
 
         protected override void HandleExit()
         {
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
-            _eventsService.RemoveListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseForceExecutionRequestedEventArgs>(EventsService_Event);
 
             ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Sequential);
@@ -75,7 +57,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             if (timer.IsRunning)
             {
-                timer.Pause();
+                timer.Stop();
             }
         }
 
@@ -108,15 +90,6 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
                     nextExerciseContext.Switch(nextExerciseContext.WaitingBeforeForceExecutionExerciseState);
                 }
             });
-        }
-
-        private void EventsService_Event(ExerciseTimeBetweenSetsChangedEventArgs args)
-        {
-            if (args.ExerciseId == Context.ExerciseId)
-            {
-                ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Sequential);
-                timer.Interval = args.TimeBetweenSets;
-            }
         }
 
         private void EventsService_Event(ExerciseForceExecutionRequestedEventArgs args)

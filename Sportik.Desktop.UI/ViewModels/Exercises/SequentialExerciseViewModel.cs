@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Common.Timers;
@@ -59,6 +58,14 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             set => SetField(ref _executionTime, value);
         }
 
+        private TimeSpan _snoozingTime;
+
+        public TimeSpan SnoozingTime
+        {
+            get => _snoozingTime;
+            set => SetField(ref _snoozingTime, value);
+        }
+
         private SequentialExerciseState _state;
 
         public SequentialExerciseState State
@@ -67,11 +74,11 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             set => SetField(ref _state, value);
         }
 
-        public ICommand CompleteCommand { get; }
+        public IReactiveCommand CompleteCommand { get; }
 
-        public ICommand ExecuteCommand { get; }
+        public IReactiveCommand ExecuteCommand { get; }
 
-        public ICommand SwitchCommand { get; }
+        public IReactiveCommand SwitchCommand { get; }
 
         public Guid ExerciseId { get; }
 
@@ -88,6 +95,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         private readonly ITimer _exerciseReminderUpdateTimer;
         private readonly ITimer _exerciseExecutionUpdateTimer;
+        private readonly ITimer _exerciseSnoozingUpdateTimer;
 
         public SequentialExerciseViewModel(Exercise exercise)
         {
@@ -96,9 +104,9 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             Name = exercise.Name;
             SetField(ref _isEnabled, exercise.Settings.IsEnabled, nameof(IsEnabled));
 
-            CompleteCommand = new ReactiveRelayCommand(CompleteExercise);
-            ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise);
-            SwitchCommand = new ReactiveRelayCommand(SwitchExercise);
+            CompleteCommand = new ReactiveRelayCommand(CompleteExercise, false);
+            ExecuteCommand = new ReactiveRelayCommand(ExecuteExercise, false);
+            SwitchCommand = new ReactiveRelayCommand(SwitchExercise, false);
 
             _exerciseReminderUpdateTimer = new DefaultTimerBuilder()
                 .SetInterval(TimeSpan.FromSeconds(0.5))
@@ -112,20 +120,36 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 .SetLoop()
                 .Build();
 
+            _exerciseSnoozingUpdateTimer = new DefaultTimerBuilder()
+                .SetInterval(TimeSpan.FromSeconds(0.5))
+                .SetCallback(UpdateSnoozingTime)
+                .SetLoop()
+                .Build();
+
             SequentialExerciseState state = ReminderService.GetExerciseState<SequentialExerciseState>(ExerciseId);
 
             switch (state)
             {
                 case SequentialExerciseState.Unknown:
                 case SequentialExerciseState.Disabled:
+                    break;
                 case SequentialExerciseState.Queued:
+                    SwitchCommand.IsExecutable = true;
                     break;
                 case SequentialExerciseState.WaitingBeforeForceExecution:
+                    _exerciseReminderUpdateTimer.Start();
+                    break;
                 case SequentialExerciseState.WaitingWithForceExecution:
+                    ExecuteCommand.IsExecutable = true;
                     _exerciseReminderUpdateTimer.Start();
                     break;
                 case SequentialExerciseState.Executing:
+                    CompleteCommand.IsExecutable = true;
                     _exerciseExecutionUpdateTimer.Start();
+                    break;
+                case SequentialExerciseState.Snoozed:
+                    ExecuteCommand.IsExecutable = true;
+                    _exerciseSnoozingUpdateTimer.Start();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -151,6 +175,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
             _exerciseReminderUpdateTimer.Stop();
             _exerciseExecutionUpdateTimer.Stop();
+            _exerciseSnoozingUpdateTimer.Stop();
 
             EventsService.RemoveListener<SequentialExerciseStateChangedEventArgs>(EventsService_Event);
         }
@@ -185,14 +210,24 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 {
                     case SequentialExerciseState.Unknown:
                     case SequentialExerciseState.Disabled:
+                        break;
                     case SequentialExerciseState.Queued:
+                        SwitchCommand.IsExecutable = false;
                         break;
                     case SequentialExerciseState.WaitingBeforeForceExecution:
+                        _exerciseReminderUpdateTimer.Stop();
+                        break;
                     case SequentialExerciseState.WaitingWithForceExecution:
+                        ExecuteCommand.IsExecutable = false;
                         _exerciseReminderUpdateTimer.Stop();
                         break;
                     case SequentialExerciseState.Executing:
+                        CompleteCommand.IsExecutable = false;
                         _exerciseExecutionUpdateTimer.Stop();
+                        break;
+                    case SequentialExerciseState.Snoozed:
+                        ExecuteCommand.IsExecutable = false;
+                        _exerciseSnoozingUpdateTimer.Stop();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -204,14 +239,24 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 {
                     case SequentialExerciseState.Unknown:
                     case SequentialExerciseState.Disabled:
+                        break;
                     case SequentialExerciseState.Queued:
+                        SwitchCommand.IsExecutable = true;
                         break;
                     case SequentialExerciseState.WaitingBeforeForceExecution:
+                        _exerciseReminderUpdateTimer.Start();
+                        break;
                     case SequentialExerciseState.WaitingWithForceExecution:
+                        ExecuteCommand.IsExecutable = true;
                         _exerciseReminderUpdateTimer.Start();
                         break;
                     case SequentialExerciseState.Executing:
+                        CompleteCommand.IsExecutable = true;
                         _exerciseExecutionUpdateTimer.Start();
+                        break;
+                    case SequentialExerciseState.Snoozed:
+                        ExecuteCommand.IsExecutable = true;
+                        _exerciseSnoozingUpdateTimer.Start();
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -251,6 +296,19 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                 if (timer != null)
                 {
                     ExecutionTime = timer.Interval - timer.ElapsedTime;
+                }
+            });
+        }
+
+        private void UpdateSnoozingTime(object sender, EventArgs e)
+        {
+            _ = UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                ITimer timer = ExerciseTimersService.GetTimer(ExerciseId, ReminderMode.Sequential);
+
+                if (timer != null)
+                {
+                    SnoozingTime = timer.Interval - timer.ElapsedTime;
                 }
             });
         }

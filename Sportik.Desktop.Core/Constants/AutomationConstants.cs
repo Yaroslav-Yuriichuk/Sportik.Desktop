@@ -22,6 +22,6 @@ namespace Sportik.Desktop.Core.Constants
 
         public static readonly TimeSpan TimeBeforeForceExecution = TimeSpan.FromSeconds(15);
 
-        public static readonly TimeSpan SnoozingTime = TimeSpan.FromMinutes(1);
+        public static readonly TimeSpan SnoozingTime = TimeSpan.FromMinutes(5);
     }
 }

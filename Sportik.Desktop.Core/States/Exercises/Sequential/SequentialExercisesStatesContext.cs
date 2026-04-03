@@ -43,11 +43,11 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
             DeterminingState = new DeterminingSequentialExerciseState(this, exercisesServiceFactory, runtimeCacheService);
             DisabledExerciseState = new DisabledSequentialExerciseState(this, eventsService, exercisesServiceFactory);
-            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, runtimeCacheService, exercisesServiceFactory, notificationServiceFactory);
-            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, runtimeCacheService, exercisesServiceFactory);
+            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory);
             QueuedExerciseState = new QueuedSequentialExerciseState(this, eventsService);
-            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory);
-            SnoozedExerciseState = new SnoozedSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            SnoozedExerciseState = new SnoozedSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory);
 
             Switch(DeterminingState);
         }

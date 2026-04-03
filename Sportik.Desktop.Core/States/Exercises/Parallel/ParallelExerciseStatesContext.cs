@@ -34,10 +34,10 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
 
             DeterminingExerciseState = new DeterminingParallelExerciseState(this, exercisesServiceFactory);
             DisabledExerciseState = new DisabledParallelExerciseState(this, _eventsService);
-            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
-            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
-            ExecutingExerciseState = new ExecutingParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory);
-            SnoozedExerciseState = new SnoozedParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory);
+            WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory);
+            ExecutingExerciseState = new ExecutingParallelExerciseState(this, _eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            SnoozedExerciseState = new SnoozedParallelExerciseState(this, _eventsService, exerciseTimersService);
 
             Switch(DeterminingExerciseState);
         }

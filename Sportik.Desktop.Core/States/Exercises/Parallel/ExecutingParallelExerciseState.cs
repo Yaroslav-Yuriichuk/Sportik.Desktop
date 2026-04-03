@@ -14,20 +14,24 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<INotificationService> _notificationServiceFactory;
 
         public override Exercises.ParallelExerciseState ExerciseState => Exercises.ParallelExerciseState.Executing;
 
         public ExecutingParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService,
-            IExerciseTimersService exerciseTimersService, Func<IExercisesService> exercisesServiceFactory) : base(context)
+            IExerciseTimersService exerciseTimersService, Func<IExercisesService> exercisesServiceFactory,
+            Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _notificationServiceFactory = notificationServiceFactory;
         }
 
         protected override void HandleEnter()
         {
             IExercisesService exercisesService = _exercisesServiceFactory();
+            INotificationService notificationService = _notificationServiceFactory();
 
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
@@ -45,10 +49,12 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
                     return;
                 }
 
+                Exercise exercise = result.Value;
+
                 ITimer timer = _exerciseTimersService.GetTimer(Context.ExerciseId, ReminderMode.Parallel);
 
                 timer.Loop = false;
-                timer.Interval = result.Value.Settings.ExecutionTime;
+                timer.Interval = exercise.Settings.ExecutionTime;
 
                 timer.Elapsed += Timer_Elapsed;
 
@@ -56,6 +62,17 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
                 {
                     timer.Start();
                 }
+
+                notificationService.ShowReminder(Context.ExerciseId, new ReminderNotification
+                {
+                    Title = $"{exercise.Name} reminder!",
+                    Texts = new[]
+                    {
+                        $"You have {exercise.Settings.ExecutionTime.TotalMinutes} minutes to complete {exercise.Name.ToLower()} exercise.",
+                        $"Target repetitions: {exercise.Settings.TargetRepetitions}.",
+                    },
+                    ExpirationTime = exercise.Settings.ExecutionTime,
+                });
             });
         }
 

@@ -21,19 +21,19 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
             set => SetField(ref _repetitions, value);
         }
 
-        private DateTimeOffset _date;
+        private DateTimeOffset _time;
 
-        public DateTimeOffset Date
+        public DateTimeOffset Time
         {
-            get => _date;
-            set => SetField(ref _date, value);
+            get => _time;
+            set => SetField(ref _time, value);
         }
 
-        public SetViewModel(Exercise exercise, int repetitions, DateTimeOffset date)
+        public SetViewModel(Exercise exercise, int repetitions, DateTimeOffset time)
         {
             Exercise = exercise;
             Repetitions = repetitions;
-            Date = date;
+            Time = time;
         }
     }
 }

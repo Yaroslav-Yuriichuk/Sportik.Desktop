@@ -199,7 +199,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
                 return;
             }
 
-            SetViewModel set = new SetViewModel(SelectedExerciseOption.Exercise, SelectedRepetitionsOption.IntValue, SelectedDate.ToUniversalTime());
+            SetViewModel set = new SetViewModel(SelectedExerciseOption.Exercise, SelectedRepetitionsOption.IntValue, SelectedDate);
             Sets.Add(set);
 
             SaveSetsCommand.IsExecutable = Sets.Count > 0;
@@ -219,7 +219,7 @@ namespace Sportik.Desktop.UI.ViewModels.Extra
 
             foreach (SetViewModel setViewModel in setViewModels)
             {
-                AddExerciseSetModel addModel = new AddExerciseSetModel(null, setViewModel.Repetitions, setViewModel.Date, setViewModel.Exercise.Id);
+                AddExerciseSetModel addModel = new AddExerciseSetModel(null, setViewModel.Repetitions, setViewModel.Time.ToUniversalTime(), setViewModel.Exercise.Id);
                 await ExerciseStatisticsService.AddSetAsync(addModel, cancellationToken);
 
                 Sets.Remove(setViewModel);

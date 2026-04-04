@@ -155,9 +155,9 @@
                                    FontSize="14"
                                    Margin="0 5 50 5">
                             <Run Text="Date: " />
-                            <Run Text="{Binding Date, Converter={StaticResource DateTimeOffsetToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
+                            <Run Text="{Binding Time, Converter={StaticResource DateTimeOffsetToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
                             <Run Text=", " />
-                            <Run Text="{Binding Date, Converter={StaticResource DateTimeOffsetToStringConverter}, ConverterParameter='hh:mm tt'}" />
+                            <Run Text="{Binding Time, Converter={StaticResource DateTimeOffsetToStringConverter}, ConverterParameter='hh:mm tt'}" />
                         </TextBlock>
 
                         <TextBlock Grid.Column="3"

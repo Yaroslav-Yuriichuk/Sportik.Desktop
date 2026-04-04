@@ -6,12 +6,12 @@ namespace Sportik.Desktop.Core.Events
     {
         public Guid ExerciseId { get; }
 
-        public int NewTargetRepetitions { get; }
+        public int TargetRepetitions { get; }
 
-        public ExerciseTargetRepetitionsChangedEventArgs(Guid exerciseId, int newTargetRepetitions)
+        public ExerciseTargetRepetitionsChangedEventArgs(Guid exerciseId, int targetRepetitions)
         {
             ExerciseId = exerciseId;
-            NewTargetRepetitions = newTargetRepetitions;
+            TargetRepetitions = targetRepetitions;
         }
     }
 }

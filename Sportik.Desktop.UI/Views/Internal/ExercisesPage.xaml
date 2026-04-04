@@ -143,6 +143,8 @@
                                 <Run Text="Only"></Run>
                                 <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
                                 <Run Text="left to complete"></Run>
+                                <Run Text="{Binding TargetRepetitions}"></Run>
+                                <Run Text="repetition(s)"></Run>
                             </TextBlock>
 
                             <SymbolIcon Symbol="Clock"
@@ -264,9 +266,11 @@
 
                             <TextBlock Margin="0 0 10 0"
                                VerticalAlignment="Center">
-                        <Run Text="Only"></Run>
-                        <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
-                        <Run Text="left to complete"></Run>
+                                <Run Text="Only"></Run>
+                                <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                                <Run Text="left to complete"></Run>
+                                <Run Text="{Binding TargetRepetitions}"></Run>
+                                <Run Text="repetition(s)"></Run>
                             </TextBlock>
 
                             <SymbolIcon Symbol="Clock"

@@ -128,14 +128,14 @@
                                                         <TextBlock Grid.Column="2"
                                                                    FontSize="14"
                                                                    Margin="0 5 0 5">
-                                                            <Run Text="Sets: " />
+                                                            <Run Text="Sets:" />
                                                             <Run Text="{Binding Sets}" />
                                                         </TextBlock>
 
                                                         <TextBlock Grid.Column="3"
                                                                    FontSize="14"
                                                                    Margin="0 5 0 5">
-                                                            <Run Text="Repetitions: " />
+                                                            <Run Text="Repetitions:" />
                                                             <Run Text="{Binding Repetitions}" />
                                                         </TextBlock>
 

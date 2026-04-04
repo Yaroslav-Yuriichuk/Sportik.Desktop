@@ -22,7 +22,15 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public string Name
         {
             get => _name;
-            set => SetField(ref _name, value);
+            private set => SetField(ref _name, value);
+        }
+
+        private int _targetRepetitions;
+
+        public int TargetRepetitions
+        {
+            get => _targetRepetitions;
+            private set => SetField(ref _targetRepetitions, value);
         }
 
         private bool _isEnabled;
@@ -47,7 +55,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public TimeSpan ReminderTime
         {
             get => _reminderTime;
-            set => SetField(ref _reminderTime, value);
+            private set => SetField(ref _reminderTime, value);
         }
 
         private TimeSpan _executionTime;
@@ -55,7 +63,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public TimeSpan ExecutionTime
         {
             get => _executionTime;
-            set => SetField(ref _executionTime, value);
+            private set => SetField(ref _executionTime, value);
         }
 
         private TimeSpan _snoozingTime;
@@ -63,7 +71,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public TimeSpan SnoozingTime
         {
             get => _snoozingTime;
-            set => SetField(ref _snoozingTime, value);
+            private set => SetField(ref _snoozingTime, value);
         }
 
         private ParallelExerciseState _state;
@@ -71,7 +79,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         public ParallelExerciseState State
         {
             get => _state;
-            set => SetField(ref _state, value);
+            private set => SetField(ref _state, value);
         }
 
         public IReactiveCommand CompleteCommand { get; }
@@ -100,6 +108,8 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             ExerciseId = exercise.Id;
 
             Name = exercise.Name;
+            TargetRepetitions = exercise.Settings.TargetRepetitions;
+
             SetField(ref _isEnabled, exercise.Settings.IsEnabled, nameof(IsEnabled));
 
             CompleteCommand = new ReactiveRelayCommand(CompleteExercise, false);
@@ -160,6 +170,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             }
 
             EventsService.AddListener<ParallelExerciseStateChangedEventArgs>(EventsService_Event);
+            EventsService.AddListener<ExerciseTargetRepetitionsChangedEventArgs>(EventsService_Event);
         }
 
         public void Dispose()
@@ -172,6 +183,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
             _exerciseSnoozingUpdateTimer.Stop();
 
             EventsService.RemoveListener<ParallelExerciseStateChangedEventArgs>(EventsService_Event);
+            EventsService.RemoveListener<ExerciseTargetRepetitionsChangedEventArgs>(EventsService_Event);
         }
 
         private async Task UpdateExerciseSettingsAsync(CancellationToken cancellationToken)
@@ -260,6 +272,14 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
                     ExecutionTime = timer.Interval - timer.ElapsedTime;
                 }
             });
+        }
+
+        private void EventsService_Event(ExerciseTargetRepetitionsChangedEventArgs args)
+        {
+            if (args.ExerciseId == ExerciseId)
+            {
+                TargetRepetitions = args.TargetRepetitions;
+            }
         }
 
         private void UpdateReminderTime(object sender, EventArgs e)

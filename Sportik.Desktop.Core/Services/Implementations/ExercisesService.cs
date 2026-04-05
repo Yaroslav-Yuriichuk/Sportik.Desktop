@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
@@ -97,7 +96,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             try
             {
                 Exercise exercise = await ExercisesRepository.AddAsync(new AddExerciseModel(null, name, settings), cancellationToken);
-                _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise));
+                _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise, true));
 
                 return OperationResult<Exercise>.Success(exercise);
             }

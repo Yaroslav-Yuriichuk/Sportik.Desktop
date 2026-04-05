@@ -137,6 +137,11 @@ namespace Sportik.Desktop.Core.States.App
         {
             _reminderService.AddExercise(args.Exercise.Id);
 
+            if (!args.SynchronizationRequired)
+            {
+                return;
+            }
+
             ISynchronizationService synchronizationService = _synchronizationServiceFactory();
 
             Task.Run(async () =>
@@ -187,6 +192,11 @@ namespace Sportik.Desktop.Core.States.App
 
         private void EventsService_Event(ExerciseSetAddedEventArgs args)
         {
+            if (!args.SynchronizationRequired)
+            {
+                return;
+            }
+
             ISynchronizationService synchronizationService = _synchronizationServiceFactory();
 
             Task.Run(async () =>

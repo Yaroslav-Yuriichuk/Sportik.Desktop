@@ -7,9 +7,12 @@ namespace Sportik.Desktop.Core.Events
     {
         public Exercise Exercise { get; }
 
-        public ExerciseCreatedEventArgs(Exercise exercise)
+        internal bool SynchronizationRequired { get; }
+
+        public ExerciseCreatedEventArgs(Exercise exercise, bool synchronizationRequired)
         {
             Exercise = exercise;
+            SynchronizationRequired = synchronizationRequired;
         }
     }
 }

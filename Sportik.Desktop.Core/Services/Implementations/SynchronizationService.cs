@@ -136,7 +136,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
                 foreach (Exercise exercise in addLocalExercisesTask.Result)
                 {
-                    _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise));
+                    _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(exercise, false));
                 }
 
                 return OperationResult.Success();
@@ -221,7 +221,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
                 foreach (ExerciseSet exerciseSet in addLocalSetsTask.Result)
                 {
-                    _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(exerciseSet));
+                    _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(exerciseSet, false));
                 }
 
                 return OperationResult.Success();

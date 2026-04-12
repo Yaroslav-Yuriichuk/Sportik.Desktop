@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Common.Synchronization;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Automation;
+using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.App
@@ -86,7 +88,8 @@ namespace Sportik.Desktop.Core.States.App
 
             Task.Run(async () =>
             {
-                await synchronizationService.SyncAsync(SyncOption.All, ActiveCancellationToken);
+                ISynchronizer synchronizer = new AllSynchronizer();
+                await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
             });
         }
 
@@ -98,6 +101,7 @@ namespace Sportik.Desktop.Core.States.App
             _eventsService.RemoveListener<UserRefreshFailedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<ExerciseTargetRepetitionsChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseTimeBetweenSetsChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<ExerciseSetAddedEventArgs>(EventsService_Event);
@@ -137,11 +141,17 @@ namespace Sportik.Desktop.Core.States.App
         {
             _reminderService.AddExercise(args.Exercise.Id);
 
+            if (!args.SynchronizationRequired)
+            {
+                return;
+            }
+
             ISynchronizationService synchronizationService = _synchronizationServiceFactory();
 
             Task.Run(async () =>
             {
-                await synchronizationService.SyncAsync(SyncOption.Exercises, ActiveCancellationToken);
+                ISynchronizer synchronizer = new CreatedExerciseSynchronizer(args.Exercise);
+                await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
             });
         }
 
@@ -151,7 +161,14 @@ namespace Sportik.Desktop.Core.States.App
 
             Task.Run(async () =>
             {
-                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+                ExerciseSettingsDelta delta = new ExerciseSettingsDelta
+                {
+                    Change = ExerciseSettingsChange.IsEnabled,
+                    IsEnabled = args.IsEnabled,
+                };
+
+                ISynchronizer synchronizer = new ExerciseSettingsSynchronizer(args.ExerciseId, delta);
+                await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
             });
         }
 
@@ -161,7 +178,14 @@ namespace Sportik.Desktop.Core.States.App
 
             Task.Run(async () =>
             {
-                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+                ExerciseSettingsDelta delta = new ExerciseSettingsDelta
+                {
+                    Change = ExerciseSettingsChange.TargetRepetitions,
+                    TargetRepetitions = args.TargetRepetitions,
+                };
+
+                ISynchronizer synchronizer = new ExerciseSettingsSynchronizer(args.ExerciseId, delta);
+                await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
             });
         }
 
@@ -171,7 +195,14 @@ namespace Sportik.Desktop.Core.States.App
 
             Task.Run(async () =>
             {
-                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+                ExerciseSettingsDelta delta = new ExerciseSettingsDelta
+                {
+                    Change = ExerciseSettingsChange.TimeBetweenSets,
+                    TimeBetweenSets = args.TimeBetweenSets,
+                };
+
+                ISynchronizer synchronizer = new ExerciseSettingsSynchronizer(args.ExerciseId, delta);
+                await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
             });
         }
 
@@ -181,17 +212,30 @@ namespace Sportik.Desktop.Core.States.App
 
             Task.Run(async () =>
             {
-                await synchronizationService.SyncAsync(SyncOption.ExerciseSettings, ActiveCancellationToken);
+                ExerciseSettingsDelta delta = new ExerciseSettingsDelta
+                {
+                    Change = ExerciseSettingsChange.ExecutionTime,
+                    ExecutionTime = args.ExecutionTime,
+                };
+
+                ISynchronizer synchronizer = new ExerciseSettingsSynchronizer(args.ExerciseId, delta);
+                await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
             });
         }
 
         private void EventsService_Event(ExerciseSetAddedEventArgs args)
         {
+            if (!args.SynchronizationRequired)
+            {
+                return;
+            }
+
             ISynchronizationService synchronizationService = _synchronizationServiceFactory();
 
             Task.Run(async () =>
             {
-                await synchronizationService.SyncAsync(SyncOption.ExerciseStatistics, ActiveCancellationToken);
+                ISynchronizer synchronizer = new AddedSetSynchronizer(args.Set);
+                await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
             });
         }
     }

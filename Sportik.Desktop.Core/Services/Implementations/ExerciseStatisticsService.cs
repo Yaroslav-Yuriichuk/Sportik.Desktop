@@ -62,7 +62,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             try
             {
                 ExerciseSet addedSet = await ExerciseStatisticsRepository.AddSetAsync(addModel, cancellationToken);
-                _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(addedSet));
+                _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(addedSet, true));
 
                 return OperationResult<ExerciseSet>.Success(addedSet);
             }

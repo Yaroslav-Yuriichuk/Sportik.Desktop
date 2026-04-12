@@ -134,6 +134,13 @@
     <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Common\StateMachine\IState.cs" />
     <Compile Include="Common\StateMachine\IStatesContext.cs" />
+    <Compile Include="Common\Synchronization\AddedSetSynchronizer.cs" />
+    <Compile Include="Common\Synchronization\AllSynchronizer.cs" />
+    <Compile Include="Common\Synchronization\CreatedExerciseSynchronizer.cs" />
+    <Compile Include="Common\Synchronization\DeleteAllSynchronizer.cs" />
+    <Compile Include="Common\Synchronization\ExerciseSettingsSynchronizer.cs" />
+    <Compile Include="Common\Synchronization\ISynchronizer.cs" />
+    <Compile Include="Common\Synchronization\Synchronizer.cs" />
     <Compile Include="Common\Timers\DefaultTimer.cs" />
     <Compile Include="Common\Timers\DefaultTimerBuilder.cs" />
     <Compile Include="Common\Timers\ITimer.cs" />
@@ -191,7 +198,6 @@
     <Compile Include="Models\Statistics\WeekStatistics.cs" />
     <Compile Include="Models\Statistics\WeekStatisticsOrder.cs" />
     <Compile Include="Models\SyncedUserCache.cs" />
-    <Compile Include="Models\SyncOption.cs" />
     <Compile Include="Models\Training\TrainingSet.cs" />
     <Compile Include="Models\Training\TrainingStopReason.cs" />
     <Compile Include="Models\UpdateExerciseSettingsModel.cs" />

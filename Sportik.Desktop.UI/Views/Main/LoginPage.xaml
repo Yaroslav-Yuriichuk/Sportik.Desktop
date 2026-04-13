@@ -57,7 +57,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Rectangle Height="1" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" VerticalAlignment="Center" />
+                    <Rectangle Grid.Column="0" Height="1" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" VerticalAlignment="Center" />
                     <TextBlock Grid.Column="1" Text="or" Margin="16,0" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" FontSize="13" />
                     <Rectangle Grid.Column="2" Height="1" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" VerticalAlignment="Center" />
                 </Grid>

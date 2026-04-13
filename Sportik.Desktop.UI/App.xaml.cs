@@ -66,7 +66,6 @@ namespace Sportik.Desktop.UI
 
             if (e.PrelaunchActivated == false)
             {
-                //ServiceProvider.GetService<INavigationService>().Navigate(typeof(WelcomePage), NavigationScope.Main);
                 Window.Current.Activate();
             }
 

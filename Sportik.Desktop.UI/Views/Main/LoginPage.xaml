@@ -12,67 +12,68 @@
         <login:LoginViewModel />
     </Page.DataContext>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Border HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="400"
+                Padding="40"
+                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+            <StackPanel Spacing="16">
+                <TextBlock Text="Welcome Back"
+                           FontSize="32"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,4" />
 
-        <TextBox Grid.Row="0"
-                 Text=""
-                 Height="0" />
+                <TextBlock Text="Log in to continue to Sportik Desktop"
+                           FontSize="14"
+                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,24" />
 
-        <TextBlock Grid.Row="1"
-                   Text="Log in to Sportik Desktop"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   Margin="0 15 0 0" />
+                <TextBox PlaceholderText="Email"
+                         Text="{Binding Email, Mode=TwoWay}"
+                         Padding="12,10"
+                         FontSize="14" />
 
-        <TextBox Grid.Row="2"
-                 Width="250"
-                 Margin="0,15,0,0"
-                 PlaceholderText="Email"
-                 Text="{Binding Email, Mode=TwoWay}" />
+                <PasswordBox PlaceholderText="Password"
+                             Password="{Binding Password, Mode=TwoWay}"
+                             Padding="12,10"
+                             FontSize="14" />
 
-        <PasswordBox Grid.Row="3"
-                     Width="250"
-                     Margin="0,15,0,0"
-                     PlaceholderText="Password"
-                     Password="{Binding Password, Mode=TwoWay}" />
+                <Button Content="Log in"
+                        HorizontalAlignment="Stretch"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        MinHeight="40"
+                        Margin="0,16,0,0"
+                        Command="{Binding LoginCommand}" />
 
-        <Button Grid.Row="4"
-                Content="Log in"
-                Width="250"
-                Margin="0,15,0,0"
-                HorizontalAlignment="Center"
-                Command="{Binding LoginCommand}" />
+                <Grid Margin="0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Rectangle Height="1" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="or" Margin="16,0" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" FontSize="13" />
+                    <Rectangle Grid.Column="2" Height="1" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" VerticalAlignment="Center" />
+                </Grid>
 
-        <TextBlock Grid.Row="5"
-                   Text="or"
-                   HorizontalAlignment="Center"
-                   Margin="0 15 0 0" />
+                <Button Content="Sign up"
+                        HorizontalAlignment="Stretch"
+                        MinHeight="40"
+                        Background="Transparent"
+                        Command="{Binding RegisterCommand}" />
 
-        <Button Grid.Row="6"
-                Content="Sign up"
-                Width="250"
-                Margin="0,15,0,0"
-                HorizontalAlignment="Center"
-                Command="{Binding RegisterCommand}" />
-
-        <HyperlinkButton Grid.Row="7"
-                         Content="Continue in offline mode"
-                         Width="250"
-                         Margin="0,15,0,0"
-                         HorizontalAlignment="Center"
-                         Command="{Binding UseOfflineModeCommand}" />
-
+                <HyperlinkButton Content="Continue in offline mode"
+                                 HorizontalAlignment="Center"
+                                 Margin="0,8,0,0"
+                                 Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                 Command="{Binding UseOfflineModeCommand}" />
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>

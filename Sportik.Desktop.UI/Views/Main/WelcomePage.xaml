@@ -7,18 +7,29 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Border HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="400"
+                Padding="40"
+                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+            <StackPanel Spacing="16">
+                <TextBlock Text="Welcome"
+                           FontSize="32"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,4" />
 
-        <TextBlock Grid.Row="1"
-                   Text="Welcome to Sportik Desktop"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   Margin="0 15 0 0" />
+                <TextBlock Text="Welcome to Sportik Desktop"
+                           FontSize="14"
+                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                           HorizontalAlignment="Center"
+                           TextWrapping="WrapWholeWords"
+                           TextAlignment="Center" />
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>

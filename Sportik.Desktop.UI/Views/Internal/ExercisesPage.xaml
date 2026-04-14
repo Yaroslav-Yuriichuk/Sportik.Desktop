@@ -30,6 +30,7 @@
         <TextBlock Grid.Row="0"
                    Text="Exercises"
                    FontSize="32"
+                   FontWeight="SemiBold"
                    Margin="15 15 15 0"/>
 
         <StackPanel Grid.Row="1"
@@ -38,6 +39,7 @@
                     Margin="15 15 15 0">
 
             <TextBlock Text="Mode:"
+                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                        Margin="0 0 15 0"
                        VerticalAlignment="Center" />
 
@@ -45,15 +47,12 @@
                       Margin="0"
                       ItemsSource="{Binding ReminderModeOptions}"
                       SelectedValue="{Binding SelectedReminderModeOption, Mode=TwoWay}">
-
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
-
             </ComboBox>
-
         </StackPanel>
 
         <ListView Grid.Row="2"
@@ -69,6 +68,44 @@
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0,0,0,12" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Grid Background="Transparent">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal" />
+                                            <VisualState x:Name="PointerOver">
+                                                <VisualState.Setters>
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <VisualState.Setters>
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                    <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                    <Border x:Name="CardBorder"
+                                            Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                                            BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8" />
+
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                                      Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      Margin="{TemplateBinding Padding}" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </ListView.ItemContainerStyle>
 
@@ -87,11 +124,13 @@
                             <SymbolIcon Grid.Column="0"
                                         Symbol="World"
                                         Width="27"
-                                        Height="27" />
+                                        Height="27"
+                                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <TextBlock Grid.Column="1"
                                        Text="{Binding Name}"
                                        FontSize="20"
+                                       FontWeight="SemiBold"
                                        Margin="15 0 0 0" />
 
                             <ToggleSwitch Grid.Column="3"
@@ -103,14 +142,11 @@
                                     Margin="15 0 15 15"
                                     Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingBeforeForceExecution}">
 
-                            <TextBlock Margin="0 0 10 0"
-                                       VerticalAlignment="Center">
-                                <Run Text="Next reminder in"></Run>
-                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Next reminder in" />
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock" />
-
+                            <SymbolIcon Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
@@ -118,19 +154,16 @@
                                     Margin="15 0 15 15"
                                     Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingWithForceExecution}">
 
-                            <TextBlock Margin="0 0 10 0"
-                                       VerticalAlignment="Center">
-                                <Run Text="Next reminder in"></Run>
-                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Next reminder in" />
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock"
-                                        Margin="0 0 10 0" />
+                            <SymbolIcon Margin="0 0 10 0" Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <Button Content="Start executing"
                                     MinWidth="140"
+                                    Style="{ThemeResource AccentButtonStyle}"
                                     Command="{Binding ExecuteCommand}"/>
-
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
@@ -138,22 +171,19 @@
                                     Margin="15 0 15 15"
                                     Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Executing}">
 
-                            <TextBlock Margin="0 0 10 0"
-                                       VerticalAlignment="Center">
-                                <Run Text="Only"></Run>
-                                <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
-                                <Run Text="left to complete"></Run>
-                                <Run Text="{Binding TargetRepetitions}"></Run>
-                                <Run Text="repetition(s)"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Only" />
+                                <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
+                                <Run Text="left to complete" />
+                                <Run Text="{Binding TargetRepetitions}" FontWeight="SemiBold" />
+                                <Run Text="repetition(s)" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock"
-                                        Margin="0 0 10 0"/>
+                            <SymbolIcon Margin="0 0 10 0" Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <Button Content="Mark as completed"
                                     MinWidth="140"
+                                    Style="{ThemeResource AccentButtonStyle}"
                                     Command="{Binding CompleteCommand}"/>
-
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
@@ -161,19 +191,16 @@
                                     Margin="15 0 15 15"
                                     Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Snoozed}">
 
-                            <TextBlock Margin="0 0 10 0"
-                                       VerticalAlignment="Center">
-                                <Run Text="Snoozed, next reminder in"></Run>
-                                <Run Text="{Binding SnoozingTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Snoozed, next reminder in" />
+                                <Run Text="{Binding SnoozingTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock"
-                                        Margin="0 0 10 0" />
+                            <SymbolIcon Margin="0 0 10 0" Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <Button Content="Start executing"
                                     MinWidth="140"
+                                    Style="{ThemeResource AccentButtonStyle}"
                                     Command="{Binding ExecuteCommand}"/>
-
                         </StackPanel>
 
                     </StackPanel>
@@ -183,18 +210,56 @@
         </ListView>
 
         <ListView Grid.Row="2"
-          IsItemClickEnabled="True"
-          SelectionMode="None"
-          HorizontalAlignment="Stretch"
-          HorizontalContentAlignment="Stretch"
-          Margin="15"
-          ItemsSource="{Binding SequentialExercises}"
-          Visibility="{Binding ReminderMode, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Sequential}">
+                  IsItemClickEnabled="True"
+                  SelectionMode="None"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Stretch"
+                  Margin="15"
+                  ItemsSource="{Binding SequentialExercises}"
+                  Visibility="{Binding ReminderMode, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Sequential}">
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0,0,0,12" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Grid Background="Transparent">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal" />
+                                            <VisualState x:Name="PointerOver">
+                                                <VisualState.Setters>
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <VisualState.Setters>
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                    <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                    <Border x:Name="CardBorder"
+                                            Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                                            BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8" />
+
+                                    <ContentPresenter x:Name="ContentPresenter"
+                                                      Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      Margin="{TemplateBinding Padding}" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </ListView.ItemContainerStyle>
 
@@ -211,32 +276,31 @@
                             </Grid.ColumnDefinitions>
 
                             <SymbolIcon Grid.Column="0"
-                                Symbol="World"
-                                Width="27"
-                                Height="27" />
+                                        Symbol="World"
+                                        Width="27"
+                                        Height="27"
+                                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <TextBlock Grid.Column="1"
-                               Text="{Binding Name}"
-                               FontSize="20"
-                               Margin="15 0 0 0" />
+                                       Text="{Binding Name}"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"
+                                       Margin="15 0 0 0" />
 
                             <ToggleSwitch Grid.Column="3"
-                                  IsOn="{Binding IsEnabled, Mode=TwoWay}" />
+                                          IsOn="{Binding IsEnabled, Mode=TwoWay}" />
                         </Grid>
 
                         <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            Margin="15 0 15 15"
-                            Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingBeforeForceExecution}">
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 15 15"
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingBeforeForceExecution}">
 
-                            <TextBlock Margin="0 0 10 0"
-                               VerticalAlignment="Center">
-                                <Run Text="Next reminder in"></Run>
-                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Next reminder in" />
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock" />
-
+                            <SymbolIcon Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
@@ -244,42 +308,36 @@
                                     Margin="15 0 15 15"
                                     Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=WaitingWithForceExecution}">
 
-                            <TextBlock Margin="0 0 10 0"
-                                       VerticalAlignment="Center">
-                                <Run Text="Next reminder in"></Run>
-                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Next reminder in" />
+                                <Run Text="{Binding ReminderTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock"
-                                        Margin="0 0 10 0" />
+                            <SymbolIcon Margin="0 0 10 0" Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <Button Content="Start executing"
                                     MinWidth="140"
+                                    Style="{ThemeResource AccentButtonStyle}"
                                     Command="{Binding ExecuteCommand}"/>
-
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            Margin="15 0 15 15"
-                            Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Executing}">
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 15 15"
+                                    Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Executing}">
 
-                            <TextBlock Margin="0 0 10 0"
-                               VerticalAlignment="Center">
-                                <Run Text="Only"></Run>
-                                <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
-                                <Run Text="left to complete"></Run>
-                                <Run Text="{Binding TargetRepetitions}"></Run>
-                                <Run Text="repetition(s)"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Only" />
+                                <Run Text="{Binding ExecutionTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
+                                <Run Text="left to complete" />
+                                <Run Text="{Binding TargetRepetitions}" FontWeight="SemiBold" />
+                                <Run Text="repetition(s)" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock"
-                                Margin="0 0 10 0"/>
+                            <SymbolIcon Margin="0 0 10 0" Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <Button Content="Mark as completed"
                                     MinWidth="140"
+                                    Style="{ThemeResource AccentButtonStyle}"
                                     Command="{Binding CompleteCommand}"/>
-
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
@@ -287,18 +345,14 @@
                                     Margin="15 0 15 15"
                                     Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Queued}">
 
-                            <TextBlock Margin="0 0 10 0"
-                                       VerticalAlignment="Center">
-                                <Run Text="Queued"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Queued" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock"
-                                        Margin="0 0 10 0" />
+                            <SymbolIcon Margin="0 0 10 0" Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <Button Content="Switch"
                                     MinWidth="140"
                                     Command="{Binding SwitchCommand}"/>
-
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal"
@@ -306,19 +360,16 @@
                                     Margin="15 0 15 15"
                                     Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Snoozed}">
 
-                            <TextBlock Margin="0 0 10 0"
-                                       VerticalAlignment="Center">
-                                <Run Text="Snoozed, next reminder in"></Run>
-                                <Run Text="{Binding SnoozingTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}"></Run>
+                            <TextBlock Margin="0 0 10 0" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                                <Run Text="Snoozed, next reminder in" />
+                                <Run Text="{Binding SnoozingTime, Converter={StaticResource TimeSpanToLongHoursMinutesSecondsStringConverter}}" FontWeight="SemiBold" />
                             </TextBlock>
-
-                            <SymbolIcon Symbol="Clock"
-                                        Margin="0 0 10 0" />
+                            <SymbolIcon Margin="0 0 10 0" Symbol="Clock" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                             <Button Content="Start executing"
                                     MinWidth="140"
+                                    Style="{ThemeResource AccentButtonStyle}"
                                     Command="{Binding ExecuteCommand}"/>
-
                         </StackPanel>
 
                     </StackPanel>
@@ -340,6 +391,7 @@
             <Button Content="Resume"
                     Margin="0"
                     MinWidth="140"
+                    Style="{ThemeResource AccentButtonStyle}"
                     Command="{Binding ResumeCommand}" />
 
         </StackPanel>

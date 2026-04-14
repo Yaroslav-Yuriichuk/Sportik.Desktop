@@ -29,6 +29,7 @@
         <TextBlock Grid.Row="0"
                    Text="Training"
                    FontSize="32"
+                   FontWeight="SemiBold"
                    Margin="15 15 15 0"/>
 
         <Grid Grid.Row="1"
@@ -42,66 +43,78 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0"
-                      Margin="15 15 15 0">
+                <Border Grid.Row="0"
+                        Margin="15 15 15 0"
+                        Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                        BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="15">
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                    </Grid.RowDefinitions>
+                    <Grid>
 
-                    <ComboBox Grid.Row="0"
-                              Margin="0 15 0 15"
-                              MinWidth="300"
-                              ItemsSource="{Binding ExercisesOptions}"
-                              SelectedValue="{Binding SelectedExerciseOption, Mode=TwoWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                        </Grid.RowDefinitions>
 
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Exercise.Name}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-
-                    </ComboBox>
-
-                    <StackPanel Grid.Row="3"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Margin="15 0 0 15"
-                                Visibility="Visible">
-
-                        <TextBlock Text="Repetitions:"
-                                   Margin="0 0 15 0"
-                                   VerticalAlignment="Center" />
-
-                        <ComboBox MinWidth="100"
-                                  ItemsSource="{Binding RepetitionsOptions}"
-                                  SelectedValue="{Binding SelectedRepetitionsOption, Mode=TwoWay}">
+                        <ComboBox Grid.Row="0"
+                                  Margin="0 0 0 15"
+                                  MinWidth="300"
+                                  ItemsSource="{Binding ExercisesOptions}"
+                                  SelectedValue="{Binding SelectedExerciseOption, Mode=TwoWay}">
 
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding IntValue}"/>
+                                    <TextBlock Text="{Binding Exercise.Name}"/>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
 
                         </ComboBox>
 
-                    </StackPanel>
+                        <StackPanel Grid.Row="3"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Margin="15 0 0 15"
+                                    Visibility="Visible">
 
-                    <Button Grid.Row="4"
-                            Content="Add set"
-                            HorizontalAlignment="Right"
-                            Margin="0"
-                            Command="{Binding AddSetCommand}" />
+                            <TextBlock Text="Repetitions:"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       Margin="0 0 15 0"
+                                       VerticalAlignment="Center" />
 
-                </Grid>
+                            <ComboBox MinWidth="100"
+                                      ItemsSource="{Binding RepetitionsOptions}"
+                                      SelectedValue="{Binding SelectedRepetitionsOption, Mode=TwoWay}">
+
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding IntValue}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+
+                            </ComboBox>
+
+                        </StackPanel>
+
+                        <Button Grid.Row="4"
+                                Content="Add set"
+                                HorizontalAlignment="Right"
+                                Margin="0"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Command="{Binding AddSetCommand}" />
+
+                    </Grid>
+                </Border>
 
                 <ListView Grid.Row="1"
                           IsItemClickEnabled="True"
                           SelectionMode="None"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
                           Margin="15"
                           ItemsSource="{Binding Sets}">
 
@@ -109,35 +122,76 @@
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                             <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0,0,0,12" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Grid Background="Transparent">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal" />
+                                                    <VisualState x:Name="PointerOver">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                            <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+
+                                            <Border x:Name="CardBorder"
+                                                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8" />
+
+                                            <ContentPresenter x:Name="ContentPresenter"
+                                                              Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              Margin="{TemplateBinding Padding}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </ListView.ItemContainerStyle>
 
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="training:SetupSetViewModel">
-                            <Grid Margin="10 0 0 0">
+                            <Grid Margin="15">
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
                                     <ColumnDefinition Width="*"></ColumnDefinition>
                                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
 
                                 <SymbolIcon Grid.Column="0"
                                             Symbol="World"
-                                            Width="20"
-                                            Height="20"
-                                            Margin="0 0 10 0"/>
+                                            Width="27"
+                                            Height="27"
+                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                            Margin="0 0 15 0"/>
 
                                 <TextBlock Grid.Column="1"
                                            Text="{Binding Exercise.Name}"
-                                           FontSize="14"
-                                           Margin="0 5 0 5" />
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
 
                                 <TextBlock Grid.Column="2"
                                            FontSize="14"
-                                           Margin="0 5 5 5">
-                                    <Run Text="Repetitions: " />
-                                    <Run Text="{Binding Repetitions}" />
+                                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                           VerticalAlignment="Center">
+                                    <Run Text="Repetitions:" />
+                                    <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />
                                 </TextBlock>
 
                             </Grid>
@@ -153,8 +207,9 @@
                             Margin="15 0 15 15">
 
                     <Button Content="Start"
-                            Margin="0 0 0 0"
+                            Margin="0"
                             MinWidth="140"
+                            Style="{ThemeResource AccentButtonStyle}"
                             Command="{Binding StartTrainingCommand}" />
 
                 </StackPanel>
@@ -174,17 +229,55 @@
                 </Grid.RowDefinitions>
 
                 <ListView Grid.Row="0"
-                      IsItemClickEnabled="True"
-                      SelectionMode="None"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Margin="15"
-                      ItemsSource="{Binding Sets}">
+                          IsItemClickEnabled="True"
+                          SelectionMode="None"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          Margin="15"
+                          ItemsSource="{Binding Sets}">
 
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                             <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0,0,0,12" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Grid Background="Transparent">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal" />
+                                                    <VisualState x:Name="PointerOver">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                            <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+
+                                            <Border x:Name="CardBorder"
+                                                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8" />
+
+                                            <ContentPresenter x:Name="ContentPresenter"
+                                                              Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              Margin="{TemplateBinding Padding}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </ListView.ItemContainerStyle>
 
@@ -203,11 +296,13 @@
                                     <SymbolIcon Grid.Column="0"
                                                 Symbol="World"
                                                 Width="27"
-                                                Height="27" />
+                                                Height="27"
+                                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                                     <TextBlock Grid.Column="1"
                                                Text="{Binding ExerciseName}"
                                                FontSize="20"
+                                               FontWeight="SemiBold"
                                                Margin="15 0 0 0" />
 
                                     <StackPanel Grid.Column="3"
@@ -217,18 +312,20 @@
 
                                         <TextBlock Margin="0 0 10 0"
                                                    Text="Completed"
+                                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                                    VerticalAlignment="Center">
                                         </TextBlock>
 
-                                        <SymbolIcon Symbol="Accept" />
+                                        <SymbolIcon Symbol="Accept" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
 
                                     </StackPanel>
 
                                     <TextBlock Grid.Column="3"
+                                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                                Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Executing}"
                                                VerticalAlignment="Center">
-                                        <Run Text="Repetitions: " />
-                                        <Run Text="{Binding Repetitions}" />
+                                        <Run Text="Repetitions:" />
+                                        <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />
                                     </TextBlock>
 
                                 </Grid>
@@ -240,6 +337,7 @@
 
                                     <Button Content="Mark as completed"
                                             MinWidth="140"
+                                            Style="{ThemeResource AccentButtonStyle}"
                                             Command="{Binding CompleteCommand}"/>
 
                                 </StackPanel>
@@ -256,7 +354,7 @@
                             Margin="15 0 15 15">
 
                     <Button Content="Cancel"
-                            Margin="0 0 0 0"
+                            Margin="0"
                             MinWidth="140"
                             Command="{Binding CancelTrainingCommand}" />
 

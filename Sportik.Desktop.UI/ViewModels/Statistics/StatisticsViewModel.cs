@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Models.Statistics;
@@ -25,8 +26,22 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
+        private bool _isImportOpen;
+
+        public bool IsImportOpen
+        {
+            get => _isImportOpen;
+            set => SetField(ref _isImportOpen, value);
+        }
+
+        public ICommand ShowImportCommand { get; }
+        public ICommand CloseImportCommand { get; }
+
         public StatisticsViewModel()
         {
+            ShowImportCommand = new ReactiveRelayCommand(ShowImport);
+            CloseImportCommand = new ReactiveRelayCommand(CloseImport);
+
             _ = LoadDayStatisticsAsync(_loadCts.Token);
         }
 
@@ -54,6 +69,16 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
                 weekStatistics.Select(statistics => new WeekStatisticsViewModel(statistics)));
+        }
+
+        private void ShowImport()
+        {
+            IsImportOpen = true;
+        }
+
+        private void CloseImport()
+        {
+            IsImportOpen = false;
         }
     }
 }

@@ -225,7 +225,7 @@
         <Grid Grid.Row="0"
               Grid.RowSpan="3"
               Background="#80000000"
-              Visibility="{Binding IsImportOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+              Visibility="{Binding Import.IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
 
             <Border Width="420"
                     Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
@@ -242,16 +242,27 @@
                                FontWeight="SemiBold"
                                Margin="0 0 0 15" />
 
-                    <TextBlock Text="Import functionality will be available soon."
+                    <TextBlock Text="Google Sheet Id"
                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                               Margin="0 0 0 15" />
+                               Margin="0 0 0 5" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter Google Sheet Id" />
+
+                    <CheckBox Content="Validate duplicates"
+                              Margin="0 0 0 15" />
 
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right">
 
                         <Button Content="Close"
                                 MinWidth="100"
-                                Command="{Binding CloseImportCommand}" />
+                                Margin="0 0 10 0"
+                                Command="{Binding Import.CloseCommand}" />
+
+                        <Button Content="Import"
+                                MinWidth="120"
+                                Style="{ThemeResource AccentButtonStyle}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

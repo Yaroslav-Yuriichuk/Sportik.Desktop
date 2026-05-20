@@ -19,28 +19,20 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public ObservableCollection<WeekStatisticsViewModel> WeekStatistics
         {
             get => _weekStatistics;
-            set => SetField(ref _weekStatistics, value);
+            private set => SetField(ref _weekStatistics, value);
         }
+
+        public ImportViewModel Import { get; } = new ImportViewModel();
+
+        public ICommand ShowImportCommand { get; }
 
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
-        private bool _isImportOpen;
-
-        public bool IsImportOpen
-        {
-            get => _isImportOpen;
-            set => SetField(ref _isImportOpen, value);
-        }
-
-        public ICommand ShowImportCommand { get; }
-        public ICommand CloseImportCommand { get; }
-
         public StatisticsViewModel()
         {
-            ShowImportCommand = new ReactiveRelayCommand(ShowImport);
-            CloseImportCommand = new ReactiveRelayCommand(CloseImport);
+            ShowImportCommand = new ReactiveRelayCommand(OpenImport);
 
             _ = LoadDayStatisticsAsync(_loadCts.Token);
         }
@@ -71,14 +63,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 weekStatistics.Select(statistics => new WeekStatisticsViewModel(statistics)));
         }
 
-        private void ShowImport()
+        private void OpenImport()
         {
-            IsImportOpen = true;
-        }
-
-        private void CloseImport()
-        {
-            IsImportOpen = false;
+            Import.Open();
         }
     }
 }

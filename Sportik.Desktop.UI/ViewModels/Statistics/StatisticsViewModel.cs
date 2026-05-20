@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Models.Statistics;
@@ -18,8 +19,12 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public ObservableCollection<WeekStatisticsViewModel> WeekStatistics
         {
             get => _weekStatistics;
-            set => SetField(ref _weekStatistics, value);
+            private set => SetField(ref _weekStatistics, value);
         }
+
+        public ImportViewModel Import { get; } = new ImportViewModel();
+
+        public ICommand ShowImportCommand { get; }
 
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
 
@@ -27,6 +32,8 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         public StatisticsViewModel()
         {
+            ShowImportCommand = new ReactiveRelayCommand(OpenImport);
+
             _ = LoadDayStatisticsAsync(_loadCts.Token);
         }
 
@@ -54,6 +61,11 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
                 weekStatistics.Select(statistics => new WeekStatisticsViewModel(statistics)));
+        }
+
+        private void OpenImport()
+        {
+            Import.Open();
         }
     }
 }

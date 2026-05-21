@@ -45,6 +45,8 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             {
                 weekStatisticsViewModel.Dispose();
             }
+
+            Import.Dispose();
         }
 
         private async Task LoadDayStatisticsAsync(CancellationToken cancellationToken)

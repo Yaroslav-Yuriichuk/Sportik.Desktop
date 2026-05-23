@@ -26,7 +26,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             set => SetField(ref _googleSheetId, value);
         }
 
-        private bool _validateDuplicates;
+        private bool _validateDuplicates = true;
 
         public bool ValidateDuplicates
         {
@@ -78,6 +78,11 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             ImportCommand.IsExecutable = true;
             CloseCommand.IsExecutable = true;
+
+            if (result.Succeeded)
+            {
+                Close();
+            }
         }
     }
 }

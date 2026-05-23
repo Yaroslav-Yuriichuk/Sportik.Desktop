@@ -11,16 +11,16 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Mappers
             return new UserSet(
                 addModel.Id ?? Guid.NewGuid(),
                 addModel.Repetitions,
-                addModel.LoggedAt,
+                addModel.LoggedAt.ToUniversalTime(),
                 addModel.ExerciseId);
         }
 
-        public static ExerciseSet ToDomain(UserSet set)
+        public static ExerciseSet ToDomain(UserSet set, TimeSpan offset)
         {
             return new ExerciseSet(
                 set.Id,
                 set.Repetitions,
-                set.LoggedAt,
+                set.LoggedAt.ToOffset(offset),
                 set.ExerciseId);
         }
     }

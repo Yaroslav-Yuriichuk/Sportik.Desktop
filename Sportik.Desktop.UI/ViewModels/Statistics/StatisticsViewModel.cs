@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -27,6 +29,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public ICommand ShowImportCommand { get; }
 
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
+        private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -35,11 +38,15 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ShowImportCommand = new ReactiveRelayCommand(OpenImport);
 
             _ = LoadDayStatisticsAsync(_loadCts.Token);
+
+            EventsService.AddListener<ExerciseSetAddedEventArgs>(EventsService_Event);
         }
 
         public void Dispose()
         {
             _loadCts.Cancel();
+
+            EventsService.RemoveListener<ExerciseSetAddedEventArgs>(EventsService_Event);
 
             foreach (WeekStatisticsViewModel weekStatisticsViewModel in WeekStatistics)
             {
@@ -68,6 +75,26 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         private void OpenImport()
         {
             Import.Open();
+        }
+
+        private void EventsService_Event(ExerciseSetAddedEventArgs args)
+        {
+            DateTime date = args.Set.LoggedAt.Date;
+
+            WeekStatisticsViewModel weekStatisticsViewModel =
+                WeekStatistics.FirstOrDefault(vm => CalendarHelper.IsBeetween(date, vm.FirstWeekDayDate, vm.LastWeekDayDate));
+
+            if (weekStatisticsViewModel == null)
+            {
+                weekStatisticsViewModel = new WeekStatisticsViewModel(new WeekStatistics(new List<DayStatistics>()));
+
+                WeekStatistics.Add(weekStatisticsViewModel);
+
+                WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
+                    WeekStatistics.OrderByDescending(vm => vm.FirstWeekDayDate));
+            }
+
+            weekStatisticsViewModel.AddSet(args.Set);
         }
     }
 }

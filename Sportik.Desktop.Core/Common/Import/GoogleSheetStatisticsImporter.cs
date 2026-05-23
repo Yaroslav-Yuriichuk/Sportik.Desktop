@@ -165,13 +165,13 @@ namespace Sportik.Desktop.Core.Common.Import
 
         private sealed class ImportRow
         {
-            [Name("Exercise Name")]
+            [Index(0)]
             public string ExerciseName { get; set; }
 
-            [Name("Logged At")]
+            [Index(1)]
             public DateTimeOffset LoggedAt { get; set; }
 
-            [Name("Repetitions")]
+            [Index(2)]
             public int Repetitions { get; set; }
         }
 

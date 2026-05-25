@@ -18,13 +18,15 @@
     <Page.Resources>
         <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
         <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
     </Page.Resources>
 
     <Grid>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
@@ -34,7 +36,7 @@
                    Margin="15 15 15 0"/>
 
         <ListView Grid.Row="1"
-                  Margin="15"
+                  Margin="15 15 15 0"
                   IsItemClickEnabled="False"
                   SelectionMode="None"
                   ItemsSource="{Binding WeekStatistics}">
@@ -206,6 +208,69 @@
             </ListView.ItemTemplate>
 
         </ListView>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="15 15 15 15">
+
+            <Button Content="Import"
+                    Margin="0 0 0 0"
+                    MinWidth="140"
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Command="{Binding ShowImportCommand}" />
+
+        </StackPanel>
+
+        <Grid Grid.Row="0"
+              Grid.RowSpan="3"
+              Background="#80000000"
+              DataContext="{Binding Import}"
+              Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+
+            <Border Width="420"
+                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="15"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                <StackPanel>
+                    <TextBlock Text="Import data"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0 0 0 15" />
+
+                    <TextBlock Text="Google Sheet Id"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter Google Sheet Id"
+                             Text="{Binding GoogleSheetId, Mode=TwoWay}" />
+
+                    <CheckBox Content="Validate duplicates"
+                              Margin="0 0 0 15"
+                              IsChecked="{Binding ValidateDuplicates, Mode=TwoWay}" />
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+
+                        <Button Content="Close"
+                                MinWidth="100"
+                                Margin="0 0 10 0"
+                                Command="{Binding CloseCommand}" />
+
+                        <Button Content="Import"
+                                MinWidth="120"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Command="{Binding ImportCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
 
     </Grid>
 </Page>

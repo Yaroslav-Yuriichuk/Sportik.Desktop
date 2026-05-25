@@ -57,7 +57,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                             return new ExerciseStatistics(
                                 ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id)),
                                 g
-                                    .Select(SetMapper.ToDomain)
+                                    .Select(s => SetMapper.ToDomain(s, offset))
                                     .ToList());
                         });
 
@@ -83,7 +83,9 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            return setEntities.Select(SetMapper.ToDomain);
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            return setEntities.Select(s => SetMapper.ToDomain(s, offset));
         }
 
         public async Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
@@ -102,7 +104,9 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             _dbContext.Sets.Add(setEntity);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return SetMapper.ToDomain(setEntity);
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            return SetMapper.ToDomain(setEntity, offset);
         }
 
         public async Task<IEnumerable<ExerciseSet>> AddRangeAsync(IEnumerable<AddExerciseSetModel> addModels,
@@ -134,7 +138,9 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             _dbContext.Sets.AddRange(setEntities);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return setEntities.Select(SetMapper.ToDomain);
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            return setEntities.Select(s => SetMapper.ToDomain(s, offset));
         }
     }
 }

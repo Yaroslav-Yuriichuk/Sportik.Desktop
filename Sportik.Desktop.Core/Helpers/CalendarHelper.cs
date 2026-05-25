@@ -14,5 +14,10 @@ namespace Sportik.Desktop.Core.Helpers
         {
             return GetFirstDayOfWeek(date).AddDays(6);
         }
+
+        public static bool IsBeetween(DateTime date, DateTime startDate, DateTime endDate)
+        {
+            return date.Date >= startDate.Date && date.Date <= endDate.Date;
+        }
     }
 }

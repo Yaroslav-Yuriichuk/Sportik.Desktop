@@ -57,7 +57,7 @@ namespace Sportik.Desktop.Core.Common.Import
 
             CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                HasHeaderRecord = true,
+                HasHeaderRecord = false,
                 IgnoreBlankLines = true,
                 TrimOptions = TrimOptions.Trim,
                 PrepareHeaderForMatch = args => args.Header.Trim(),

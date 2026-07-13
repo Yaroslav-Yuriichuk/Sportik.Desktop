@@ -215,10 +215,16 @@
                     Margin="15 15 15 15">
 
             <Button Content="Import"
-                    Margin="0 0 0 0"
+                    Margin="0 0 15 0"
                     MinWidth="140"
                     Style="{ThemeResource AccentButtonStyle}"
                     Command="{Binding ShowImportCommand}" />
+
+            <Button Content="Export"
+                    Margin="0 0 0 0"
+                    MinWidth="140"
+                    Style="{ThemeResource AccentButtonStyle}"
+                    Command="{Binding ShowExportCommand}" />
 
         </StackPanel>
 
@@ -267,6 +273,52 @@
                                 MinWidth="120"
                                 Style="{ThemeResource AccentButtonStyle}"
                                 Command="{Binding ImportCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="0"
+              Grid.RowSpan="3"
+              Background="#80000000"
+              DataContext="{Binding Export}"
+              Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+
+            <Border Width="420"
+                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="15"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                <StackPanel>
+                    <TextBlock Text="Export data"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0 0 0 15" />
+
+                    <TextBlock Text="Google Sheet Id"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter Google Sheet Id"
+                             Text="{Binding GoogleSheetId, Mode=TwoWay}" />
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+
+                        <Button Content="Close"
+                                MinWidth="100"
+                                Margin="0 0 10 0"
+                                Command="{Binding CloseCommand}" />
+
+                        <Button Content="Export"
+                                MinWidth="120"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Command="{Binding ExportCommand}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

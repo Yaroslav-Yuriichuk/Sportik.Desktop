@@ -17,11 +17,11 @@ namespace Sportik.Desktop.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            string assembleName = typeof(DependencyInjection).Assembly.GetName().Name;
+            string assemblyName = typeof(DependencyInjection).Assembly.GetName().Name;
 
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile(Path.Combine(assembleName, "appsettings.json"), optional: false, reloadOnChange: true);
+                .AddJsonFile(Path.Combine(assemblyName, "appsettings.json"), optional: false, reloadOnChange: true);
 
             IConfigurationRoot configuration = configurationBuilder.Build();
 
@@ -34,7 +34,7 @@ namespace Sportik.Desktop.Infrastructure
 
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")!);
             }, ServiceLifetime.Transient);
 
             services.AddTransient<INotificationService, ToastNotificationService>();

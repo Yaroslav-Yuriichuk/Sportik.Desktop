@@ -68,7 +68,7 @@ namespace Sportik.Desktop.Core.Common.Export
                 {
                     exerciseNamesById[set.ExerciseId],
                     set.LoggedAt.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture),
-                    set.Repetitions.ToString(CultureInfo.InvariantCulture)
+                    set.Repetitions,
                 })
                 .ToList();
 

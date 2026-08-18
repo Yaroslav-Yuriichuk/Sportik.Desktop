@@ -9,6 +9,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 
@@ -52,8 +53,6 @@ namespace Sportik.Desktop.Core.Common.Export
                 throw new InvalidOperationException("Exporter is not initialized.");
             }
 
-            string serviceAccountJson = LoadServiceAccountJson();
-
             IEnumerable<Exercise> exercises = await _exercisesRepository.GetAllAsync(cancellationToken);
 
             Dictionary<Guid, string> exerciseNamesById = exercises
@@ -72,11 +71,13 @@ namespace Sportik.Desktop.Core.Common.Export
                 })
                 .ToList();
 
-            await WriteValuesAsync(values, serviceAccountJson, cancellationToken);
+            await WriteValuesAsync(values, cancellationToken);
         }
 
-        private async Task WriteValuesAsync(IList<IList<object>> values, string serviceAccountJson, CancellationToken cancellationToken)
+        private async Task WriteValuesAsync(IList<IList<object>> values, CancellationToken cancellationToken)
         {
+            string serviceAccountJson = GoogleSheetsHelper.LoadServiceAccountJson("google-service-account.json");
+
             GoogleCredential credential = GoogleCredential
                 .FromJson(serviceAccountJson)
                 .CreateScoped(SheetsService.Scope.Spreadsheets);
@@ -87,7 +88,7 @@ namespace Sportik.Desktop.Core.Common.Export
                 ApplicationName = "Sportik.Desktop"
             });
 
-            string escapedSheetName = EscapeSheetName(_sheetName);
+            string escapedSheetName = GoogleSheetsHelper.EscapeSheetName(_sheetName);
             string clearRange = $"{escapedSheetName}!A:C";
             string writeRange = $"{escapedSheetName}!A1";
 
@@ -115,24 +116,6 @@ namespace Sportik.Desktop.Core.Common.Export
                 SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
 
             await updateRequest.ExecuteAsync(cancellationToken);
-        }
-
-        private static string EscapeSheetName(string sheetName)
-        {
-            return $"'{sheetName.Replace("'", "''")}'";
-        }
-
-        private static string LoadServiceAccountJson()
-        {
-            string assemblyName = typeof(GoogleSheetStatisticsExporter).Assembly.GetName().Name;
-            string serviceAccountJsonPath = Path.Combine(AppContext.BaseDirectory, assemblyName, "google-service-account.json");
-
-            if (!File.Exists(serviceAccountJsonPath))
-            {
-                throw new InvalidOperationException($"Service account json file was not found: {serviceAccountJsonPath}");
-            }
-
-            return File.ReadAllText(serviceAccountJsonPath);
         }
     }
 }

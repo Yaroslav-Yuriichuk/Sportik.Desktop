@@ -257,6 +257,14 @@
                              PlaceholderText="Enter Google Sheet Id"
                              Text="{Binding GoogleSheetId, Mode=TwoWay}" />
 
+                    <TextBlock Text="Sheet name"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter sheet name"
+                             Text="{Binding SheetName, Mode=TwoWay}" />
+
                     <CheckBox Content="Validate duplicates"
                               Margin="0 0 0 15"
                               IsChecked="{Binding ValidateDuplicates, Mode=TwoWay}" />

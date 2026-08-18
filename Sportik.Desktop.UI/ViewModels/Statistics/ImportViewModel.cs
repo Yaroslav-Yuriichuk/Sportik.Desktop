@@ -26,6 +26,14 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             set => SetField(ref _googleSheetId, value);
         }
 
+        private string _sheetName;
+
+        public string SheetName
+        {
+            get => _sheetName;
+            set => SetField(ref _sheetName, value);
+        }
+
         private bool _validateDuplicates = true;
 
         public bool ValidateDuplicates
@@ -73,7 +81,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ImportCommand.IsExecutable = false;
             CloseCommand.IsExecutable = false;
 
-            IStatisticsImporter importer = new GoogleSheetStatisticsImporter(GoogleSheetId, ValidateDuplicates);
+            IStatisticsImporter importer = new GoogleSheetStatisticsImporter(GoogleSheetId, SheetName, ValidateDuplicates);
             OperationResult result = await StatisticsImportService.ImportAsync(importer, cancellationToken);
 
             ImportCommand.IsExecutable = true;

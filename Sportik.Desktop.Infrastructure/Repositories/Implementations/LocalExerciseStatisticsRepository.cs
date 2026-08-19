@@ -72,7 +72,13 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
             IEnumerable<WeekStatistics> weekStatistics = dayStatistics
                 .GroupBy(statistics => CalendarHelper.GetFirstDayOfWeek(statistics.Date))
-                .Select(group => new WeekStatistics(group.ToList()));
+                .Select(group =>
+                {
+                    DateTime firstWeekDayDate = group.Key;
+                    DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(firstWeekDayDate);
+
+                    return new WeekStatistics(firstWeekDayDate, lastWeekDayDate, group.ToList());
+                });
 
             return weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate);
         }

@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
-using Sportik.Desktop.Core.Common.Import;
+using Sportik.Desktop.Core.Common.Export;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
-    internal sealed class ImportViewModel : ViewModel, IDisposable
+    internal sealed class ExportViewModel : ViewModel, IDisposable
     {
         private bool _isOpen;
 
@@ -34,31 +34,23 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             set => SetField(ref _sheetName, value);
         }
 
-        private bool _validateDuplicates = true;
-
-        public bool ValidateDuplicates
-        {
-            get => _validateDuplicates;
-            set => SetField(ref _validateDuplicates, value);
-        }
-
-        public ReactiveRelayCommand ImportCommand { get; }
+        public ReactiveRelayCommand ExportCommand { get; }
         public ReactiveRelayCommand CloseCommand { get; }
 
-        private IStatisticsImportService StatisticsImportService => App.ServiceProvider.GetRequiredService<IStatisticsImportService>();
+        private IStatisticsExportService StatisticsExportService => App.ServiceProvider.GetRequiredService<IStatisticsExportService>();
 
-        private readonly CancellationTokenSource _importCts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _exportCts = new CancellationTokenSource();
 
-        public ImportViewModel()
+        public ExportViewModel()
         {
-            ImportCommand = new ReactiveRelayCommand(Import);
+            ExportCommand = new ReactiveRelayCommand(Export);
             CloseCommand = new ReactiveRelayCommand(Close);
         }
 
         public void Dispose()
         {
-            _importCts.Cancel();
-            _importCts.Dispose();
+            _exportCts.Cancel();
+            _exportCts.Dispose();
         }
 
         public void Open()
@@ -66,9 +58,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             IsOpen = true;
         }
 
-        private void Import()
+        private void Export()
         {
-            _ = ImportAsync(_importCts.Token);
+            _ = ExportAsync(_exportCts.Token);
         }
 
         private void Close()
@@ -76,15 +68,15 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             IsOpen = false;
         }
 
-        private async Task ImportAsync(CancellationToken cancellationToken)
+        private async Task ExportAsync(CancellationToken cancellationToken)
         {
-            ImportCommand.IsExecutable = false;
+            ExportCommand.IsExecutable = false;
             CloseCommand.IsExecutable = false;
 
-            IStatisticsImporter importer = new GoogleSheetStatisticsImporter(GoogleSheetId, SheetName, ValidateDuplicates);
-            OperationResult result = await StatisticsImportService.ImportAsync(importer, cancellationToken);
+            IStatisticsExporter exporter = new GoogleSheetStatisticsExporter(GoogleSheetId, SheetName);
+            OperationResult result = await StatisticsExportService.ExportAsync(exporter, cancellationToken);
 
-            ImportCommand.IsExecutable = true;
+            ExportCommand.IsExecutable = true;
             CloseCommand.IsExecutable = true;
 
             if (result.Succeeded)

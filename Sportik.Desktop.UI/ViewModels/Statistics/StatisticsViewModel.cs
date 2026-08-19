@@ -26,7 +26,11 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         public ImportViewModel Import { get; } = new ImportViewModel();
 
+        public ExportViewModel Export { get; } = new ExportViewModel();
+
         public ICommand ShowImportCommand { get; }
+
+        public ICommand ShowExportCommand { get; }
 
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
         private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
@@ -36,6 +40,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public StatisticsViewModel()
         {
             ShowImportCommand = new ReactiveRelayCommand(OpenImport);
+            ShowExportCommand = new ReactiveRelayCommand(OpenExport);
 
             _ = LoadDayStatisticsAsync(_loadCts.Token);
 
@@ -54,6 +59,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             }
 
             Import.Dispose();
+            Export.Dispose();
         }
 
         private async Task LoadDayStatisticsAsync(CancellationToken cancellationToken)
@@ -77,16 +83,24 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             Import.Open();
         }
 
+        private void OpenExport()
+        {
+            Export.Open();
+        }
+
         private void EventsService_Event(ExerciseSetAddedEventArgs args)
         {
             DateTime date = args.Set.LoggedAt.Date;
 
             WeekStatisticsViewModel weekStatisticsViewModel =
-                WeekStatistics.FirstOrDefault(vm => CalendarHelper.IsBeetween(date, vm.FirstWeekDayDate, vm.LastWeekDayDate));
+                WeekStatistics.FirstOrDefault(vm => CalendarHelper.IsBetween(date, vm.FirstWeekDayDate, vm.LastWeekDayDate));
 
             if (weekStatisticsViewModel == null)
             {
-                weekStatisticsViewModel = new WeekStatisticsViewModel(new WeekStatistics(new List<DayStatistics>()));
+                DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(date);
+                DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(date);
+
+                weekStatisticsViewModel = new WeekStatisticsViewModel(new WeekStatistics(firstWeekDayDate, lastWeekDayDate, new List<DayStatistics>()));
 
                 WeekStatistics.Add(weekStatisticsViewModel);
 

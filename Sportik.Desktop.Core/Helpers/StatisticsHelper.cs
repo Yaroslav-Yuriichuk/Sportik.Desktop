@@ -8,18 +8,6 @@ namespace Sportik.Desktop.Core.Helpers
 {
     public sealed class StatisticsHelper
     {
-        public static DateTime GetWeekFirstDayDate(WeekStatistics weekStatistics)
-        {
-            DateTime firstDayDate = GetFirstDayDate(weekStatistics);
-            return CalendarHelper.GetFirstDayOfWeek(firstDayDate);
-        }
-
-        public static DateTime GetWeekLastDayDate(WeekStatistics weekStatistics)
-        {
-            DateTime lastDayDate = GetLastDayDate(weekStatistics);
-            return CalendarHelper.GetLastDayOfWeek(lastDayDate);
-        }
-
         public static DateTime GetFirstDayDate(WeekStatistics weekStatistics)
         {
             DayStatistics dayStatistics = weekStatistics.DayStatistics

@@ -14,6 +14,7 @@ namespace Sportik.Desktop.Core
             services.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
             services.AddTransient<ISynchronizationService, SynchronizationService>();
             services.AddTransient<IStatisticsImportService, StatisticsImportService>();
+            services.AddTransient<IStatisticsExportService, StatisticsExportService>();
 
             services.AddSingleton<IEventsService, EventsService>();
             services.AddSingleton<IExerciseTimersService, ExerciseTimersService>();

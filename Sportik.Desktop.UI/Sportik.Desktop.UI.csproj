@@ -173,6 +173,7 @@
     <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\DayStatisticsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\ExerciseStatisticsViewModel.cs" />
+    <Compile Include="ViewModels\Statistics\ExportViewModel.cs" />
     <Compile Include="ViewModels\Statistics\ImportViewModel.cs" />
     <Compile Include="ViewModels\Statistics\StatisticsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\WeekStatisticsViewModel.cs" />

@@ -93,11 +93,14 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             DateTime date = args.Set.LoggedAt.Date;
 
             WeekStatisticsViewModel weekStatisticsViewModel =
-                WeekStatistics.FirstOrDefault(vm => CalendarHelper.IsBeetween(date, vm.FirstWeekDayDate, vm.LastWeekDayDate));
+                WeekStatistics.FirstOrDefault(vm => CalendarHelper.IsBetween(date, vm.FirstWeekDayDate, vm.LastWeekDayDate));
 
             if (weekStatisticsViewModel == null)
             {
-                weekStatisticsViewModel = new WeekStatisticsViewModel(new WeekStatistics(new List<DayStatistics>()));
+                DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(date);
+                DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(date);
+
+                weekStatisticsViewModel = new WeekStatisticsViewModel(new WeekStatistics(firstWeekDayDate, lastWeekDayDate, new List<DayStatistics>()));
 
                 WeekStatistics.Add(weekStatisticsViewModel);
 

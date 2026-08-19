@@ -39,8 +39,8 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             DayStatistics = new ObservableCollection<DayStatisticsViewModel>(
                                weekStatistics.DayStatistics.Select(statistics => new DayStatisticsViewModel(statistics)));
 
-            FirstWeekDayDate = StatisticsHelper.GetWeekFirstDayDate(weekStatistics);
-            LastWeekDayDate = StatisticsHelper.GetWeekLastDayDate(weekStatistics);
+            FirstWeekDayDate = weekStatistics.FirstWeekDayDate;
+            LastWeekDayDate = weekStatistics.LastWeekDayDate;
         }
 
         public void Dispose()
@@ -55,7 +55,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         {
             DateTime date = set.LoggedAt.Date;
 
-            if (!CalendarHelper.IsBeetween(date, FirstWeekDayDate, LastWeekDayDate))
+            if (!CalendarHelper.IsBetween(date, FirstWeekDayDate, LastWeekDayDate))
             {
                 return;
             }

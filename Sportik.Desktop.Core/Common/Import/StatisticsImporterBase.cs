@@ -12,18 +12,14 @@ namespace Sportik.Desktop.Core.Common.Import
 {
     public abstract class StatisticsImporterBase : IStatisticsImporter
     {
-        private readonly string _sheetId;
-        private readonly string _sheetName;
         private readonly bool _validateDuplicates;
 
         private IExercisesRepository _exercisesRepository;
         private IExerciseStatisticsRepository _exerciseStatisticsRepository;
         private IEventsService _eventsService;
 
-        protected StatisticsImporterBase(string sheetId, string sheetName, bool validateDuplicates)
+        protected StatisticsImporterBase(bool validateDuplicates)
         {
-            _sheetId = sheetId;
-            _sheetName = sheetName;
             _validateDuplicates = validateDuplicates;
         }
 
@@ -37,16 +33,6 @@ namespace Sportik.Desktop.Core.Common.Import
 
         public async Task ImportAsync(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(_sheetId))
-            {
-                throw new InvalidOperationException("Sheet id cannot be empty.");
-            }
-
-            if (string.IsNullOrWhiteSpace(_sheetName))
-            {
-                throw new InvalidOperationException("Sheet name cannot be empty.");
-            }
-
             if (_exercisesRepository is null || _exerciseStatisticsRepository is null || _eventsService is null)
             {
                 throw new InvalidOperationException("Importer is not initialized.");

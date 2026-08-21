@@ -18,12 +18,12 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             private set => SetField(ref _isOpen, value);
         }
 
-        private string _googleSheetId;
+        private string _googleSheetUrlOrId;
 
-        public string GoogleSheetId
+        public string GoogleSheetUrlOrId
         {
-            get => _googleSheetId;
-            set => SetField(ref _googleSheetId, value);
+            get => _googleSheetUrlOrId;
+            set => SetField(ref _googleSheetUrlOrId, value);
         }
 
         private string _sheetName;
@@ -73,7 +73,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ExportCommand.IsExecutable = false;
             CloseCommand.IsExecutable = false;
 
-            IStatisticsExporter exporter = new GoogleSheetStatisticsExporter(GoogleSheetId, SheetName);
+            IStatisticsExporter exporter = new GoogleSheetStatisticsExporter(GoogleSheetUrlOrId, SheetName);
             OperationResult result = await StatisticsExportService.ExportAsync(exporter, cancellationToken);
 
             ExportCommand.IsExecutable = true;

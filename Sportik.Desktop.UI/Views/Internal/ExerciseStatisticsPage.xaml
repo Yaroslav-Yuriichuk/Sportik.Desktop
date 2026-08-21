@@ -249,13 +249,13 @@
                                FontWeight="SemiBold"
                                Margin="0 0 0 15" />
 
-                    <TextBlock Text="Google Sheet Id"
+                    <TextBlock Text="Google Sheet Url or Id"
                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                Margin="0 0 0 5" />
 
                     <TextBox Margin="0 0 0 15"
-                             PlaceholderText="Enter Google Sheet Id"
-                             Text="{Binding GoogleSheetId, Mode=TwoWay}" />
+                             PlaceholderText="Enter Google Sheet Url or Id"
+                             Text="{Binding GoogleSheetUrlOrId, Mode=TwoWay}" />
 
                     <TextBlock Text="Sheet name"
                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
@@ -307,13 +307,13 @@
                                FontWeight="SemiBold"
                                Margin="0 0 0 15" />
 
-                    <TextBlock Text="Google Sheet Id"
+                    <TextBlock Text="Google Sheet Url or Id"
                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                Margin="0 0 0 5" />
 
                     <TextBox Margin="0 0 0 15"
-                             PlaceholderText="Enter Google Sheet Id"
-                             Text="{Binding GoogleSheetId, Mode=TwoWay}" />
+                             PlaceholderText="Enter Google Sheet Url or Id"
+                             Text="{Binding GoogleSheetUrlOrId, Mode=TwoWay}" />
 
                     <TextBlock Text="Sheet name"
                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"

@@ -22,5 +22,32 @@ namespace Sportik.Desktop.Core.Helpers
         {
             return $"'{sheetName.Replace("'", "''")}'";
         }
+
+        public static bool TryParseSheetId(string urlOrId, out string sheetId)
+        {
+            sheetId = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(urlOrId))
+            {
+                return false;
+            }
+
+            if (urlOrId.Contains("/d/"))
+            {
+                Uri url = new Uri(urlOrId);
+                string[] segments = url.Segments;
+
+                if (segments.Length < 4 || segments[2] != "d/")
+                {
+                    return false;
+                }
+
+                sheetId = segments[3].TrimEnd('/');
+                return true;
+            }
+
+            sheetId = urlOrId;
+            return true;
+        }
     }
 }

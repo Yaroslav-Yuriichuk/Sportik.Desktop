@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Common.Export;
+using Sportik.Desktop.Core.Extensions;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
@@ -18,12 +20,12 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             private set => SetField(ref _isOpen, value);
         }
 
-        private string _googleSheetId;
+        private string _googleSheetUrlOrId;
 
-        public string GoogleSheetId
+        public string GoogleSheetUrlOrId
         {
-            get => _googleSheetId;
-            set => SetField(ref _googleSheetId, value);
+            get => _googleSheetUrlOrId;
+            set => SetField(ref _googleSheetUrlOrId, value);
         }
 
         private string _sheetName;
@@ -38,6 +40,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public ReactiveRelayCommand CloseCommand { get; }
 
         private IStatisticsExportService StatisticsExportService => App.ServiceProvider.GetRequiredService<IStatisticsExportService>();
+        private IPersistentCacheService PersistentCacheService => App.ServiceProvider.GetRequiredService<IPersistentCacheService>();
 
         private readonly CancellationTokenSource _exportCts = new CancellationTokenSource();
 
@@ -45,6 +48,12 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         {
             ExportCommand = new ReactiveRelayCommand(Export);
             CloseCommand = new ReactiveRelayCommand(Close);
+
+            if (PersistentCacheService.TryGet(out ImportExportCache importExportCache))
+            {
+                GoogleSheetUrlOrId = importExportCache.LastExportGoogleSheetUrlOrId;
+                SheetName = importExportCache.LastExportSheetName;
+            }
         }
 
         public void Dispose()
@@ -73,7 +82,10 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ExportCommand.IsExecutable = false;
             CloseCommand.IsExecutable = false;
 
-            IStatisticsExporter exporter = new GoogleSheetStatisticsExporter(GoogleSheetId, SheetName);
+            string googleSheetUrlOrId = GoogleSheetUrlOrId;
+            string sheetName = SheetName;
+
+            IStatisticsExporter exporter = new GoogleSheetStatisticsExporter(googleSheetUrlOrId, sheetName);
             OperationResult result = await StatisticsExportService.ExportAsync(exporter, cancellationToken);
 
             ExportCommand.IsExecutable = true;
@@ -81,6 +93,13 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             if (result.Succeeded)
             {
+                ImportExportCache importExportCache = PersistentCacheService.GetOrNew<ImportExportCache>();
+
+                importExportCache.LastExportGoogleSheetUrlOrId = googleSheetUrlOrId;
+                importExportCache.LastExportSheetName = sheetName;
+
+                PersistentCacheService.Set(importExportCache);
+
                 Close();
             }
         }

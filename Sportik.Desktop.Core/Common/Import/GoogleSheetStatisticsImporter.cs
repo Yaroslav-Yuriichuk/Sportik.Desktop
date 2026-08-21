@@ -14,18 +14,33 @@ namespace Sportik.Desktop.Core.Common.Import
 {
     public sealed class GoogleSheetStatisticsImporter : StatisticsImporterBase
     {
-        private readonly string _sheetId;
+        private readonly string _sheetUrlOrId;
         private readonly string _sheetName;
 
-        public GoogleSheetStatisticsImporter(string sheetId, string sheetName, bool validateDuplicates)
-            : base(sheetId, sheetName, validateDuplicates)
+        public GoogleSheetStatisticsImporter(string sheetUrlOrId, string sheetName, bool validateDuplicates)
+            : base(validateDuplicates)
         {
-            _sheetId = sheetId;
+            _sheetUrlOrId = sheetUrlOrId;
             _sheetName = sheetName;
         }
 
         protected override async Task<IList<ImportExercise>> GetExercisesAsync(CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(_sheetUrlOrId))
+            {
+                throw new InvalidOperationException("Sheet url or id cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(_sheetName))
+            {
+                throw new InvalidOperationException("Sheet name cannot be empty.");
+            }
+
+            if (!GoogleSheetsHelper.TryParseSheetId(_sheetUrlOrId, out string sheetId))
+            {
+                throw new InvalidOperationException("Invalid sheet url or id.");
+            }
+
             string serviceAccountJson = GoogleSheetsHelper.LoadServiceAccountJson("google-service-account.json");
 
             GoogleCredential credential = GoogleCredential
@@ -42,7 +57,7 @@ namespace Sportik.Desktop.Core.Common.Import
             string readRange = $"{escapedSheetName}!A:C";
 
             SpreadsheetsResource.ValuesResource.GetRequest request =
-                sheetsService.Spreadsheets.Values.Get(_sheetId, readRange);
+                sheetsService.Spreadsheets.Values.Get(sheetId, readRange);
 
             ValueRange response = await request.ExecuteAsync(cancellationToken);
 

@@ -52,6 +52,7 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
                 new NavigationOption { Name = "Exercises", Icon = Symbol.AllApps, PageType = typeof(ExercisesPage), },
                 new NavigationOption { Name = "Create Exercise", Icon = Symbol.Add, PageType = typeof(CreateExercisePage), },
                 new NavigationOption { Name = "Exercise Statistics", Icon = Symbol.ViewAll, PageType = typeof(ExerciseStatisticsPage), },
+                new NavigationOption { Name = "Charts Preview", Icon = Symbol.ViewAll, PageType = typeof(ChartPreviewPage), },
                 new NavigationOption { Name = "Extra Sets", Icon = Symbol.Favorite, PageType = typeof(ExtraSetsPage), },
                 new NavigationOption { Name = "Exercise Settings", Icon = Symbol.Edit, PageType = typeof(ExerciseSettingsPage), },
                 new NavigationOption { Name = "Training", Icon = Symbol.Shuffle, PageType = typeof(TrainingPage), },

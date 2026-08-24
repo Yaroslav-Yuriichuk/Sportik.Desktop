@@ -83,6 +83,54 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate);
         }
 
+        public async Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedRepetitionsAsync(CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            IEnumerable<AggregatedRepetitionsExerciseStatistics> aggregatedStatistics = sets
+                .GroupBy(s => s.ExerciseId)
+                .Select(group =>
+                {
+                    UserExercise exercise = group.First().Exercise;
+
+                    return new AggregatedRepetitionsExerciseStatistics(
+                        ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id)),
+                        group.Sum(s => s.Repetitions));
+                });
+
+            return aggregatedStatistics;
+        }
+
+        public async Task<IEnumerable<AggregatedSetsExerciseStatistics>> GetAggregatedSetsAsync(CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            IEnumerable<AggregatedSetsExerciseStatistics> aggregatedStatistics = sets
+                .GroupBy(s => s.ExerciseId)
+                .Select(group =>
+                {
+                    UserExercise exercise = group.First().Exercise;
+
+                    return new AggregatedSetsExerciseStatistics(
+                        ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id)),
+                        group.Count());
+                });
+
+            return aggregatedStatistics;
+        }
+
         public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             List<UserSet> setEntities = await _dbContext.Sets

@@ -148,12 +148,21 @@
     <Compile Include="Converters\TimeSpanToLongHoursMinutesSecondsStringConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesStringConverter.cs" />
     <Compile Include="Helpers\UIThreadHelper.cs" />
+    <Compile Include="Models\BarChartColumn.cs" />
     <Compile Include="Models\NavigationScope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\FrameNavigationService.cs" />
     <Compile Include="Services\Interfaces\INavigationService.cs" />
     <Compile Include="ViewModels\Account\AccountViewModel.cs" />
     <Compile Include="ViewModels\Create\CreateExerciseViewModel.cs" />
+    <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseRepetitionsBarChartLoader.cs" />
+    <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseSetsBarChartLoader.cs" />
+    <Compile Include="ViewModels\Dashboard\DashboardGrouping.cs" />
+    <Compile Include="ViewModels\Dashboard\DashboardGroupingOption.cs" />
+    <Compile Include="ViewModels\Dashboard\DashboardTarget.cs" />
+    <Compile Include="ViewModels\Dashboard\DashboardTargetOption.cs" />
+    <Compile Include="ViewModels\Dashboard\DashboardViewModel.cs" />
+    <Compile Include="ViewModels\Dashboard\IDashboardBarChartLoader.cs" />
     <Compile Include="ViewModels\ExerciseOption.cs" />
     <Compile Include="ViewModels\Exercises\ExercisesViewModel.cs" />
     <Compile Include="ViewModels\Exercises\ParallelExerciseViewModel.cs" />
@@ -187,11 +196,11 @@
     <Compile Include="Views\Internal\AccountPage.xaml.cs">
       <DependentUpon>AccountPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Internal\ChartPreviewPage.xaml.cs">
-      <DependentUpon>ChartPreviewPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Internal\CreateExercisePage.xaml.cs">
       <DependentUpon>CreateExercisePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Internal\DashboardPage.xaml.cs">
+      <DependentUpon>DashboardPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Internal\ExercisesPage.xaml.cs">
       <DependentUpon>ExercisesPage.xaml</DependentUpon>
@@ -303,10 +312,10 @@
     <Page Include="Views\Internal\AccountPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Internal\ChartPreviewPage.xaml">
+    <Page Include="Views\Internal\CreateExercisePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Internal\CreateExercisePage.xaml">
+    <Page Include="Views\Internal\DashboardPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Internal\ExercisesPage.xaml">

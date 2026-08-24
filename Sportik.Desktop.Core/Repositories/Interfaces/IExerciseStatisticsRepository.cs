@@ -10,6 +10,10 @@ namespace Sportik.Desktop.Core.Repositories.Interfaces
     {
         Task<IEnumerable<WeekStatistics>> GetWeeklyAsync(CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedRepetitionsAsync(CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<AggregatedSetsExerciseStatistics>> GetAggregatedSetsAsync(CancellationToken cancellationToken = default);
+
         Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default);
 
         Task<ExerciseSet> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default);

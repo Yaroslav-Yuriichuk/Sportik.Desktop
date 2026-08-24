@@ -203,6 +203,8 @@
     <Compile Include="Models\Settings\ExerciseSettingsDelta.cs" />
     <Compile Include="Models\Sound\SoundSource.cs" />
     <Compile Include="Models\Sound\SystemSound.cs" />
+    <Compile Include="Models\Statistics\AggregatedRepetitionsExerciseStatistics.cs" />
+    <Compile Include="Models\Statistics\AggregatedSetsExerciseStatistics.cs" />
     <Compile Include="Models\Statistics\DayStatistics.cs" />
     <Compile Include="Models\Statistics\ExerciseStatistics.cs" />
     <Compile Include="Models\Statistics\WeekStatistics.cs" />

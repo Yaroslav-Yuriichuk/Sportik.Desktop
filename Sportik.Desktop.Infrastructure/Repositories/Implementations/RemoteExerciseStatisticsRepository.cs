@@ -46,14 +46,19 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.Select(ws => WeekStatisticsMapper.ToDomain(ws, enabledExercisesCache.IncludesExercise));
         }
 
-        public async Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedRepetitionsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException("Aggregated repetitions exercise statistics are not supported in the remote repository.");
         }
 
-        public async Task<IEnumerable<AggregatedSetsExerciseStatistics>> GetAggregatedSetsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AggregatedSetsExerciseStatistics>> GetAggregatedExerciseSetsAsync(CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException("Aggregated sets exercise statistics are not supported in the remote repository.");
+        }
+
+        public async Task<IEnumerable<AggregatedSetsDayStatistics>> GetAggregatedDaySetsAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException("Aggregated day sets statistics are not supported in the remote repository.");
         }
 
         public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)

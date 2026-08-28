@@ -57,11 +57,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
-        public async Task<OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>>> GetAggregatedRepetitionsAsync(CancellationToken cancellationToken = default)
+        public async Task<OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                IEnumerable<AggregatedRepetitionsExerciseStatistics> aggregatedRepetitions = await ExerciseStatisticsRepository.GetAggregatedRepetitionsAsync(cancellationToken);
+                IEnumerable<AggregatedRepetitionsExerciseStatistics> aggregatedRepetitions = await ExerciseStatisticsRepository.GetAggregatedExerciseRepetitionsAsync(cancellationToken);
                 return OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>>.Success(aggregatedRepetitions);
             }
             catch (OperationCanceledException)
@@ -74,11 +74,11 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
-        public async Task<OperationResult<IEnumerable<AggregatedSetsExerciseStatistics>>> GetAggregatedSetsAsync(CancellationToken cancellationToken = default)
+        public async Task<OperationResult<IEnumerable<AggregatedSetsExerciseStatistics>>> GetAggregatedExerciseSetsAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                IEnumerable<AggregatedSetsExerciseStatistics> aggregatedSets = await ExerciseStatisticsRepository.GetAggregatedSetsAsync(cancellationToken);
+                IEnumerable<AggregatedSetsExerciseStatistics> aggregatedSets = await ExerciseStatisticsRepository.GetAggregatedExerciseSetsAsync(cancellationToken);
                 return OperationResult<IEnumerable<AggregatedSetsExerciseStatistics>>.Success(aggregatedSets);
             }
             catch (OperationCanceledException)
@@ -88,6 +88,23 @@ namespace Sportik.Desktop.Core.Services.Implementations
             catch (Exception)
             {
                 return OperationResult<IEnumerable<AggregatedSetsExerciseStatistics>>.Failure(new[] { "Failed to retrieve aggregated sets exercise statistics." });
+            }
+        }
+
+        public async Task<OperationResult<IEnumerable<AggregatedSetsDayStatistics>>> GetAggregatedDaySetsAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                IEnumerable<AggregatedSetsDayStatistics> aggregatedDaySets = await ExerciseStatisticsRepository.GetAggregatedDaySetsAsync(cancellationToken);
+                return OperationResult<IEnumerable<AggregatedSetsDayStatistics>>.Success(aggregatedDaySets);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<IEnumerable<AggregatedSetsDayStatistics>>.Failure(new[] { "Failed to retrieve aggregated day sets exercise statistics." });
             }
         }
 

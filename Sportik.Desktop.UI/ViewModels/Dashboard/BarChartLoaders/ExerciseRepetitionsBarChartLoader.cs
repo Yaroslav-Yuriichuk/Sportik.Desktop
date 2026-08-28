@@ -22,7 +22,7 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard.BarChartLoaders
         public async Task<OperationResult<IEnumerable<BarChartColumn>>> LoadBarChartAsync(CancellationToken cancellationToken)
         {
             OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>> result =
-                await _exerciseStatisticsService.GetAggregatedRepetitionsAsync(cancellationToken);
+                await _exerciseStatisticsService.GetAggregatedExerciseRepetitionsAsync(cancellationToken);
 
             if (!result.Succeeded)
             {

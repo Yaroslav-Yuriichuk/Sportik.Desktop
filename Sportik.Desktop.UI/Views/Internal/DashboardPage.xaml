@@ -135,9 +135,12 @@
             <Grid>
 
                 <StackPanel>
-                    <TextBlock Text="Temporary weekly data preview (vertical columns)."
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                               Margin="0 0 0 10" />
+                    <TextBlock Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 10">
+                        <Run Text="{Binding SelectedTargetOption.Name}" />
+                        <Run Text="statistics grouped by" />
+                        <Run Text="{Binding SelectedGroupingOption.Name}" />
+                    </TextBlock>
 
                     <charting:Chart Height="400">
 

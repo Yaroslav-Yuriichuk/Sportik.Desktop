@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
-using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.ViewModels.Dashboard.BarChartLoaders;
@@ -33,6 +31,7 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 if (SetField(ref _groupingOptions, value))
                 {
                     SetField(ref _selectedGroupingOption, value[0], nameof(SelectedGroupingOption));
+                    TargetOptions = new ObservableCollection<DashboardTargetOption>(SelectedGroupingOption.TargetOptions);
                 }
             }
         }
@@ -46,7 +45,12 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             {
                 if (SetField(ref _selectedGroupingOption, value))
                 {
+                    TargetOptions = new ObservableCollection<DashboardTargetOption>(SelectedGroupingOption.TargetOptions);
 
+                    _loadCts.Cancel();
+                    _loadCts = new CancellationTokenSource();
+
+                    _ = LoadDashboardAsync(SelectedGroupingOption.Grouping, SelectedTargetOption.Target, _loadCts.Token);
                 }
             }
         }
@@ -88,9 +92,21 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
 
         public DashboardViewModel()
         {
+            List<DashboardTargetOption> exerciseTargetOptions = new List<DashboardTargetOption>
+            {
+                new DashboardTargetOption("Repetitions", DashboardTarget.Repetitions),
+                new DashboardTargetOption("Sets", DashboardTarget.Sets),
+            };
+
+            List<DashboardTargetOption> dayTargetOptions = new List<DashboardTargetOption>
+            {
+                new DashboardTargetOption("Sets", DashboardTarget.Sets),
+            };
+
             GroupingOptions = new ObservableCollection<DashboardGroupingOption>
             {
-                new DashboardGroupingOption("Exercise", DashboardGrouping.Exercise),
+                new DashboardGroupingOption("Exercise", DashboardGrouping.Exercise, exerciseTargetOptions),
+                new DashboardGroupingOption("Day of Week", DashboardGrouping.Day, dayTargetOptions),
             };
 
             TargetOptions = new ObservableCollection<DashboardTargetOption>
@@ -108,12 +124,13 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             _loadCts.Dispose();
         }
 
-        public async Task LoadDashboardAsync(DashboardGrouping grouping, DashboardTarget target, CancellationToken cancellationToken)
+        private async Task LoadDashboardAsync(DashboardGrouping grouping, DashboardTarget target, CancellationToken cancellationToken)
         {
             IDashboardBarChartLoader barChartLoader = grouping switch
             {
                 DashboardGrouping.Exercise when target == DashboardTarget.Repetitions => new ExerciseRepetitionsBarChartLoader(ExerciseStatisticsService),
                 DashboardGrouping.Exercise when target == DashboardTarget.Sets => new ExerciseSetsBarChartLoader(ExerciseStatisticsService),
+                DashboardGrouping.Day when target == DashboardTarget.Sets => new DaySetsBarChartLoader(ExerciseStatisticsService),
                 _ => throw new ArgumentOutOfRangeException(nameof(grouping), grouping, null)
             };
 

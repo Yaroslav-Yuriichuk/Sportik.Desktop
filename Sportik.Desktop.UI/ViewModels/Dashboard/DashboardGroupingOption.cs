@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Sportik.Desktop.UI.ViewModels.Dashboard
 {
     internal sealed class DashboardGroupingOption
@@ -6,10 +8,13 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
 
         public DashboardGrouping Grouping { get; }
 
-        public DashboardGroupingOption(string name, DashboardGrouping grouping)
+        public IEnumerable<DashboardTargetOption> TargetOptions { get; }
+
+        public DashboardGroupingOption(string name, DashboardGrouping grouping, IEnumerable<DashboardTargetOption> targetOptions)
         {
             Name = name;
             Grouping = grouping;
+            TargetOptions = targetOptions;
         }
     }
 }

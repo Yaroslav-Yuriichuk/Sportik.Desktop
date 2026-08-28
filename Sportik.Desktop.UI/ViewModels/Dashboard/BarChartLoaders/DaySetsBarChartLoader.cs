@@ -9,19 +9,19 @@ using Sportik.Desktop.UI.Models;
 
 namespace Sportik.Desktop.UI.ViewModels.Dashboard.BarChartLoaders
 {
-    internal sealed class ExerciseSetsBarChartLoader : IDashboardBarChartLoader
+    internal sealed class DaySetsBarChartLoader : IDashboardBarChartLoader
     {
         private readonly IExerciseStatisticsService _exerciseStatisticsService;
 
-        public ExerciseSetsBarChartLoader(IExerciseStatisticsService exerciseStatisticsService)
+        public DaySetsBarChartLoader(IExerciseStatisticsService exerciseStatisticsService)
         {
             _exerciseStatisticsService = exerciseStatisticsService;
         }
 
         public async Task<OperationResult<IEnumerable<BarChartColumn>>> LoadBarChartAsync(CancellationToken cancellationToken)
         {
-            OperationResult<IEnumerable<AggregatedSetsExerciseStatistics>> result =
-                await _exerciseStatisticsService.GetAggregatedExerciseSetsAsync(cancellationToken);
+            OperationResult<IEnumerable<AggregatedSetsDayStatistics>> result =
+                await _exerciseStatisticsService.GetAggregatedDaySetsAsync(cancellationToken);
 
             if (!result.Succeeded)
             {
@@ -29,7 +29,7 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard.BarChartLoaders
             }
 
             return OperationResult<IEnumerable<BarChartColumn>>.Success(
-                result.Value.Select(s => new BarChartColumn(s.Exercise.Name, s.TotalSets)));
+                result.Value.Select(s => new BarChartColumn(s.DayOfWeek, s.TotalSets)));
         }
     }
 }

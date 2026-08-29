@@ -35,7 +35,7 @@
                    Margin="15 15 15 0"/>
 
         <Border Grid.Row="1"
-                Margin="15 45 15 0"
+                Margin="15 15 15 0"
                 Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
                 BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="1"

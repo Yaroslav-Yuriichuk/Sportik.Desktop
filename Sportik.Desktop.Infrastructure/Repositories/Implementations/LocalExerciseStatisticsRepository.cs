@@ -83,6 +83,88 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate);
         }
 
+        public async Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            IEnumerable<AggregatedRepetitionsExerciseStatistics> aggregatedStatistics = sets
+                .GroupBy(s => s.ExerciseId)
+                .Select(group =>
+                {
+                    UserExercise exercise = group.First().Exercise;
+
+                    return new AggregatedRepetitionsExerciseStatistics(
+                        ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id)),
+                        group.Sum(s => s.Repetitions));
+                });
+
+            return aggregatedStatistics;
+        }
+
+        public async Task<IEnumerable<AggregatedSetsExerciseStatistics>> GetAggregatedExerciseSetsAsync(CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            IEnumerable<AggregatedSetsExerciseStatistics> aggregatedStatistics = sets
+                .GroupBy(s => s.ExerciseId)
+                .Select(group =>
+                {
+                    UserExercise exercise = group.First().Exercise;
+
+                    return new AggregatedSetsExerciseStatistics(
+                        ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id)),
+                        group.Count());
+                });
+
+            return aggregatedStatistics;
+        }
+
+        public async Task<IEnumerable<AggregatedSetsDayStatistics>> GetAggregatedDaySetsAsync(CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            List<AggregatedSetsDayStatistics> aggregatedStatistics = sets
+                .GroupBy(s => s.LoggedAt.ToOffset(offset).Date.DayOfWeek)
+                .Select(group =>
+                {
+                    DayOfWeek groupKey = group.Key;
+                    return new AggregatedSetsDayStatistics(groupKey, group.Count());
+                })
+                .ToList();
+
+            HashSet<DayOfWeek> existingDays = aggregatedStatistics.Select(s => s.DayOfWeek).ToHashSet();
+
+            foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>())
+            {
+                if (!existingDays.Contains(day))
+                {
+                    aggregatedStatistics.Add(new AggregatedSetsDayStatistics(day, 0));
+                }
+            }
+
+            aggregatedStatistics.Sort((x, y) => CalendarHelper.GetWeekDayIndex(x.DayOfWeek).CompareTo(CalendarHelper.GetWeekDayIndex(y.DayOfWeek)));
+
+            return aggregatedStatistics;
+        }
+
         public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             List<UserSet> setEntities = await _dbContext.Sets

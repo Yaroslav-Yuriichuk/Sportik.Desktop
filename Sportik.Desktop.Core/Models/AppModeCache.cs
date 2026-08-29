@@ -2,6 +2,6 @@ namespace Sportik.Desktop.Core.Models
 {
     public sealed class AppModeCache
     {
-        public bool IsOffline { get; set; }
+        public bool IsGuest { get; set; }
     }
 }

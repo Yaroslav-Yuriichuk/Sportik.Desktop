@@ -51,7 +51,7 @@ namespace Sportik.Desktop.UI.ViewModels.Account
 
             if (RuntimeCacheService.TryGet(out AppModeCache appModeCache))
             {
-                isLoggedIn = !appModeCache.IsOffline;
+                isLoggedIn = !appModeCache.IsGuest;
             }
 
             IsLoggedIn = isLoggedIn;

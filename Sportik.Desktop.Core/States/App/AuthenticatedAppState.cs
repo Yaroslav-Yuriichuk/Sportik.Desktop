@@ -43,7 +43,7 @@ namespace Sportik.Desktop.Core.States.App
         {
             _runtimeCacheService.Set(new AppModeCache
             {
-                IsOffline = false,
+                IsGuest = false,
             });
 
             _eventsService.AddListener<UserLoggedOutEventArgs>(EventsService_Event);

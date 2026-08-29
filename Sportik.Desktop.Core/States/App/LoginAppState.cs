@@ -18,14 +18,14 @@ namespace Sportik.Desktop.Core.States.App
         {
             _eventsService.AddListener<UserLoggedInEventArgs>(EventsService_Event);
             _eventsService.AddListener<RegistrationRequestedEventArgs>(EventsService_Event);
-            _eventsService.AddListener<OfflineModeRequestedEventArgs>(EventsService_Event);
+            _eventsService.AddListener<GuestModeRequestedEventArgs>(EventsService_Event);
         }
 
         protected override void HandleExit()
         {
             _eventsService.RemoveListener<UserLoggedInEventArgs>(EventsService_Event);
             _eventsService.RemoveListener<RegistrationRequestedEventArgs>(EventsService_Event);
-            _eventsService.RemoveListener<OfflineModeRequestedEventArgs>(EventsService_Event);
+            _eventsService.RemoveListener<GuestModeRequestedEventArgs>(EventsService_Event);
         }
 
         private void EventsService_Event(UserLoggedInEventArgs args)
@@ -38,9 +38,9 @@ namespace Sportik.Desktop.Core.States.App
             Context.Switch(Context.RegistrationAppState);
         }
 
-        private void EventsService_Event(OfflineModeRequestedEventArgs args)
+        private void EventsService_Event(GuestModeRequestedEventArgs args)
         {
-            Context.Switch(Context.OfflineAppState);
+            Context.Switch(Context.GuestAppState);
         }
     }
 }

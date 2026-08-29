@@ -15,7 +15,7 @@ namespace Sportik.Desktop.Core.States.App
 
         public AppState RegistrationAppState { get; }
 
-        public AppState OfflineAppState { get; }
+        public AppState GuestAppState { get; }
 
         public AppState CurrentAppState { get; private set; }
 
@@ -32,7 +32,7 @@ namespace Sportik.Desktop.Core.States.App
             AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, runtimeCacheService, exercisesServiceFactory, synchronizationServiceFactory, trainingService);
             LoginAppState = new LoginAppState(this, eventsService);
             RegistrationAppState = new RegistrationAppState(this, eventsService);
-            OfflineAppState = new OfflineAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory);
+            GuestAppState = new GuestAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory);
 
             Switch(DeterminingAppState);
         }

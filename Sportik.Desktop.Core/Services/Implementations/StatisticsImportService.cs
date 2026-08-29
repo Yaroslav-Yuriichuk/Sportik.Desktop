@@ -27,7 +27,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     return _localExercisesRepository;
                 }
 
-                return appModeCache.IsOffline ? _localExercisesRepository : _remoteExercisesRepository;
+                return appModeCache.IsGuest ? _localExercisesRepository : _remoteExercisesRepository;
             }
         }
 
@@ -40,7 +40,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     return _localExerciseStatisticsRepository;
                 }
 
-                return appModeCache.IsOffline ? _localExerciseStatisticsRepository : _remoteExerciseStatisticsRepository;
+                return appModeCache.IsGuest ? _localExerciseStatisticsRepository : _remoteExerciseStatisticsRepository;
             }
         }
 

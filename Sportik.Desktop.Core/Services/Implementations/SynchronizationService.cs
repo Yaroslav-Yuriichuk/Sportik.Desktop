@@ -42,9 +42,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
         public async Task<OperationResult> SyncAsync(ISynchronizer synchronizer, CancellationToken cancellationToken = default)
         {
-            if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache) || appModeCache.IsOffline)
+            if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache) || appModeCache.IsGuest)
             {
-                return OperationResult.Failure(new[] { "Cannot sync while in offline mode." });
+                return OperationResult.Failure(new[] { "Cannot sync while in guest mode." });
             }
 
             OperationResult<Guid> userIdResult = await _authService.GetUserIdAsync(cancellationToken);

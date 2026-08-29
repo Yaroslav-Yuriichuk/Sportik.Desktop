@@ -1,4 +1,4 @@
-namespace Sportik.Desktop.UI.Models
+namespace Sportik.Desktop.UI.Models.Dashboard
 {
     internal sealed class BarChartColumn
     {

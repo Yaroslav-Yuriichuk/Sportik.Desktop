@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Services.Interfaces;
-using Sportik.Desktop.UI.Models;
+using Sportik.Desktop.UI.Models.Dashboard;
 using Sportik.Desktop.UI.ViewModels.Dashboard.BarChartLoaders;
 
 namespace Sportik.Desktop.UI.ViewModels.Dashboard
@@ -47,6 +48,14 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 {
                     TargetOptions = new ObservableCollection<DashboardTargetOption>(SelectedGroupingOption.TargetOptions);
 
+                    DashboardCache dashboardCache = new DashboardCache
+                    {
+                        LastGrouping = SelectedGroupingOption.Grouping,
+                        LastTarget = SelectedTargetOption.Target
+                    };
+
+                    PersistentCacheService.Set(dashboardCache);
+
                     _loadCts.Cancel();
                     _loadCts = new CancellationTokenSource();
 
@@ -78,6 +87,14 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             {
                 if (SetField(ref _selectedTargetOption, value))
                 {
+                    DashboardCache dashboardCache = new DashboardCache
+                    {
+                        LastGrouping = SelectedGroupingOption.Grouping,
+                        LastTarget = SelectedTargetOption.Target
+                    };
+
+                    PersistentCacheService.Set(dashboardCache);
+
                     _loadCts.Cancel();
                     _loadCts = new CancellationTokenSource();
 
@@ -87,6 +104,7 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
         }
 
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
+        private IPersistentCacheService PersistentCacheService => App.ServiceProvider.GetRequiredService<IPersistentCacheService>();
 
         private CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -103,17 +121,33 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 new DashboardTargetOption("Sets", DashboardTarget.Sets),
             };
 
-            GroupingOptions = new ObservableCollection<DashboardGroupingOption>
+            List<DashboardGroupingOption> groupingOptions = new List<DashboardGroupingOption>
             {
                 new DashboardGroupingOption("Exercise", DashboardGrouping.Exercise, exerciseTargetOptions),
                 new DashboardGroupingOption("Day of Week", DashboardGrouping.Day, dayTargetOptions),
             };
 
-            TargetOptions = new ObservableCollection<DashboardTargetOption>
+            DashboardGroupingOption selectedGroupingOption = groupingOptions[0];
+
+            List<DashboardTargetOption> targetOptions = selectedGroupingOption.TargetOptions.ToList();
+            DashboardTargetOption selectedTargetOption = targetOptions.First();
+
+            if (PersistentCacheService.TryGet(out DashboardCache dashboardCache))
             {
-                new DashboardTargetOption("Repetitions", DashboardTarget.Repetitions),
-                new DashboardTargetOption("Sets", DashboardTarget.Sets),
-            };
+                DashboardGroupingOption lastSelectedGroupingOption = groupingOptions.FirstOrDefault(go => go.Grouping == dashboardCache.LastGrouping);
+                selectedGroupingOption = lastSelectedGroupingOption ?? selectedGroupingOption;
+
+                targetOptions = selectedGroupingOption.TargetOptions.ToList();
+
+                DashboardTargetOption lastSelectedTargetOption = targetOptions.FirstOrDefault(to => to.Target == dashboardCache.LastTarget);
+                selectedTargetOption = lastSelectedTargetOption ?? targetOptions.First();
+            }
+
+            SetField(ref _groupingOptions, new ObservableCollection<DashboardGroupingOption>(groupingOptions), nameof(GroupingOptions));
+            SetField(ref _selectedGroupingOption, selectedGroupingOption, nameof(SelectedGroupingOption));
+
+            SetField(ref _targetOptions, new ObservableCollection<DashboardTargetOption>(targetOptions), nameof(TargetOptions));
+            SetField(ref _selectedTargetOption, selectedTargetOption, nameof(SelectedTargetOption));
 
             _ = LoadDashboardAsync(SelectedGroupingOption.Grouping, SelectedTargetOption.Target, _loadCts.Token);
         }

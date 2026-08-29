@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sportik.Desktop.UI.Models.Dashboard;
 
 namespace Sportik.Desktop.UI.ViewModels.Dashboard
 {

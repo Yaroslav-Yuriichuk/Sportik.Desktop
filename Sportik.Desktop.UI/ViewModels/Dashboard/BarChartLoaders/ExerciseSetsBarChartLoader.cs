@@ -6,6 +6,7 @@ using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.UI.Models;
+using Sportik.Desktop.UI.Models.Dashboard;
 
 namespace Sportik.Desktop.UI.ViewModels.Dashboard.BarChartLoaders
 {

@@ -148,7 +148,10 @@
     <Compile Include="Converters\TimeSpanToLongHoursMinutesSecondsStringConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesStringConverter.cs" />
     <Compile Include="Helpers\UIThreadHelper.cs" />
-    <Compile Include="Models\BarChartColumn.cs" />
+    <Compile Include="Models\Dashboard\BarChartColumn.cs" />
+    <Compile Include="Models\Dashboard\DashboardCache.cs" />
+    <Compile Include="Models\Dashboard\DashboardGrouping.cs" />
+    <Compile Include="Models\Dashboard\DashboardTarget.cs" />
     <Compile Include="Models\NavigationScope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Implementations\FrameNavigationService.cs" />
@@ -158,9 +161,7 @@
     <Compile Include="ViewModels\Dashboard\BarChartLoaders\DaySetsBarChartLoader.cs" />
     <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseRepetitionsBarChartLoader.cs" />
     <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseSetsBarChartLoader.cs" />
-    <Compile Include="ViewModels\Dashboard\DashboardGrouping.cs" />
     <Compile Include="ViewModels\Dashboard\DashboardGroupingOption.cs" />
-    <Compile Include="ViewModels\Dashboard\DashboardTarget.cs" />
     <Compile Include="ViewModels\Dashboard\DashboardTargetOption.cs" />
     <Compile Include="ViewModels\Dashboard\DashboardViewModel.cs" />
     <Compile Include="ViewModels\Dashboard\IDashboardBarChartLoader.cs" />

@@ -1,4 +1,4 @@
-namespace Sportik.Desktop.UI.ViewModels.Dashboard
+namespace Sportik.Desktop.UI.Models.Dashboard
 {
     internal enum DashboardGrouping
     {

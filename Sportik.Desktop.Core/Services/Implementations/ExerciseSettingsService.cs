@@ -29,7 +29,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
                     return _localExerciseSettingsRepository;
                 }
 
-                return appModeCache.IsOffline ? _localExerciseSettingsRepository : _remoteExerciseSettingsRepository;
+                return appModeCache.IsGuest ? _localExerciseSettingsRepository : _remoteExerciseSettingsRepository;
             }
         }
 

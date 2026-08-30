@@ -163,7 +163,7 @@
     <Compile Include="Events\ExerciseTargetRepetitionsChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseTimeBetweenSetsChangedEventArgs.cs" />
     <Compile Include="Events\LoginRequestedEventArgs.cs" />
-    <Compile Include="Events\OfflineModeRequestedEventArgs.cs" />
+    <Compile Include="Events\GuestModeRequestedEventArgs.cs" />
     <Compile Include="Events\ParallelExerciseStateChangedEventArgs.cs" />
     <Compile Include="Events\RegistrationRequestedEventArgs.cs" />
     <Compile Include="Events\ReminderModeChangedEventArgs.cs" />
@@ -189,6 +189,7 @@
     <Compile Include="Models\AddExerciseModel.cs" />
     <Compile Include="Models\AddExerciseSetModel.cs" />
     <Compile Include="Models\AppModeCache.cs" />
+    <Compile Include="Models\AppRunCache.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\DataSource.cs" />
     <Compile Include="Models\Exercise.cs" />
@@ -253,7 +254,7 @@
     <Compile Include="States\App\AuthenticatedAppState.cs" />
     <Compile Include="States\App\DeterminingAppState.cs" />
     <Compile Include="States\App\LoginAppState.cs" />
-    <Compile Include="States\App\OfflineAppState.cs" />
+    <Compile Include="States\App\GuestAppState.cs" />
     <Compile Include="States\App\RegistrationAppState.cs" />
     <Compile Include="States\Exercises\IStatesRunner.cs" />
     <Compile Include="States\Exercises\ParallelExerciseState.cs" />

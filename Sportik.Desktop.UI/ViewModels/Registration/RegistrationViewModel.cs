@@ -30,7 +30,7 @@ namespace Sportik.Desktop.UI.ViewModels.Registration
 
         public IReactiveCommand LoginCommand { get; }
 
-        public IReactiveCommand UseOfflineModeCommand { get; }
+        public IReactiveCommand UseGuestModeCommand { get; }
 
         private IUsersService UsersService => App.ServiceProvider.GetService<IUsersService>();
         private IEventsService EventsService => App.ServiceProvider.GetService<IEventsService>();
@@ -44,7 +44,7 @@ namespace Sportik.Desktop.UI.ViewModels.Registration
 
             RegisterCommand = new ReactiveRelayCommand(Register);
             LoginCommand = new ReactiveRelayCommand(Login);
-            UseOfflineModeCommand = new ReactiveRelayCommand(UseOfflineMode);
+            UseGuestModeCommand = new ReactiveRelayCommand(UseGuestMode);
         }
 
         public void Dispose()
@@ -62,20 +62,20 @@ namespace Sportik.Desktop.UI.ViewModels.Registration
             EventsService.RaiseEvent(new LoginRequestedEventArgs());
         }
 
-        private void UseOfflineMode()
+        private void UseGuestMode()
         {
-            EventsService.RaiseEvent(new OfflineModeRequestedEventArgs());
+            EventsService.RaiseEvent(new GuestModeRequestedEventArgs());
         }
 
         private async Task RegisterAsync(CancellationToken cancellationToken)
         {
             RegisterCommand.IsExecutable = false;
-            UseOfflineModeCommand.IsExecutable = false;
+            UseGuestModeCommand.IsExecutable = false;
 
             OperationResult<Guid> result = await UsersService.RegisterAsync(Email, Password, cancellationToken);
 
             RegisterCommand.IsExecutable = !result.Succeeded;
-            UseOfflineModeCommand.IsExecutable = !result.Succeeded;
+            UseGuestModeCommand.IsExecutable = !result.Succeeded;
         }
     }
 }

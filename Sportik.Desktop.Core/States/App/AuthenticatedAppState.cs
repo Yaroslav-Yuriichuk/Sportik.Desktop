@@ -41,9 +41,14 @@ namespace Sportik.Desktop.Core.States.App
 
         protected override void HandleEnter()
         {
+            _persistentCacheService.Set(new AppRunCache
+            {
+                LastIsOnline = true,
+            });
+
             _runtimeCacheService.Set(new AppModeCache
             {
-                IsOffline = false,
+                IsGuest = false,
             });
 
             _eventsService.AddListener<UserLoggedOutEventArgs>(EventsService_Event);

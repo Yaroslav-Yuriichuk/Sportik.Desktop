@@ -9,7 +9,7 @@ using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.States.App
 {
-    internal sealed class OfflineAppState : AppState
+    internal sealed class GuestAppState : AppState
     {
         private readonly IEventsService _eventsService;
         private readonly IReminderService _reminderService;
@@ -17,9 +17,9 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IPersistentCacheService _persistentCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
 
-        public override ApplicationState ApplicationState => ApplicationState.Offline;
+        public override ApplicationState ApplicationState => ApplicationState.Guest;
 
-        public OfflineAppState(AppStatesContext context, IEventsService eventsService,
+        public GuestAppState(AppStatesContext context, IEventsService eventsService,
             IReminderService reminderService, IRuntimeCacheService runtimeCacheService,
             IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory) : base(context)
         {
@@ -32,9 +32,14 @@ namespace Sportik.Desktop.Core.States.App
 
         protected override void HandleEnter()
         {
+            _persistentCacheService.Set(new AppRunCache
+            {
+                LastIsOnline = false,
+            });
+
             _runtimeCacheService.Set(new AppModeCache
             {
-                IsOffline = true,
+                IsGuest = true,
             });
 
             _eventsService.AddListener<LoginRequestedEventArgs>(EventService_Event);

@@ -68,11 +68,11 @@
                         Background="Transparent"
                         Command="{Binding LoginCommand}" />
 
-                <HyperlinkButton Content="Continue in offline mode"
+                <HyperlinkButton Content="Continue as guest"
                                  HorizontalAlignment="Center"
                                  Margin="0,8,0,0"
                                  Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
-                                 Command="{Binding UseOfflineModeCommand}" />
+                                 Command="{Binding UseGuestModeCommand}" />
             </StackPanel>
         </Border>
     </Grid>

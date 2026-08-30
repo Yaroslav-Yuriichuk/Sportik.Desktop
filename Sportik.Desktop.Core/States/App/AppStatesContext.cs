@@ -28,7 +28,7 @@ namespace Sportik.Desktop.Core.States.App
         {
             _eventsService = eventsService;
 
-            DeterminingAppState = new DeterminingAppState(this, authServiceFactory);
+            DeterminingAppState = new DeterminingAppState(this, persistentCacheService, authServiceFactory);
             AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, runtimeCacheService, exercisesServiceFactory, synchronizationServiceFactory, trainingService);
             LoginAppState = new LoginAppState(this, eventsService);
             RegistrationAppState = new RegistrationAppState(this, eventsService);

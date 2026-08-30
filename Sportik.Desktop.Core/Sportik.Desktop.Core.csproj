@@ -189,6 +189,7 @@
     <Compile Include="Models\AddExerciseModel.cs" />
     <Compile Include="Models\AddExerciseSetModel.cs" />
     <Compile Include="Models\AppModeCache.cs" />
+    <Compile Include="Models\AppRunCache.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\DataSource.cs" />
     <Compile Include="Models\Exercise.cs" />

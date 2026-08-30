@@ -41,6 +41,11 @@ namespace Sportik.Desktop.Core.States.App
 
         protected override void HandleEnter()
         {
+            _persistentCacheService.Set(new AppRunCache
+            {
+                LastIsOnline = true,
+            });
+
             _runtimeCacheService.Set(new AppModeCache
             {
                 IsGuest = false,

@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Common.Timers;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
@@ -88,9 +87,7 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
 
         public Guid ExerciseId { get; }
 
-        private IExercisesService ExercisesService => App.ServiceProvider.GetService<IExercisesService>();
         private IExerciseSettingsService ExerciseSettingsService => App.ServiceProvider.GetService<IExerciseSettingsService>();
-        private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetService<IExerciseStatisticsService>();
         private IExerciseTimersService ExerciseTimersService => App.ServiceProvider.GetService<IExerciseTimersService>();
         private IEventsService EventsService => App.ServiceProvider.GetService<IEventsService>();
         private IReminderService ReminderService => App.ServiceProvider.GetService<IReminderService>();
@@ -337,19 +334,6 @@ namespace Sportik.Desktop.UI.ViewModels.Exercises
         private async Task CompleteExerciseAsync(CancellationToken cancellationToken)
         {
             CompleteCommand.IsExecutable = false;
-
-            OperationResult<Exercise> result = await ExercisesService.GetByIdAsync(ExerciseId, cancellationToken);
-
-            if (!result.Succeeded)
-            {
-                // TODO: Handle error.
-                return;
-            }
-
-            Exercise exercise = result.Value;
-
-            AddExerciseSetModel addModel = new AddExerciseSetModel(null, exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow, exercise.Id);
-            await ExerciseStatisticsService.AddSetAsync(addModel, cancellationToken);
 
             EventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(ExerciseId));
 

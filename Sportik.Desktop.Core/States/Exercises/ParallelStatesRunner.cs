@@ -14,16 +14,22 @@ namespace Sportik.Desktop.Core.States.Exercises
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
         private readonly List<ParallelExerciseStatesContext> _contexts = new List<ParallelExerciseStatesContext>();
 
-        public ParallelStatesRunner(IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
+        public ParallelStatesRunner(
+            IEventsService eventsService,
+            IExerciseTimersService exerciseTimersService,
+            Func<IExercisesService> exercisesServiceFactory,
+            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
+            Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
@@ -48,9 +54,7 @@ namespace Sportik.Desktop.Core.States.Exercises
 
         public void AddExercise(Guid exerciseId)
         {
-            ParallelExerciseStatesContext context = new ParallelExerciseStatesContext(exerciseId, _eventsService,
-                _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory);
-
+            ParallelExerciseStatesContext context = CreateContext(exerciseId);
             _contexts.Add(context);
         }
 
@@ -63,6 +67,17 @@ namespace Sportik.Desktop.Core.States.Exercises
                 context.Dispose();
                 _contexts.Remove(context);
             }
+        }
+
+        private ParallelExerciseStatesContext CreateContext(Guid exerciseId)
+        {
+            return new ParallelExerciseStatesContext(
+                exerciseId,
+                _eventsService,
+                _exerciseTimersService,
+                _exercisesServiceFactory,
+                _exerciseStatisticsServiceFactory,
+                _notificationServiceFactory);
         }
     }
 }

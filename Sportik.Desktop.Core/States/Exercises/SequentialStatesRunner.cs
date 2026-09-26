@@ -15,18 +15,24 @@ namespace Sportik.Desktop.Core.States.Exercises
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
         private readonly List<SequentialExercisesStatesContext> _contexts = new List<SequentialExercisesStatesContext>();
 
-        public SequentialStatesRunner(IEventsService eventsService, IExerciseTimersService exerciseTimersService,
-            IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory,
+        public SequentialStatesRunner(
+            IEventsService eventsService,
+            IExerciseTimersService exerciseTimersService,
+            IRuntimeCacheService runtimeCacheService,
+            Func<IExercisesService> exercisesServiceFactory,
+            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
             Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
@@ -61,11 +67,7 @@ namespace Sportik.Desktop.Core.States.Exercises
             _contexts.Clear();
 
             exerciseIds.Add(exerciseId);
-
-            IEnumerable<SequentialExercisesStatesContext> contexts = exerciseIds
-                .Select(id => new SequentialExercisesStatesContext(exerciseIds, id, GetContext, _eventsService,
-                    _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory,
-                    _notificationServiceFactory));
+            IEnumerable<SequentialExercisesStatesContext> contexts = exerciseIds.Select(id => CreateContext(exerciseIds, id));
 
             _contexts.AddRange(contexts);
         }
@@ -82,11 +84,7 @@ namespace Sportik.Desktop.Core.States.Exercises
             _contexts.Clear();
 
             exerciseIds.Remove(exerciseId);
-
-            IEnumerable<SequentialExercisesStatesContext> contexts = exerciseIds
-                .Select(id => new SequentialExercisesStatesContext(exerciseIds, id, GetContext, _eventsService,
-                    _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory,
-                    _notificationServiceFactory));
+            IEnumerable<SequentialExercisesStatesContext> contexts = exerciseIds.Select(id => CreateContext(exerciseIds, id));
 
             _contexts.AddRange(contexts);
         }
@@ -94,6 +92,20 @@ namespace Sportik.Desktop.Core.States.Exercises
         private SequentialExercisesStatesContext GetContext(Guid exerciseId)
         {
             return _contexts.FirstOrDefault(c => c.ExerciseId == exerciseId);
+        }
+
+        private SequentialExercisesStatesContext CreateContext(IEnumerable<Guid> exerciseIds, Guid exerciseId)
+        {
+            return new SequentialExercisesStatesContext(
+                exerciseIds,
+                exerciseId,
+                GetContext,
+                _eventsService,
+                _exerciseTimersService,
+                _runtimeCacheService,
+                _exercisesServiceFactory,
+                _exerciseStatisticsServiceFactory,
+                _notificationServiceFactory);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
         private readonly HashSet<Guid> _exerciseIds = new HashSet<Guid>();
@@ -20,13 +21,19 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private IStatesRunner _runner;
         private ReminderMode _mode = ReminderMode.Parallel;
 
-        public ReminderService(IEventsService eventsService, IExerciseTimersService exerciseTimersService, IRuntimeCacheService runtimeCacheService,
-            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
+        public ReminderService(
+            IEventsService eventsService,
+            IExerciseTimersService exerciseTimersService,
+            IRuntimeCacheService runtimeCacheService,
+            Func<IExercisesService> exercisesServiceFactory,
+            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
+            Func<INotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _runtimeCacheService = runtimeCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
@@ -57,8 +64,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
                     _runner = value switch
                     {
-                        ReminderMode.Sequential => new SequentialStatesRunner(_eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
-                        ReminderMode.Parallel => new ParallelStatesRunner(_eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
+                        ReminderMode.Sequential => CreateSequentialStatesRunner(),
+                        ReminderMode.Parallel => CreateParallelStatesRunner(),
                         _ => throw new ArgumentException($"Mode {value} is not supported.")
                     };
 
@@ -85,8 +92,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
             _runner = Mode switch
             {
-                ReminderMode.Sequential => new SequentialStatesRunner(_eventsService, _exerciseTimersService, _runtimeCacheService, _exercisesServiceFactory, _notificationServiceFactory),
-                ReminderMode.Parallel => new ParallelStatesRunner(_eventsService, _exerciseTimersService, _exercisesServiceFactory, _notificationServiceFactory),
+                ReminderMode.Sequential => CreateSequentialStatesRunner(),
+                ReminderMode.Parallel => CreateParallelStatesRunner(),
                 _ => throw new ArgumentException($"Mode {Mode} is not supported.")
             };
 
@@ -140,6 +147,27 @@ namespace Sportik.Desktop.Core.Services.Implementations
         public bool IsExerciseAdded(Guid exerciseId)
         {
             return _exerciseIds.Contains(exerciseId);
+        }
+
+        private IStatesRunner CreateSequentialStatesRunner()
+        {
+            return new SequentialStatesRunner(
+                _eventsService,
+                _exerciseTimersService,
+                _runtimeCacheService,
+                _exercisesServiceFactory,
+                _exerciseStatisticsServiceFactory,
+                _notificationServiceFactory);
+        }
+
+        private IStatesRunner CreateParallelStatesRunner()
+        {
+            return new ParallelStatesRunner(
+                _eventsService,
+                _exerciseTimersService,
+                _exercisesServiceFactory,
+                _exerciseStatisticsServiceFactory,
+                _notificationServiceFactory);
         }
     }
 }

@@ -14,17 +14,23 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
         public override Exercises.ParallelExerciseState ExerciseState => Exercises.ParallelExerciseState.Executing;
 
-        public ExecutingParallelExerciseState(ParallelExerciseStatesContext context, IEventsService eventsService,
-            IExerciseTimersService exerciseTimersService, Func<IExercisesService> exercisesServiceFactory,
+        public ExecutingParallelExerciseState(
+            ParallelExerciseStatesContext context,
+            IEventsService eventsService,
+            IExerciseTimersService exerciseTimersService,
+            Func<IExercisesService> exercisesServiceFactory,
+            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
             Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
@@ -113,10 +119,34 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
 
         private void EventsService_Event(ExerciseCompleteRequestedEventArgs args)
         {
-            if (args.ExerciseId == Context.ExerciseId)
+            if (args.ExerciseId != Context.ExerciseId)
             {
-                Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
+                return;
             }
+
+            IExercisesService exercisesService = _exercisesServiceFactory();
+            IExerciseStatisticsService exerciseStatisticsService = _exerciseStatisticsServiceFactory();
+
+            Task.Run( async () =>
+            {
+                OperationResult<Exercise> getExerciseResult = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
+
+                if (!getExerciseResult.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                Exercise exercise = getExerciseResult.Value;
+
+                AddExerciseSetModel addModel = new AddExerciseSetModel(null, exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow, exercise.Id);
+                OperationResult<ExerciseSet> addSetResult = await exerciseStatisticsService.AddSetAsync(addModel, ActiveCancellationToken);
+
+                if (addSetResult.Succeeded)
+                {
+                    Context.Switch(Context.WaitingBeforeForceExecutionExerciseState);
+                }
+            });
         }
 
         private void EventsService_Event(ReminderNotificationDismissedEventArgs args)

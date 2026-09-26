@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Windows.UI.Notifications;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Sportik.Desktop.Core.Events;
@@ -20,11 +22,12 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
         {
             ToastContentBuilder builder = new ToastContentBuilder()
                 .SetToastScenario(ToastScenario.Reminder)
+                .AddArgument("view")
                 .AddText(reminderNotification.Title)
                 .AddText(string.Join('\n', reminderNotification.Texts))
                 .AddButton(new ToastButton()
-                    .SetContent("View")
-                    .AddArgument("view"))
+                    .SetContent("Complete")
+                    .AddArgument("complete"))
                 .AddButton(new ToastButton()
                     .SetContent("Snooze")
                     .AddArgument("snooze"))
@@ -42,10 +45,15 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
             {
                 if (args is ToastActivatedEventArgs toastArgs)
                 {
-                    switch (toastArgs.Arguments)
+                    string argument = ParseMajorArgument(toastArgs.Arguments);
+
+                    switch (argument)
                     {
                         case "view":
                             _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exerciseId));
+                            break;
+                        case "complete":
+                            _eventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(exerciseId));
                             break;
                         case "snooze":
                             _eventsService.RaiseEvent(new ReminderNotificationSnoozedEventArgs(exerciseId));
@@ -60,6 +68,24 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
             ToastNotificationManager.CreateToastNotifier().Show(toast);
 
             _eventsService.RaiseEvent(new ReminderNotificationShownEventArgs(exerciseId));
+        }
+
+        private string ParseMajorArgument(string arguments)
+        {
+            List<string> args = arguments.Split(";").ToList();
+
+            if (args.Count == 0 || args.Count > 2)
+            {
+                return string.Empty;
+            }
+
+            if (args.Count == 1)
+            {
+                return args[0];
+            }
+
+            args.Remove("view");
+            return args[0];
         }
     }
 }

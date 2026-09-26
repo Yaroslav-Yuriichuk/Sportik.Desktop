@@ -180,6 +180,7 @@
     <Compile Include="ViewModels\Login\LoginViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavigationOption.cs" />
     <Compile Include="ViewModels\Navigation\InternalNavigationViewModel.cs" />
+    <Compile Include="ViewModels\PopUpViewModel.cs" />
     <Compile Include="ViewModels\Registration\RegistrationViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\Settings\ExerciseSettingsViewModel.cs" />
@@ -198,6 +199,9 @@
     <Compile Include="ViewModels\Training\ExecutionSetViewModel.cs" />
     <Compile Include="ViewModels\Training\TrainingViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
+    <Compile Include="ViewModels\WeekGoal\AddExerciseGoalViewModel.cs" />
+    <Compile Include="ViewModels\WeekGoal\ExerciseGoalViewModel.cs" />
+    <Compile Include="ViewModels\WeekGoal\WeekGoalViewModel.cs" />
     <Compile Include="Views\Internal\AccountPage.xaml.cs">
       <DependentUpon>AccountPage.xaml</DependentUpon>
     </Compile>
@@ -221,6 +225,9 @@
     </Compile>
     <Compile Include="Views\Internal\TrainingPage.xaml.cs">
       <DependentUpon>TrainingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Internal\WeekGoalPage.xaml.cs">
+      <DependentUpon>WeekGoalPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Main\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
@@ -336,6 +343,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Internal\TrainingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Internal\WeekGoalPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Main\LoginPage.xaml">

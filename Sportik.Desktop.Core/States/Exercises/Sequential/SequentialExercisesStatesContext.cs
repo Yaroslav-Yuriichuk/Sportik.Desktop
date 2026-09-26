@@ -31,9 +31,16 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
 
         public SequentialExerciseState CurrentState { get; private set; }
 
-        public SequentialExercisesStatesContext(IEnumerable<Guid> exerciseIds, Guid exerciseId, Func<Guid, SequentialExercisesStatesContext> getContextCallback,
-            IEventsService eventsService, IExerciseTimersService exerciseTimersService, IRuntimeCacheService runtimeCacheService,
-            Func<IExercisesService> exercisesServiceFactory, Func<INotificationService> notificationServiceFactory)
+        public SequentialExercisesStatesContext(
+            IEnumerable<Guid> exerciseIds,
+            Guid exerciseId,
+            Func<Guid, SequentialExercisesStatesContext> getContextCallback,
+            IEventsService eventsService,
+            IExerciseTimersService exerciseTimersService,
+            IRuntimeCacheService runtimeCacheService,
+            Func<IExercisesService> exercisesServiceFactory,
+            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
+            Func<INotificationService> notificationServiceFactory)
         {
             _getContextCallback = getContextCallback;
             _eventsService = eventsService;
@@ -46,7 +53,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
             WaitingBeforeForceExecutionExerciseState = new WaitingBeforeForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, runtimeCacheService, exercisesServiceFactory);
             WaitingWithForceExecutionExerciseState = new WaitingWithForceExecutionSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory);
             QueuedExerciseState = new QueuedSequentialExerciseState(this, eventsService);
-            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, notificationServiceFactory);
+            ExecutingExerciseState = new ExecutingSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory, exerciseStatisticsServiceFactory, notificationServiceFactory);
             SnoozedExerciseState = new SnoozedSequentialExerciseState(this, eventsService, exerciseTimersService, exercisesServiceFactory);
 
             Switch(DeterminingState);

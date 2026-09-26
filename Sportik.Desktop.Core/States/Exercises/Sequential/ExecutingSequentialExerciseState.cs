@@ -16,17 +16,23 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
         private readonly IEventsService _eventsService;
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
         private readonly Func<INotificationService> _notificationServiceFactory;
 
         public override Exercises.SequentialExerciseState ExerciseState => Exercises.SequentialExerciseState.Executing;
 
-        public ExecutingSequentialExerciseState(SequentialExercisesStatesContext context, IEventsService eventsService,
-            IExerciseTimersService exerciseTimersService, Func<IExercisesService> exercisesServiceFactory,
+        public ExecutingSequentialExerciseState(
+            SequentialExercisesStatesContext context,
+            IEventsService eventsService,
+            IExerciseTimersService exerciseTimersService,
+            Func<IExercisesService> exercisesServiceFactory,
+            Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
             Func<INotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _exerciseStatisticsServiceFactory = exerciseStatisticsServiceFactory;
             _notificationServiceFactory = notificationServiceFactory;
         }
 
@@ -144,19 +150,37 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
             }
 
             IExercisesService exercisesService = _exercisesServiceFactory();
+            IExerciseStatisticsService exerciseStatisticsService = _exerciseStatisticsServiceFactory();
 
             Task.Run(async () =>
             {
-                OperationResult<IEnumerable<Exercise>> result =
-                    await exercisesService.GetByIdsAsync(Context.ExerciseIds, ActiveCancellationToken);
+                OperationResult<Exercise> getExerciseResult = await exercisesService.GetByIdAsync(Context.ExerciseId, ActiveCancellationToken);
 
-                if (!result.Succeeded)
+                if (!getExerciseResult.Succeeded)
                 {
                     // TODO: Handle error.
                     return;
                 }
 
-                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(result.Value, Context.ExerciseId);
+                Exercise exercise = getExerciseResult.Value;
+
+                AddExerciseSetModel addModel = new AddExerciseSetModel(null, exercise.Settings.TargetRepetitions, DateTimeOffset.UtcNow, exercise.Id);
+                OperationResult<ExerciseSet> addSetResult = await exerciseStatisticsService.AddSetAsync(addModel, ActiveCancellationToken);
+
+                if (!addSetResult.Succeeded)
+                {
+                    return;
+                }
+
+                OperationResult<IEnumerable<Exercise>> getExercisesResult = await exercisesService.GetByIdsAsync(Context.ExerciseIds, ActiveCancellationToken);
+
+                if (!getExercisesResult.Succeeded)
+                {
+                    // TODO: Handle error.
+                    return;
+                }
+
+                Exercise nextExercise = ExercisesSequenceHelper.GetNextEnabledExercise(getExercisesResult.Value, Context.ExerciseId);
 
                 if (nextExercise != null)
                 {

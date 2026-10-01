@@ -12,6 +12,8 @@ namespace Sportik.Desktop.Infrastructure.Persistence
 
         public DbSet<UserSet> Sets { get; set; } = null!;
 
+        public DbSet<UserExerciseGoal> ExerciseGoals { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,6 +28,12 @@ namespace Sportik.Desktop.Infrastructure.Persistence
                 .HasOne(s => s.Exercise)
                 .WithMany()
                 .HasForeignKey(s => s.ExerciseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserExerciseGoal>()
+                .HasOne(g => g.Exercise)
+                .WithMany()
+                .HasForeignKey(g => g.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -157,6 +157,7 @@
     <Compile Include="Events\ExerciseCreatedEventArgs.cs" />
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseForceExecutionRequestedEventArgs.cs" />
+    <Compile Include="Events\ExerciseGoalAddedEventArgs.cs" />
     <Compile Include="Events\ExerciseIsEnabledChangedEventArgs.cs" />
     <Compile Include="Events\ExerciseSetAddedEventArgs.cs" />
     <Compile Include="Events\ExerciseSwitchRequestedEventArgs.cs" />
@@ -195,6 +196,9 @@
     <Compile Include="Models\DataSource.cs" />
     <Compile Include="Models\Exercise.cs" />
     <Compile Include="Models\ExerciseSet.cs" />
+    <Compile Include="Models\Goal\AddExerciseGoalModel.cs" />
+    <Compile Include="Models\Goal\ExerciseGoal.cs" />
+    <Compile Include="Models\Goal\WeekGoal.cs" />
     <Compile Include="Models\ImportExport\ExportExercise.cs" />
     <Compile Include="Models\ImportExport\ExportSet.cs" />
     <Compile Include="Models\ImportExport\ImportExercise.cs" />
@@ -221,6 +225,7 @@
     <Compile Include="Repositories\Interfaces\IExerciseSettingsRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExercisesRepository.cs" />
     <Compile Include="Repositories\Interfaces\IExerciseStatisticsRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IWeekGoalsRepository.cs" />
     <Compile Include="Services\Implementations\ApplicationStatesService.cs" />
     <Compile Include="Services\Implementations\EventsService.cs" />
     <Compile Include="Services\Implementations\ExerciseSettingsService.cs" />
@@ -232,6 +237,7 @@
     <Compile Include="Services\Implementations\StatisticsImportService.cs" />
     <Compile Include="Services\Implementations\SynchronizationService.cs" />
     <Compile Include="Services\Implementations\TrainingService.cs" />
+    <Compile Include="Services\Implementations\WeekGoalsService.cs" />
     <Compile Include="Services\Interfaces\IApplicationStatesService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\IEventsService.cs" />
@@ -250,6 +256,7 @@
     <Compile Include="Services\Interfaces\ISynchronizationService.cs" />
     <Compile Include="Services\Interfaces\ITrainingService.cs" />
     <Compile Include="Services\Interfaces\IUsersService.cs" />
+    <Compile Include="Services\Interfaces\IWeekGoalsService.cs" />
     <Compile Include="States\App\ApplicationState.cs" />
     <Compile Include="States\App\AppState.cs" />
     <Compile Include="States\App\AppStatesContext.cs" />

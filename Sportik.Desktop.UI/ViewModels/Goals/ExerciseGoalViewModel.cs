@@ -1,7 +1,7 @@
 ﻿using System;
 using Sportik.Desktop.Core.Models;
 
-namespace Sportik.Desktop.UI.ViewModels.WeekGoal
+namespace Sportik.Desktop.UI.ViewModels.Goals
 {
     internal sealed class ExerciseGoalViewModel : ViewModel
     {
@@ -20,11 +20,11 @@ namespace Sportik.Desktop.UI.ViewModels.WeekGoal
         private string _exerciseName;
         private int _targetRepetitions;
 
-        private Guid _exerciseId;
+        public Guid ExerciseId { get; }
 
         public ExerciseGoalViewModel(Exercise exercise)
         {
-            _exerciseId = exercise.Id;
+            ExerciseId = exercise.Id;
 
             ExerciseName = exercise.Name;
             TargetRepetitions = exercise.Settings.TargetRepetitions;

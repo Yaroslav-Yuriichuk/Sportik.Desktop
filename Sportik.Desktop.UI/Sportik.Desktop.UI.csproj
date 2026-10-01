@@ -145,6 +145,7 @@
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EnumTargetValueToVisibilityConverter.cs" />
     <Compile Include="Converters\GuidToStringConverter.cs" />
+    <Compile Include="Converters\IntToStringConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesSecondsStringConverter.cs" />
     <Compile Include="Converters\TimeSpanToLongHoursMinutesStringConverter.cs" />
     <Compile Include="Helpers\UIThreadHelper.cs" />
@@ -199,9 +200,9 @@
     <Compile Include="ViewModels\Training\ExecutionSetViewModel.cs" />
     <Compile Include="ViewModels\Training\TrainingViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
-    <Compile Include="ViewModels\WeekGoal\AddExerciseGoalViewModel.cs" />
-    <Compile Include="ViewModels\WeekGoal\ExerciseGoalViewModel.cs" />
-    <Compile Include="ViewModels\WeekGoal\WeekGoalViewModel.cs" />
+    <Compile Include="ViewModels\Goals\AddExerciseGoalViewModel.cs" />
+    <Compile Include="ViewModels\Goals\ExerciseGoalViewModel.cs" />
+    <Compile Include="ViewModels\Goals\WeekGoalViewModel.cs" />
     <Compile Include="Views\Internal\AccountPage.xaml.cs">
       <DependentUpon>AccountPage.xaml</DependentUpon>
     </Compile>

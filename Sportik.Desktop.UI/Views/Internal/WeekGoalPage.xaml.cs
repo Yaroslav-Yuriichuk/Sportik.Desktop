@@ -1,6 +1,6 @@
 ﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Sportik.Desktop.UI.ViewModels.WeekGoal;
+using Sportik.Desktop.UI.ViewModels.Goals;
 
 namespace Sportik.Desktop.UI.Views.Internal
 {

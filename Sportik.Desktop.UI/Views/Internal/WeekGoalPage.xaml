@@ -4,18 +4,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:goal="using:Sportik.Desktop.UI.ViewModels.WeekGoal"
     xmlns:converters="using:Sportik.Desktop.UI.Converters"
+    xmlns:goals="using:Sportik.Desktop.UI.ViewModels.Goals"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
-        <goal:WeekGoalViewModel />
+        <goals:WeekGoalViewModel />
     </Page.DataContext>
 
     <Page.Resources>
         <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+        <converters:IntToStringConverter x:Name="IntToStringConverter" />
         <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
     </Page.Resources>
 
@@ -93,7 +94,7 @@
                 </ListView.ItemContainerStyle>
 
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="goal:ExerciseGoalViewModel">
+                    <DataTemplate x:DataType="goals:ExerciseGoalViewModel">
                         <StackPanel HorizontalAlignment="Stretch">
 
                             <Grid Margin="15 15 15 15">
@@ -186,10 +187,12 @@
                                Margin="0 0 0 5" />
 
                     <ComboBox HorizontalAlignment="Stretch"
-                              Margin="0 0 0 15">
+                              Margin="0 0 0 15"
+                              ItemsSource="{Binding ExercisesOptions}"
+                              SelectedValue="{Binding SelectedExerciseOption, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Some"/>
+                                <TextBlock Text="{Binding Exercise.Name}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -198,14 +201,9 @@
                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                Margin="0 0 0 5" />
 
-                    <ComboBox HorizontalAlignment="Stretch"
-                              Margin="0 0 0 15">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="Some"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter repetitions"
+                             Text="{Binding Repetitions, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
 
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right">
@@ -217,7 +215,8 @@
 
                         <Button Content="Add"
                                 MinWidth="100"
-                                Style="{ThemeResource AccentButtonStyle}" />
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Command="{Binding AddGoalCommand}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

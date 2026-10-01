@@ -52,6 +52,8 @@ namespace Sportik.Desktop.Infrastructure
             services.AddTransient<LocalExerciseSettingsRepository>();
             services.AddTransient<RemoteExerciseStatisticsRepository>();
             services.AddTransient<LocalExerciseStatisticsRepository>();
+            services.AddTransient<RemoteWeekGoalsRepository>();
+            services.AddTransient<LocalWeekGoalsRepository>();
 
             services.AddTransient<Func<DataSource, IExercisesRepository>>(serviceProvider =>
             {
@@ -87,6 +89,19 @@ namespace Sportik.Desktop.Infrastructure
                     {
                         DataSource.Remote => serviceProvider.GetRequiredService<RemoteExerciseStatisticsRepository>(),
                         DataSource.Local => serviceProvider.GetRequiredService<LocalExerciseStatisticsRepository>(),
+                        _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
+                    };
+                };
+            });
+
+            services.AddTransient<Func<DataSource, IWeekGoalsRepository>>(serviceProvider =>
+            {
+                return dataSource =>
+                {
+                    return dataSource switch
+                    {
+                        DataSource.Remote => serviceProvider.GetRequiredService<RemoteWeekGoalsRepository>(),
+                        DataSource.Local => serviceProvider.GetRequiredService<LocalWeekGoalsRepository>(),
                         _ => throw new ArgumentException($"Unsupported data source: {dataSource}")
                     };
                 };

@@ -51,15 +51,16 @@ namespace Sportik.Desktop.UI.ViewModels.Goals
 
         private void EventsService_Event(ExerciseGoalAddedEventArgs args)
         {
-            ExerciseGoalViewModel exerciseGoalViewModel = ExerciseGoals.FirstOrDefault(g => g.ExerciseId == args.ExerciseGoal.Exercise.Id);
+            ExerciseGoalViewModel existingGoal = ExerciseGoals.FirstOrDefault(g => g.ExerciseId == args.ExerciseGoal.Exercise.Id);
+            int index = ExerciseGoals.IndexOf(existingGoal);
 
-            if (exerciseGoalViewModel != null)
+            if (index != -1)
             {
-                ExerciseGoals.Remove(exerciseGoalViewModel);
+                ExerciseGoals.RemoveAt(index);
             }
 
             ExerciseGoal exerciseGoal = args.ExerciseGoal;
-            ExerciseGoals.Add(new ExerciseGoalViewModel(exerciseGoal));
+            ExerciseGoals.Insert(index != -1 ? index : ExerciseGoals.Count, new ExerciseGoalViewModel(exerciseGoal));
         }
 
         private async Task LoadWeekGoalAsync(CancellationToken cancellationToken)

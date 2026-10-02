@@ -41,7 +41,6 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 .Where(g => g.FirstWeekDayDate == firstWeekDayDate)
                 .ToListAsync(cancellationToken);
 
-
             TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
 
             DateTimeOffset firstWeekDayDateOffset = new DateTimeOffset(firstWeekDayDate, offset).ToUniversalTime();
@@ -70,13 +69,18 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
         public async Task<ExerciseGoal> AddGoalAsync(AddExerciseGoalModel addModel, CancellationToken cancellationToken = default)
         {
+            if (addModel.Repetitions <= 0)
+            {
+                throw new ArgumentException("Repetitions must be a positive number.", nameof(addModel.Repetitions));
+            }
+
             UserExercise exerciseEntity = await _dbContext.Exercises
                 .Include(e => e.Settings)
                 .FirstOrDefaultAsync(e => e.Id == addModel.ExerciseId, cancellationToken);
 
             if (exerciseEntity is null)
             {
-                return null;
+                throw new InvalidOperationException($"Exercise with ID {addModel.ExerciseId} does not exist.");
             }
 
             DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(addModel.DayInWeek);

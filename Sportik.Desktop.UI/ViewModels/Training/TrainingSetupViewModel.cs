@@ -99,7 +99,6 @@ namespace Sportik.Desktop.UI.ViewModels.Training
             StartTrainingCommand = new ReactiveRelayCommand(StartTraining, false);
 
             TrainingService.RunningStateChanged += HandleRunningStateChanged;
-
             EventsService.AddListener<ExerciseCreatedEventArgs>(EventsService_Event);
 
             _ = LoadExercisesAsync(_loadCts.Token);
@@ -107,9 +106,10 @@ namespace Sportik.Desktop.UI.ViewModels.Training
 
         public void Dispose()
         {
-            _loadCts.Cancel();
-
             TrainingService.RunningStateChanged -= HandleRunningStateChanged;
+            EventsService.RemoveListener<ExerciseCreatedEventArgs>(EventsService_Event);
+
+            _loadCts.Cancel();
         }
 
         private void HandleRunningStateChanged(TrainingRunningStateChangedEventArgs args)

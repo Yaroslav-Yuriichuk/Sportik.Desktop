@@ -184,7 +184,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
             if (exerciseEntity is null)
             {
-                return null;
+                throw new ArgumentException($"Exercise with ID '{addModel.ExerciseId}' does not exist.");
             }
 
             UserSet setEntity = SetMapper.ToEntity(addModel);
@@ -216,7 +216,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             {
                 if (!existingExerciseIds.Contains(addModel.ExerciseId))
                 {
-                    continue;
+                    throw new ArgumentException($"Exercise with ID '{addModel.ExerciseId}' does not exist.");
                 }
 
                 UserSet setEntity = SetMapper.ToEntity(addModel);

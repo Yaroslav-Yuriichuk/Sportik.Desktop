@@ -35,7 +35,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
 
             if (exerciseEntity?.Settings is null)
             {
-                return null;
+                throw new InvalidOperationException($"Exercise with ID {updateModel.ExerciseId} does not exist.");
             }
 
             UserExerciseSettings settingsEntity = exerciseEntity.Settings;
@@ -95,7 +95,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             {
                 if (!exercisesById.TryGetValue(updateModel.ExerciseId, out UserExercise exerciseEntity))
                 {
-                    continue;
+                    throw new InvalidOperationException($"Exercise with ID {updateModel.ExerciseId} does not exist.");
                 }
 
                 ExerciseSettingsDelta delta = updateModel.Delta;

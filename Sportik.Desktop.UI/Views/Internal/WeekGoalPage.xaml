@@ -1,0 +1,227 @@
+﻿<Page
+    x:Class="Sportik.Desktop.UI.Views.Internal.WeekGoalPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:Sportik.Desktop.UI.Converters"
+    xmlns:goals="using:Sportik.Desktop.UI.ViewModels.Goals"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <goals:WeekGoalViewModel />
+    </Page.DataContext>
+
+    <Page.Resources>
+        <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+        <converters:IntToStringConverter x:Name="IntToStringConverter" />
+        <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Week Goal"
+                   FontSize="32"
+                   FontWeight="SemiBold"
+                   Margin="15 15 15 0"/>
+
+        <Grid Grid.Row="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <ListView Grid.Row="0"
+                      IsItemClickEnabled="True"
+                      SelectionMode="None"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      Margin="15"
+                      ItemsSource="{Binding ExerciseGoals}">
+
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0,0,0,12" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <Grid Background="Transparent">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="CommonStates">
+                                                <VisualState x:Name="Normal" />
+                                                <VisualState x:Name="PointerOver">
+                                                    <VisualState.Setters>
+                                                        <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState x:Name="Pressed">
+                                                    <VisualState.Setters>
+                                                        <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                        <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+
+                                        <Border x:Name="CardBorder"
+                                                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                                                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="8" />
+
+                                        <ContentPresenter x:Name="ContentPresenter"
+                                                          Content="{TemplateBinding Content}"
+                                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          Margin="{TemplateBinding Padding}" />
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="goals:ExerciseGoalViewModel">
+                        <StackPanel HorizontalAlignment="Stretch">
+
+                            <Grid Margin="15 15 15 15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <SymbolIcon Grid.Column="0"
+                                            Symbol="World"
+                                            Width="27"
+                                            Height="27"
+                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding ExerciseName}"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           Margin="15 0 0 0" />
+
+                                <Grid Grid.Column="3"
+                                      HorizontalAlignment="Right">
+
+                                    <ProgressBar MinWidth="180"
+                                                 Height="24"
+                                                 CornerRadius="4"
+                                                 Value="{Binding CompletedRepetitions}"
+                                                 Maximum="{Binding TargetRepetitions}" />
+
+                                    <TextBlock HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               IsHitTestVisible="False"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}">
+                                        <Run Text="{Binding CompletedRepetitions}" />
+                                        <Run Text="/" />
+                                        <Run Text="{Binding TargetRepetitions}" />
+                                    </TextBlock>
+
+                                </Grid>
+
+                            </Grid>
+
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="15 0 15 15">
+
+                <Button Content="Add goal"
+                        Margin="0"
+                        MinWidth="140"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Command="{Binding OpenAddExerciseGoalCommand}" />
+
+            </StackPanel>
+
+        </Grid>
+
+        <Grid Grid.Row="0"
+              Grid.RowSpan="2"
+              Background="#80000000"
+              DataContext="{Binding AddExerciseGoal}"
+              Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+
+            <Border Width="420"
+                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="15"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                <StackPanel>
+                    <TextBlock Text="Add exercise goal"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0 0 0 15" />
+
+                    <TextBlock Text="Exercise"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <ComboBox HorizontalAlignment="Stretch"
+                              Margin="0 0 0 15"
+                              ItemsSource="{Binding ExercisesOptions}"
+                              SelectedValue="{Binding SelectedExerciseOption, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Exercise.Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Text="Repetitions"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter repetitions"
+                             Text="{Binding Repetitions, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+
+                        <Button Content="Close"
+                                MinWidth="100"
+                                Margin="0 0 10 0"
+                                Command="{Binding CloseCommand}" />
+
+                        <Button Content="Add"
+                                MinWidth="100"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Command="{Binding AddGoalCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Page>

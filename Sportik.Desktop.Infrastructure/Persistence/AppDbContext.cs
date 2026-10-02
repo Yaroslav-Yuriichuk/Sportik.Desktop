@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Sportik.Desktop.Infrastructure.Persistence.Entities;
 
 namespace Sportik.Desktop.Infrastructure.Persistence
@@ -11,6 +12,8 @@ namespace Sportik.Desktop.Infrastructure.Persistence
         public DbSet<UserExercise> Exercises { get; set; } = null!;
 
         public DbSet<UserSet> Sets { get; set; } = null!;
+
+        public DbSet<UserExerciseGoal> ExerciseGoals { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +29,18 @@ namespace Sportik.Desktop.Infrastructure.Persistence
                 .HasOne(s => s.Exercise)
                 .WithMany()
                 .HasForeignKey(s => s.ExerciseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserSet>()
+                .Property(s => s.LoggedAt)
+                .HasConversion(
+                    dto => dto.ToUnixTimeMilliseconds(),
+                    ms => DateTimeOffset.FromUnixTimeMilliseconds(ms));
+
+            modelBuilder.Entity<UserExerciseGoal>()
+                .HasOne(g => g.Exercise)
+                .WithMany()
+                .HasForeignKey(g => g.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

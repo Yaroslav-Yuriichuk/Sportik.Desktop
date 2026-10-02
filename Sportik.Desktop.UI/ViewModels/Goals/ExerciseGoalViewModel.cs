@@ -1,5 +1,5 @@
 ﻿using System;
-using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Goal;
 
 namespace Sportik.Desktop.UI.ViewModels.Goals
 {
@@ -17,17 +17,25 @@ namespace Sportik.Desktop.UI.ViewModels.Goals
             private set => SetField(ref _targetRepetitions, value);
         }
 
+        public int CompletedRepetitions
+        {
+            get => _completedRepetitions;
+            set => SetField(ref _completedRepetitions, value);
+        }
+
         private string _exerciseName;
         private int _targetRepetitions;
+        private int _completedRepetitions;
 
         public Guid ExerciseId { get; }
 
-        public ExerciseGoalViewModel(Exercise exercise)
+        public ExerciseGoalViewModel(ExerciseGoal exerciseGoal)
         {
-            ExerciseId = exercise.Id;
+            ExerciseId = exerciseGoal.Exercise.Id;
 
-            ExerciseName = exercise.Name;
-            TargetRepetitions = exercise.Settings.TargetRepetitions;
+            ExerciseName = exerciseGoal.Exercise.Name;
+            TargetRepetitions = exerciseGoal.TargetRepetitions;
+            CompletedRepetitions = exerciseGoal.CompletedRepetitions;
         }
     }
 }

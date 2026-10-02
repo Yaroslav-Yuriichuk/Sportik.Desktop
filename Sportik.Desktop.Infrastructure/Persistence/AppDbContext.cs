@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Sportik.Desktop.Infrastructure.Persistence.Entities;
 
 namespace Sportik.Desktop.Infrastructure.Persistence
@@ -29,6 +30,12 @@ namespace Sportik.Desktop.Infrastructure.Persistence
                 .WithMany()
                 .HasForeignKey(s => s.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserSet>()
+                .Property(s => s.LoggedAt)
+                .HasConversion(
+                    dto => dto.ToUnixTimeMilliseconds(),
+                    ms => DateTimeOffset.FromUnixTimeMilliseconds(ms));
 
             modelBuilder.Entity<UserExerciseGoal>()
                 .HasOne(g => g.Exercise)

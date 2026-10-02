@@ -6,12 +6,15 @@ namespace Sportik.Desktop.Core.Models.Goal
     {
         public Exercise Exercise { get; }
 
-        public int Repetitions { get; }
+        public int TargetRepetitions { get; }
 
-        public ExerciseGoal(Exercise exercise, int repetitions)
+        public int CompletedRepetitions { get; }
+
+        public ExerciseGoal(Exercise exercise, int targetRepetitions, int completedRepetitions)
         {
             Exercise = exercise ?? throw new ArgumentNullException(nameof(exercise));
-            Repetitions = repetitions;
+            TargetRepetitions = targetRepetitions;
+            CompletedRepetitions = completedRepetitions;
         }
     }
 }

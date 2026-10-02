@@ -6,7 +6,7 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Entities
     {
         public Guid Id { get; private set; }
 
-        public int Repetitions { get; set; }
+        public int TargetRepetitions { get; set; }
 
         public DateTime FirstWeekDayDate { get; private set; }
 
@@ -14,17 +14,17 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Entities
 
         public UserExercise Exercise { get; private set; }
 
-        public UserExerciseGoal(Guid id, int repetitions, DateTime firstWeekDayDate, Guid exerciseId)
-            : this(id, repetitions, firstWeekDayDate, exerciseId, null)
+        public UserExerciseGoal(Guid id, int targetRepetitions, DateTime firstWeekDayDate, Guid exerciseId)
+            : this(id, targetRepetitions, firstWeekDayDate, exerciseId, null)
         {
         }
 
-        public UserExerciseGoal(Guid id, int repetitions, DateTime firstWeekDayDate, UserExercise exercise)
-            : this(id, repetitions, firstWeekDayDate, exercise.Id, exercise)
+        public UserExerciseGoal(Guid id, int targetRepetitions, DateTime firstWeekDayDate, UserExercise exercise)
+            : this(id, targetRepetitions, firstWeekDayDate, exercise.Id, exercise)
         {
         }
 
-        private UserExerciseGoal(Guid id, int repetitions, DateTime firstWeekDayDate, Guid exerciseId, UserExercise exercise)
+        private UserExerciseGoal(Guid id, int targetRepetitions, DateTime firstWeekDayDate, Guid exerciseId, UserExercise exercise)
         {
             if (exercise != null && exerciseId != exercise.Id)
             {
@@ -32,7 +32,7 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Entities
             }
 
             Id = id;
-            Repetitions = repetitions;
+            TargetRepetitions = targetRepetitions;
             FirstWeekDayDate = firstWeekDayDate;
             ExerciseId = exerciseId;
             Exercise = exercise;

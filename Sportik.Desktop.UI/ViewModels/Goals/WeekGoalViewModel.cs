@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Goal;
-using Sportik.Desktop.Core.Models.Settings;
-using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.Goals
@@ -61,7 +58,8 @@ namespace Sportik.Desktop.UI.ViewModels.Goals
                 ExerciseGoals.Remove(exerciseGoalViewModel);
             }
 
-            ExerciseGoals.Add(new ExerciseGoalViewModel(args.ExerciseGoal.Exercise));
+            ExerciseGoal exerciseGoal = args.ExerciseGoal;
+            ExerciseGoals.Add(new ExerciseGoalViewModel(exerciseGoal));
         }
 
         private async Task LoadWeekGoalAsync(CancellationToken cancellationToken)
@@ -74,8 +72,10 @@ namespace Sportik.Desktop.UI.ViewModels.Goals
                 return;
             }
 
+            WeekGoal weekGoal = result.Value;
+
             ExerciseGoals = new ObservableCollection<ExerciseGoalViewModel>(
-                result.Value.ExerciseGoals.Select(g => new ExerciseGoalViewModel(g.Exercise)));
+                weekGoal.ExerciseGoals.Select(g => new ExerciseGoalViewModel(g)));
         }
 
         private void OpenAddExerciseGoal()

@@ -14,7 +14,7 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Mappers
                 entity.ExecutionTime);
         }
 
-        public static UserExerciseSettings ToEntity(ExerciseSettings settings)
+        public static UserExerciseSettings ToEntity(AddExerciseSettingsModel settings)
         {
             return new UserExerciseSettings
             {

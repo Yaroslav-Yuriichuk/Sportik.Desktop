@@ -1,0 +1,47 @@
+﻿<Page
+    x:Class="Sportik.Desktop.UI.Views.Internal.AppSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:account="using:Sportik.Desktop.UI.ViewModels.Account"
+    xmlns:converters="using:Sportik.Desktop.UI.Converters"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <account:AccountViewModel />
+    </Page.DataContext>
+
+    <Page.Resources>
+        <converters:GuidToStringConverter x:Name="GuidToStringConverter" />
+        <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
+        <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Settings"
+                   FontSize="32"
+                   FontWeight="SemiBold"
+                   Margin="15 15 15 0"/>
+
+        <Border Grid.Row="1"
+                Margin="15 15 15 0"
+                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="15">
+
+        </Border>
+
+    </Grid>
+</Page>

@@ -110,7 +110,7 @@ namespace Sportik.Desktop.Core.Common.Import
                     importExercise.TimeBetweenSets,
                     importExercise.ExecutionTime);
 
-                exercisesToAdd.Add(new AddExerciseModel(null, importExercise.Name, exerciseSettings));
+                exercisesToAdd.Add(new AddExerciseModel(null, importExercise.Name, new AddExerciseSettingsModel(exerciseSettings)));
             }
 
             return exercisesToAdd;

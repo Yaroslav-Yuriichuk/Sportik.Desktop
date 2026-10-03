@@ -10,7 +10,7 @@ using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
 
-namespace Sportik.Desktop.UI.ViewModels.Settings
+namespace Sportik.Desktop.UI.ViewModels.ExerciseSettings
 {
     internal sealed class ExerciseSettingsViewModel : ViewModel, IDisposable
     {

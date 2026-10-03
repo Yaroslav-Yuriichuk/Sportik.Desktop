@@ -9,9 +9,9 @@ namespace Sportik.Desktop.Core.Models
 
         public string Name { get; }
 
-        public ExerciseSettings Settings { get; }
+        public AddExerciseSettingsModel Settings { get; }
 
-        public AddExerciseModel(Guid? id, string name, ExerciseSettings settings)
+        public AddExerciseModel(Guid? id, string name, AddExerciseSettingsModel settings)
         {
             Id = id;
             Name = name.Trim();

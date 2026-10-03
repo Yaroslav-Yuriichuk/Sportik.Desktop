@@ -32,7 +32,7 @@ namespace Sportik.Desktop.Core.Common.Synchronization
 
             List<AddExerciseModel> localExercisesToAdd = localExercises
                 .Where(e => !remoteExerciseIds.Contains(e.Id))
-                .Select(e => new AddExerciseModel(e.Id, e.Name, e.Settings))
+                .Select(e => new AddExerciseModel(e.Id, e.Name, new AddExerciseSettingsModel(e.Settings)))
                 .ToList();
 
             Task<IEnumerable<Exercise>> addLocalExercisesTask = RemoteExercisesRepository.AddRangeAsync(localExercisesToAdd, cancellationToken);
@@ -41,7 +41,7 @@ namespace Sportik.Desktop.Core.Common.Synchronization
 
             List<AddExerciseModel> remoteExercisesToAdd = remoteExercises
                 .Where(e => !localExerciseIds.Contains(e.Id))
-                .Select(e => new AddExerciseModel(e.Id, e.Name, e.Settings))
+                .Select(e => new AddExerciseModel(e.Id, e.Name, new AddExerciseSettingsModel(e.Settings)))
                 .ToList();
 
             Task<IEnumerable<Exercise>> addRemoteExercisesTask = LocalExercisesRepository.AddRangeAsync(remoteExercisesToAdd, cancellationToken);

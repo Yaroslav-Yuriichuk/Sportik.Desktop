@@ -91,7 +91,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
-        public async Task<OperationResult<Exercise>> AddAsync(string name, ExerciseSettings settings, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<Exercise>> AddAsync(string name, AddExerciseSettingsModel settings, CancellationToken cancellationToken = default)
         {
             try
             {

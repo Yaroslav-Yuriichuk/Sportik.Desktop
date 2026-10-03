@@ -4,13 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:settings="using:Sportik.Desktop.UI.ViewModels.Settings"
     xmlns:converters="using:Sportik.Desktop.UI.Converters"
+    xmlns:exerciseSettings="using:Sportik.Desktop.UI.ViewModels.ExerciseSettings"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
-        <settings:SettingsViewModel />
+        <exerciseSettings:SettingsViewModel />
     </Page.DataContext>
 
     <Page.Resources>
@@ -84,7 +84,7 @@
             </ListView.ItemContainerStyle>
 
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="settings:ExerciseSettingsViewModel">
+                <DataTemplate x:DataType="exerciseSettings:ExerciseSettingsViewModel">
                     <StackPanel HorizontalAlignment="Stretch">
 
                         <Grid Margin="15 15 15 15">

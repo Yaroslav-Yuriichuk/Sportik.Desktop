@@ -206,6 +206,7 @@
     <Compile Include="Models\ReminderCache.cs" />
     <Compile Include="Models\ReminderNotification.cs" />
     <Compile Include="Models\SequentialExercisesCache.cs" />
+    <Compile Include="Models\Settings\AddExerciseSettingsModel.cs" />
     <Compile Include="Models\Settings\ExerciseSettings.cs" />
     <Compile Include="Models\Settings\ExerciseSettingsDelta.cs" />
     <Compile Include="Models\Sound\SoundSource.cs" />

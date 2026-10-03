@@ -75,7 +75,7 @@ namespace Sportik.Desktop.UI.ViewModels.Navigation
         {
             if (args.IsSettingsSelected)
             {
-                NavigationService.Navigate(typeof(ExerciseSettingsPage), NavigationScope.Internal);
+                NavigationService.Navigate(typeof(AppSettingsPage), NavigationScope.Internal);
                 return;
             }
 

@@ -19,7 +19,6 @@
                         IsPaneOpen="True"
                         PaneDisplayMode="Left"
                         IsBackButtonVisible="Collapsed"
-                        IsSettingsVisible="False"
                         MenuItemsSource="{Binding MenuItemOptions}"
                         SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}">
 

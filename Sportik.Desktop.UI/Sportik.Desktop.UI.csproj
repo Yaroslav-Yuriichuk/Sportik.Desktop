@@ -184,8 +184,9 @@
     <Compile Include="ViewModels\PopUpViewModel.cs" />
     <Compile Include="ViewModels\Registration\RegistrationViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
-    <Compile Include="ViewModels\Settings\ExerciseSettingsViewModel.cs" />
-    <Compile Include="ViewModels\Settings\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\ExerciseSettings\ExerciseSettingsViewModel.cs" />
+    <Compile Include="ViewModels\ExerciseSettings\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\AppSettings\AppSettingsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\DayStatisticsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\ExerciseStatisticsViewModel.cs" />
     <Compile Include="ViewModels\Statistics\ExportViewModel.cs" />
@@ -223,6 +224,9 @@
     </Compile>
     <Compile Include="Views\Internal\ExerciseStatisticsPage.xaml.cs">
       <DependentUpon>ExerciseStatisticsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Internal\AppSettingsPage.xaml.cs">
+      <DependentUpon>AppSettingsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Internal\TrainingPage.xaml.cs">
       <DependentUpon>TrainingPage.xaml</DependentUpon>
@@ -341,6 +345,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Internal\ExerciseStatisticsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Internal\AppSettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Internal\TrainingPage.xaml">

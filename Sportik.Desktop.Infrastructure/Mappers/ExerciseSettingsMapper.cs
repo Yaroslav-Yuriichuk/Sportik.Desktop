@@ -14,7 +14,7 @@ namespace Sportik.Desktop.Infrastructure.Mappers
                 dto.ExecutionTime);
         }
 
-        public static AddExerciseSettingsDto ToDto(ExerciseSettings settings)
+        public static AddExerciseSettingsDto ToDto(AddExerciseSettingsModel settings)
         {
             return new AddExerciseSettingsDto(
                 settings.TargetRepetitions,

@@ -133,7 +133,7 @@ namespace Sportik.Desktop.UI.ViewModels.Create
 
             CreateExerciseCommand.IsExecutable = false;
 
-            ExerciseSettings settings = new ExerciseSettings(
+            AddExerciseSettingsModel settings = new AddExerciseSettingsModel(
                 false,
                 SelectedTargetRepetitionsOption.IntValue,
                 SelectedTimeBetweenSetsOption.TimeSpanValue,

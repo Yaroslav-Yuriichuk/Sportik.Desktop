@@ -3,15 +3,15 @@ using System.Threading.Tasks;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
 
-namespace Sportik.Desktop.Core.Common.Import
+namespace Sportik.Desktop.Core.Common
 {
-    public interface IStatisticsImporter
+    public interface IDataExchanger
     {
         internal void Initialize(
             IExercisesRepository exercisesRepository,
             IExerciseStatisticsRepository exerciseStatisticsRepository,
             IEventsService eventsService);
 
-        Task ImportAsync(CancellationToken cancellationToken);
+        Task ExchangeAsync(CancellationToken cancellationToken);
     }
 }

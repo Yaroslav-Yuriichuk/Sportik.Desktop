@@ -160,6 +160,7 @@
     <Compile Include="Services\Implementations\FrameNavigationService.cs" />
     <Compile Include="Services\Interfaces\INavigationService.cs" />
     <Compile Include="ViewModels\Account\AccountViewModel.cs" />
+    <Compile Include="ViewModels\AppSettings\AutomaticImportExportViewModel.cs" />
     <Compile Include="ViewModels\Create\CreateExerciseViewModel.cs" />
     <Compile Include="ViewModels\Dashboard\BarChartLoaders\DaySetsBarChartLoader.cs" />
     <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseRepetitionsBarChartLoader.cs" />

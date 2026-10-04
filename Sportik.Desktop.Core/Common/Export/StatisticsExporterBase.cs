@@ -1,33 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Google.Apis.Sheets.v4;
-using Google.Apis.Sheets.v4.Data;
-using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.ImportExport;
 using Sportik.Desktop.Core.Repositories.Interfaces;
+using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.Common.Export
 {
-    public abstract class StatisticsExporterBase : IStatisticsExporter
+    public abstract class StatisticsExporterBase : IDataExchanger
     {
         private IExercisesRepository _exercisesRepository;
         private IExerciseStatisticsRepository _exerciseStatisticsRepository;
 
-        void IStatisticsExporter.Initialize(IExercisesRepository exercisesRepository,
-            IExerciseStatisticsRepository exerciseStatisticsRepository)
+        void IDataExchanger.Initialize(
+            IExercisesRepository exercisesRepository,
+            IExerciseStatisticsRepository exerciseStatisticsRepository,
+            IEventsService eventsService)
         {
             _exercisesRepository = exercisesRepository;
             _exerciseStatisticsRepository = exerciseStatisticsRepository;
         }
 
-        public async Task ExportAsync(CancellationToken cancellationToken)
+        public async Task ExchangeAsync(CancellationToken cancellationToken)
         {
             if (_exercisesRepository is null || _exerciseStatisticsRepository is null)
             {

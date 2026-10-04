@@ -141,6 +141,7 @@
     <Compile Include="Behaviors\NavigationViewCollapseBehavior.cs" />
     <Compile Include="Converters\BoolToInvertedVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\DataExchangeOptionToStringConverter.cs" />
     <Compile Include="Converters\DateTimeOffsetToStringConverter.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Converters\EnumTargetValueToVisibilityConverter.cs" />
@@ -160,7 +161,8 @@
     <Compile Include="Services\Implementations\FrameNavigationService.cs" />
     <Compile Include="Services\Interfaces\INavigationService.cs" />
     <Compile Include="ViewModels\Account\AccountViewModel.cs" />
-    <Compile Include="ViewModels\AppSettings\AutomaticImportExportViewModel.cs" />
+    <Compile Include="ViewModels\AppSettings\DataExchangeConfigViewModel.cs" />
+    <Compile Include="ViewModels\AppSettings\AutomaticDataExchangeViewModel.cs" />
     <Compile Include="ViewModels\Create\CreateExerciseViewModel.cs" />
     <Compile Include="ViewModels\Dashboard\BarChartLoaders\DaySetsBarChartLoader.cs" />
     <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseRepetitionsBarChartLoader.cs" />

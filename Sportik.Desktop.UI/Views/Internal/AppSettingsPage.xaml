@@ -4,19 +4,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:account="using:Sportik.Desktop.UI.ViewModels.Account"
+    xmlns:appsettings="using:Sportik.Desktop.UI.ViewModels.AppSettings"
     xmlns:converters="using:Sportik.Desktop.UI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
-        <account:AccountViewModel />
+        <appsettings:AppSettingsViewModel />
     </Page.DataContext>
 
     <Page.Resources>
         <converters:GuidToStringConverter x:Name="GuidToStringConverter" />
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
+        <converters:DataExchangeOptionToStringConverter x:Name="DataExchangeOptionToStringConverter" />
     </Page.Resources>
 
     <Grid>
@@ -39,18 +40,112 @@
                 BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Padding="15">
+                Padding="15"
+                DataContext="{Binding AutomaticDataExchange}">
 
             <Grid>
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0"
                            Text="Automatic Import and Export"
-                           FontSize="16"
+                           FontSize="20"
                            FontWeight="SemiBold" />
+
+                <ListView Grid.Row="1"
+                          Margin="0 12 0 12"
+                          IsItemClickEnabled="True"
+                          SelectionMode="None"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          ItemsSource="{Binding DataExchangeConfigs}">
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0 0 0 0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Grid Background="Transparent">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal" />
+                                                    <VisualState x:Name="PointerOver">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                            <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+
+                                            <Border x:Name="CardBorder"
+                                                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    BorderThickness="0"
+                                                    CornerRadius="8" />
+
+                                            <ContentPresenter x:Name="ContentPresenter"
+                                                              Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              Margin="{TemplateBinding Padding}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="appsettings:DataExchangeConfigViewModel">
+                            <StackPanel HorizontalAlignment="Stretch">
+
+                                <Grid Margin="5 15 0 15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               FontWeight="SemiBold">
+                                        <Run Text="{Binding Config.Option, Converter={StaticResource DataExchangeOptionToStringConverter}}" />
+                                        <Run Text="{Binding Config.Type}" />
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Column="1"
+                                               Margin="0 0 10 0"
+                                               Text="{Binding Config.Description}"
+                                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                               VerticalAlignment="Center">
+                                    </TextBlock>
+
+                                </Grid>
+
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+                <Button Grid.Row="2"
+                        Content="Add"
+                        HorizontalAlignment="Right"
+                        Margin="0"
+                        Style="{ThemeResource AccentButtonStyle}" />
 
             </Grid>
 

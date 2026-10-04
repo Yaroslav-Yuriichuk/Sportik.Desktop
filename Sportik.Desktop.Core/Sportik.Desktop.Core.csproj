@@ -130,10 +130,14 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\DataExchange\DataExchangeOption.cs" />
+    <Compile Include="Common\DataExchange\DataExchangeType.cs" />
+    <Compile Include="Common\DataExchange\IDataExchangeConfig.cs" />
+    <Compile Include="Common\DataExchange\IDataExchanger.cs" />
+    <Compile Include="Common\Export\GoogleSheetsExporterConfig.cs" />
     <Compile Include="Common\Export\StatisticsExporterBase.cs" />
     <Compile Include="Common\Grouping.cs" />
     <Compile Include="Common\Export\GoogleSheetStatisticsExporter.cs" />
-    <Compile Include="Common\IDataExchanger.cs" />
     <Compile Include="Common\Import\GoogleSheetStatisticsImporter.cs" />
     <Compile Include="Common\Import\StatisticsImporterBase.cs" />
     <Compile Include="Common\OperationResult.cs" />

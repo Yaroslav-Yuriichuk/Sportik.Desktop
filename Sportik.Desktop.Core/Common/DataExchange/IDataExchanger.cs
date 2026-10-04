@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
 
-namespace Sportik.Desktop.Core.Common
+namespace Sportik.Desktop.Core.Common.DataExchange
 {
     public interface IDataExchanger
     {

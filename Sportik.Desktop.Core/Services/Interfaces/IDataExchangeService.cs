@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Common.DataExchange;
 
 namespace Sportik.Desktop.Core.Services.Interfaces
 {

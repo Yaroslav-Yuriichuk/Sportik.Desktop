@@ -1,32 +1,55 @@
-﻿using System.Collections.ObjectModel;
-using Sportik.Desktop.Core.Common.Export;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Models.AppSettings;
+using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.UI.ViewModels.AppSettings
 {
-    internal sealed class AutomaticDataExchangeViewModel : ViewModel
+    internal sealed class AutomaticDataExchangeViewModel : ViewModel, IDisposable
     {
-        private ObservableCollection<DataExchangeConfigViewModel> _dataExchangeConfigs;
-
         public ObservableCollection<DataExchangeConfigViewModel> DataExchangeConfigs
         {
             get => _dataExchangeConfigs;
-            set => SetField(ref _dataExchangeConfigs, value);
+            private set => SetField(ref _dataExchangeConfigs, value);
         }
+
+        public AddConfigViewModel AddConfig { get; } = new AddConfigViewModel();
+
+        public ReactiveRelayCommand ShowAddConfigCommand { get; }
+
+        private IAppSettingsService AppSettingsService => App.ServiceProvider.GetRequiredService<IAppSettingsService>();
+        private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
+
+        private ObservableCollection<DataExchangeConfigViewModel> _dataExchangeConfigs;
 
         public AutomaticDataExchangeViewModel()
         {
-            DataExchangeConfigs = new ObservableCollection<DataExchangeConfigViewModel>()
-            {
-                new DataExchangeConfigViewModel(new GoogleSheetsExporterConfig(
-                    sheetUrlOrId: "https://docs.google.com/spreadsheets/d/1a2b3c4d5e6f7g8h9i0j/edit#gid=123456789",
-                    exercisesSheetName: "Exercises",
-                    setsSheetName: "Sets")),
+            ShowAddConfigCommand = new ReactiveRelayCommand(OpenAddConfig);
 
-                new DataExchangeConfigViewModel(new GoogleSheetsExporterConfig(
-                    sheetUrlOrId: "https://docs.google.com/spreadsheets/d/1a2b3c4d5e6f7g8h9i0j/edit#gid=123456789",
-                    exercisesSheetName: "Exercises",
-                    setsSheetName: "Sets")),
-            };
+            AutomaticDataExchangeSettings settings = AppSettingsService.GetSettings<AutomaticDataExchangeSettings>();
+
+            DataExchangeConfigs = new ObservableCollection<DataExchangeConfigViewModel>(
+                settings.Configs.Select(config => new DataExchangeConfigViewModel(config)));
+
+            EventsService.AddListener<DataExchangeConfigAddedEventArgs>(EventsService_Event);
+        }
+
+        public void Dispose()
+        {
+            EventsService.RemoveListener<DataExchangeConfigAddedEventArgs>(EventsService_Event);
+        }
+
+        private void OpenAddConfig()
+        {
+            AddConfig.Open();
+        }
+
+        private void EventsService_Event(DataExchangeConfigAddedEventArgs args)
+        {
+            DataExchangeConfigs.Add(new DataExchangeConfigViewModel(args.DataExchangeConfig));
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
 
         public void Dispose()
         {
-
+            AutomaticDataExchange.Dispose();
         }
     }
 }

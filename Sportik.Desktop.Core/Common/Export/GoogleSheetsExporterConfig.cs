@@ -6,13 +6,15 @@ namespace Sportik.Desktop.Core.Common.Export
 {
     public sealed class GoogleSheetsExporterConfig : IDataExchangeConfig
     {
-        private readonly string _sheetUrlOrId;
-        private readonly string _exercisesSheetName;
-        private readonly string _setsSheetName;
-
         public DataExchangeType Type => DataExchangeType.Export;
 
         public DataExchangeOption Option => DataExchangeOption.GoogleSheets;
+
+        public string SheetUrlOrId { get; }
+
+        public string ExercisesSheetName { get; }
+
+        public string SetsSheetName { get; }
 
         public string Description
         {
@@ -20,7 +22,7 @@ namespace Sportik.Desktop.Core.Common.Export
             {
                 StringBuilder builder = new StringBuilder();
 
-                bool parsedId = GoogleSheetsHelper.TryParseSheetId(_sheetUrlOrId, out string sheetId);
+                bool parsedId = GoogleSheetsHelper.TryParseSheetId(SheetUrlOrId, out string sheetId);
 
                 if (parsedId)
                 {
@@ -28,26 +30,26 @@ namespace Sportik.Desktop.Core.Common.Export
                     builder.Append(sheetId);
                 }
 
-                if (parsedId && !string.IsNullOrWhiteSpace(_exercisesSheetName))
+                if (parsedId && !string.IsNullOrWhiteSpace(ExercisesSheetName))
                 {
                     builder.Append(", ");
                 }
 
-                if (!string.IsNullOrWhiteSpace(_exercisesSheetName))
+                if (!string.IsNullOrWhiteSpace(ExercisesSheetName))
                 {
                     builder.Append("Exercises sheet: ");
-                    builder.Append(_exercisesSheetName);
+                    builder.Append(ExercisesSheetName);
                 }
 
-                if (!string.IsNullOrWhiteSpace(_exercisesSheetName) && !string.IsNullOrWhiteSpace(_setsSheetName))
+                if (!string.IsNullOrWhiteSpace(ExercisesSheetName) && !string.IsNullOrWhiteSpace(SetsSheetName))
                 {
                     builder.Append(", ");
                 }
 
-                if (!string.IsNullOrWhiteSpace(_setsSheetName))
+                if (!string.IsNullOrWhiteSpace(SetsSheetName))
                 {
                     builder.Append("Sets sheet: ");
-                    builder.Append(_setsSheetName);
+                    builder.Append(SetsSheetName);
                 }
 
                 return builder.ToString();
@@ -56,9 +58,9 @@ namespace Sportik.Desktop.Core.Common.Export
 
         public GoogleSheetsExporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
         {
-            _sheetUrlOrId = sheetUrlOrId;
-            _exercisesSheetName = exercisesSheetName;
-            _setsSheetName = setsSheetName;
+            SheetUrlOrId = sheetUrlOrId;
+            ExercisesSheetName = exercisesSheetName;
+            SetsSheetName = setsSheetName;
         }
     }
 }

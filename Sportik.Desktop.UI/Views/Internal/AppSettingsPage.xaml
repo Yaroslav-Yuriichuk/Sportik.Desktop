@@ -18,6 +18,7 @@
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
         <converters:DataExchangeOptionToStringConverter x:Name="DataExchangeOptionToStringConverter" />
+        <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
     </Page.Resources>
 
     <Grid>
@@ -57,7 +58,7 @@
                            FontWeight="SemiBold" />
 
                 <ListView Grid.Row="1"
-                          Margin="0 12 0 12"
+                          Margin="0 0 0 0"
                           IsItemClickEnabled="True"
                           SelectionMode="None"
                           HorizontalAlignment="Stretch"
@@ -68,7 +69,7 @@
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                             <Setter Property="Padding" Value="0" />
-                            <Setter Property="Margin" Value="0 0 0 0" />
+                            <Setter Property="Margin" Value="0 12 0 0" />
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListViewItem">
@@ -113,15 +114,17 @@
                         <DataTemplate x:DataType="appsettings:DataExchangeConfigViewModel">
                             <StackPanel HorizontalAlignment="Stretch">
 
-                                <Grid Margin="5 15 0 15">
+                                <Grid Margin="5 15 5 15">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="200" />
-                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Grid.Column="0"
-                                               FontWeight="SemiBold">
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center">
                                         <Run Text="{Binding Config.Option, Converter={StaticResource DataExchangeOptionToStringConverter}}" />
                                         <Run Text="{Binding Config.Type}" />
                                     </TextBlock>
@@ -132,6 +135,15 @@
                                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                                VerticalAlignment="Center">
                                     </TextBlock>
+
+                                    <Button Grid.Column="2"
+                                            Margin="0 0 10 0"
+                                            Content="Edit">
+                                    </Button>
+
+                                    <Button Grid.Column="3"
+                                            Content="Remove">
+                                    </Button>
 
                                 </Grid>
 
@@ -144,12 +156,114 @@
                 <Button Grid.Row="2"
                         Content="Add"
                         HorizontalAlignment="Right"
-                        Margin="0"
+                        Margin="0 12 0 0"
+                        Command="{Binding ShowAddConfigCommand}"
                         Style="{ThemeResource AccentButtonStyle}" />
 
             </Grid>
 
         </Border>
+
+        <Grid Grid.Row="0"
+              Grid.RowSpan="3"
+              Background="#80000000"
+              DataContext="{Binding AutomaticDataExchange.AddConfig}"
+              Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+
+            <Border Width="420"
+                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="15"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                <StackPanel>
+                    <TextBlock Text="Add configuration"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0 0 0 15" />
+
+                    <TextBlock Text="Type"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <ComboBox HorizontalAlignment="Stretch"
+                              Margin="0 0 0 15"
+                              ItemsSource="{Binding TypeOptions}"
+                              SelectedValue="{Binding SelectedTypeOption, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Text="Scope"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <ComboBox HorizontalAlignment="Stretch"
+                              Margin="0 0 0 15"
+                              ItemsSource="{Binding ScopeOptions}"
+                              SelectedValue="{Binding SelectedScopeOption, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Text="Google Sheet Url or Id"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter Google Sheet Url or Id"
+                             Text="{Binding GoogleSheetUrlOrId, Mode=TwoWay}" />
+
+                    <TextBlock Text="Exercises sheet name"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5"
+                               Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter exercises sheet name"
+                             Text="{Binding ExercisesSheetName, Mode=TwoWay}"
+                             Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}" />
+
+                    <TextBlock Text="Sets sheet name"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5"
+                               Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Sets,ExercisesAndSets'}" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter sets sheet name"
+                             Text="{Binding SetsSheetName, Mode=TwoWay}"
+                             Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Sets,ExercisesAndSets'}" />
+
+                    <CheckBox Content="Validate duplicates"
+                              Margin="0 0 0 15"
+                              IsChecked="{Binding ValidateDuplicates, Mode=TwoWay}"
+                              Visibility="{Binding Type, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Import'}" />
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+
+                        <Button Content="Close"
+                                MinWidth="100"
+                                Margin="0 0 10 0"
+                                Command="{Binding CloseCommand}" />
+
+                        <Button Content="Add"
+                                MinWidth="120"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Command="{Binding AddConfigCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
 
     </Grid>
 </Page>

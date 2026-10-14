@@ -138,6 +138,7 @@
     <Compile Include="Common\Export\StatisticsExporterBase.cs" />
     <Compile Include="Common\Grouping.cs" />
     <Compile Include="Common\Export\GoogleSheetStatisticsExporter.cs" />
+    <Compile Include="Common\Import\GoogleSheetsImporterConfig.cs" />
     <Compile Include="Common\Import\GoogleSheetStatisticsImporter.cs" />
     <Compile Include="Common\Import\StatisticsImporterBase.cs" />
     <Compile Include="Common\OperationResult.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Constants\AutomationConstants.cs" />
     <Compile Include="DependencyInjection.cs" />
     <Compile Include="Events\ApplicationStateChangedEventArgs.cs" />
+    <Compile Include="Events\DataExchangeConfigAddedEventArgs.cs" />
     <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseCreatedEventArgs.cs" />
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />
@@ -186,6 +188,7 @@
     <Compile Include="Extensions\CachingExtension.cs" />
     <Compile Include="Helpers\CalendarHelper.cs" />
     <Compile Include="Helpers\CompareHelper.cs" />
+    <Compile Include="Helpers\DataExchangeHelper.cs" />
     <Compile Include="Helpers\ExercisesSequenceHelper.cs" />
     <Compile Include="Helpers\GoogleSheetsHelper.cs" />
     <Compile Include="Helpers\StatisticsHelper.cs" />
@@ -194,6 +197,9 @@
     <Compile Include="Models\AddExerciseSetModel.cs" />
     <Compile Include="Models\AppModeCache.cs" />
     <Compile Include="Models\AppRunCache.cs" />
+    <Compile Include="Models\AppSettings\AutomaticDataExchangeCache.cs" />
+    <Compile Include="Models\AppSettings\AutomaticDataExchangeSettings.cs" />
+    <Compile Include="Models\AppSettings\ISettings.cs" />
     <Compile Include="Models\Automation\ReminderMode.cs" />
     <Compile Include="Models\CreationSource.cs" />
     <Compile Include="Models\DataSource.cs" />
@@ -231,6 +237,7 @@
     <Compile Include="Repositories\Interfaces\IExerciseStatisticsRepository.cs" />
     <Compile Include="Repositories\Interfaces\IWeekGoalsRepository.cs" />
     <Compile Include="Services\Implementations\ApplicationStatesService.cs" />
+    <Compile Include="Services\Implementations\AppSettingsService.cs" />
     <Compile Include="Services\Implementations\DataExchangeService.cs" />
     <Compile Include="Services\Implementations\EventsService.cs" />
     <Compile Include="Services\Implementations\ExerciseSettingsService.cs" />
@@ -242,6 +249,7 @@
     <Compile Include="Services\Implementations\TrainingService.cs" />
     <Compile Include="Services\Implementations\WeekGoalsService.cs" />
     <Compile Include="Services\Interfaces\IApplicationStatesService.cs" />
+    <Compile Include="Services\Interfaces\IAppSettingsService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\IDataExchangeService.cs" />
     <Compile Include="Services\Interfaces\IEventsService.cs" />

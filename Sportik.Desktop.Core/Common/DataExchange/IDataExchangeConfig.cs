@@ -7,5 +7,7 @@ namespace Sportik.Desktop.Core.Common.DataExchange
         DataExchangeOption Option { get; }
 
         string Description { get; }
+
+        IDataExchanger CreateExchanger();
     }
 }

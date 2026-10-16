@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Export;
@@ -11,7 +12,7 @@ using Sportik.Desktop.UI.ViewModels.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.AppSettings
 {
-    internal sealed class AddConfigViewModel : PopUpViewModel
+    internal sealed class AddOrEditConfigViewModel : PopUpViewModel
     {
         private ObservableCollection<DataExchangeTypeOption> _typeOptions;
 
@@ -119,11 +120,29 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             set => SetField(ref _validateDuplicates, value);
         }
 
-        public ReactiveRelayCommand AddConfigCommand { get; }
+        private string _title = "Add configuration";
+
+        public string Title
+        {
+            get => _title;
+            private set => SetField(ref _title, value);
+        }
+
+        private string _submitText = "Add";
+
+        public string SubmitText
+        {
+            get => _submitText;
+            private set => SetField(ref _submitText, value);
+        }
+
+        public ReactiveRelayCommand SubmitCommand { get; }
 
         private IAppSettingsService AppSettingsService => App.ServiceProvider.GetRequiredService<IAppSettingsService>();
 
-        public AddConfigViewModel()
+        private IDataExchangeConfig _editedConfig;
+
+        public AddOrEditConfigViewModel()
         {
             TypeOptions = new ObservableCollection<DataExchangeTypeOption>
             {
@@ -138,10 +157,76 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
                 new ImportExportScopeOption("Sets only", ImportExportScope.Sets)
             };
 
-            AddConfigCommand = new ReactiveRelayCommand(AddConfig);
+            SubmitCommand = new ReactiveRelayCommand(Submit);
         }
 
-        private void AddConfig()
+        public void OpenAdd()
+        {
+            _editedConfig = null;
+
+            Title = "Add configuration";
+            SubmitText = "Add";
+
+            Open();
+        }
+
+        public void OpenEdit(IDataExchangeConfig config)
+        {
+            string sheetUrlOrId = null;
+            string exercisesSheetName = null;
+            string setsSheetName = null;
+            bool validateDuplicates = true;
+
+            if (config is GoogleSheetsImporterConfig importerConfig)
+            {
+                sheetUrlOrId = importerConfig.SheetUrlOrId;
+                exercisesSheetName = importerConfig.ExercisesSheetName;
+                setsSheetName = importerConfig.SetsSheetName;
+                validateDuplicates = importerConfig.ValidateDuplicates;
+            }
+            else if (config is GoogleSheetsExporterConfig exporterConfig)
+            {
+                sheetUrlOrId = exporterConfig.SheetUrlOrId;
+                exercisesSheetName = exporterConfig.ExercisesSheetName;
+                setsSheetName = exporterConfig.SetsSheetName;
+            }
+
+            _editedConfig = config;
+
+            SelectedTypeOption = TypeOptions.FirstOrDefault(option => option.Type == config.Type) ?? TypeOptions[0];
+            SelectedScopeOption = ScopeOptions.FirstOrDefault(option => option.Scope == GetScope(exercisesSheetName, setsSheetName)) ?? ScopeOptions[0];
+            GoogleSheetUrlOrId = sheetUrlOrId;
+            ExercisesSheetName = exercisesSheetName;
+            SetsSheetName = setsSheetName;
+            ValidateDuplicates = validateDuplicates;
+
+            Title = "Edit configuration";
+            SubmitText = "Save";
+
+            Open();
+        }
+
+        private static ImportExportScope GetScope(string exercisesSheetName, string setsSheetName)
+        {
+            if (!string.IsNullOrWhiteSpace(exercisesSheetName) && !string.IsNullOrWhiteSpace(setsSheetName))
+            {
+                return ImportExportScope.ExercisesAndSets;
+            }
+
+            if (!string.IsNullOrWhiteSpace(exercisesSheetName))
+            {
+                return ImportExportScope.Exercises;
+            }
+
+            if (!string.IsNullOrWhiteSpace(setsSheetName))
+            {
+                return ImportExportScope.Sets;
+            }
+
+            return ImportExportScope.ExercisesAndSets;
+        }
+
+        private void Submit()
         {
             DataExchangeType type = Type;
             ImportExportScope scope = Scope;
@@ -158,8 +243,13 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
 
             AutomaticDataExchangeSettings settings = AppSettingsService.GetSettings<AutomaticDataExchangeSettings>();
 
-            if (settings.TryAdd(config))
+            bool succeeded = _editedConfig == null
+                ? settings.TryAdd(config)
+                : settings.TryEdit(_editedConfig, config);
+
+            if (succeeded)
             {
+                _editedConfig = null;
                 Close();
             }
         }

@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Sportik.Desktop.Core.Common.DataExchange;
+﻿using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Helpers;
 
 namespace Sportik.Desktop.Core.Common.Import
@@ -18,45 +17,7 @@ namespace Sportik.Desktop.Core.Common.Import
 
         public bool ValidateDuplicates { get; }
 
-        public string Description
-        {
-            get
-            {
-                StringBuilder builder = new StringBuilder();
-
-                bool parsedId = GoogleSheetsHelper.TryParseSheetId(SheetUrlOrId, out string sheetId);
-
-                if (parsedId)
-                {
-                    builder.Append("Sheet id: ");
-                    builder.Append(sheetId);
-                }
-
-                if (parsedId && !string.IsNullOrWhiteSpace(ExercisesSheetName))
-                {
-                    builder.Append(", ");
-                }
-
-                if (!string.IsNullOrWhiteSpace(ExercisesSheetName))
-                {
-                    builder.Append("Exercises sheet: ");
-                    builder.Append(ExercisesSheetName);
-                }
-
-                if (!string.IsNullOrWhiteSpace(ExercisesSheetName) && !string.IsNullOrWhiteSpace(SetsSheetName))
-                {
-                    builder.Append(", ");
-                }
-
-                if (!string.IsNullOrWhiteSpace(SetsSheetName))
-                {
-                    builder.Append("Sets sheet: ");
-                    builder.Append(SetsSheetName);
-                }
-
-                return builder.ToString();
-            }
-        }
+        public string Description => GoogleSheetsHelper.BuildDescription(SheetUrlOrId, ExercisesSheetName, SetsSheetName);
 
         public GoogleSheetsImporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, bool validateDuplicates)
         {
@@ -64,6 +25,11 @@ namespace Sportik.Desktop.Core.Common.Import
             ExercisesSheetName = exercisesSheetName;
             SetsSheetName = setsSheetName;
             ValidateDuplicates = validateDuplicates;
+        }
+
+        public IDataExchanger CreateExchanger()
+        {
+            return new GoogleSheetStatisticsImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, ValidateDuplicates);
         }
     }
 }

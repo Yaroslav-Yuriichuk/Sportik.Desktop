@@ -158,6 +158,8 @@
     <Compile Include="DependencyInjection.cs" />
     <Compile Include="Events\ApplicationStateChangedEventArgs.cs" />
     <Compile Include="Events\DataExchangeConfigAddedEventArgs.cs" />
+    <Compile Include="Events\DataExchangeConfigEditedEventArgs.cs" />
+    <Compile Include="Events\DataExchangeConfigRemovedEventArgs.cs" />
     <Compile Include="Events\ExerciseCompleteRequestedEventArgs.cs" />
     <Compile Include="Events\ExerciseCreatedEventArgs.cs" />
     <Compile Include="Events\ExerciseExecutionTimeChangedEventArgs.cs" />

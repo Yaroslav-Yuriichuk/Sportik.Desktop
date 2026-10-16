@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Synchronization;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.AppSettings;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Models.Settings;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -23,12 +25,20 @@ namespace Sportik.Desktop.Core.States.App
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<ISynchronizationService> _synchronizationServiceFactory;
         private readonly ITrainingService _trainingService;
+        private readonly IDataExchangeService _dataExchangeService;
+        private readonly Func<IAppSettingsService> _appSettingsServiceFactory;
 
-        public AuthenticatedAppState(AppStatesContext context, IEventsService eventsService,
-            IReminderService reminderService, IPersistentCacheService persistentCacheService,
-            IRuntimeCacheService runtimeCacheService, Func<IExercisesService> exercisesServiceFactory,
+        public AuthenticatedAppState(
+            AppStatesContext context,
+            IEventsService eventsService,
+            IReminderService reminderService,
+            IPersistentCacheService persistentCacheService,
+            IRuntimeCacheService runtimeCacheService,
+            Func<IExercisesService> exercisesServiceFactory,
             Func<ISynchronizationService> synchronizationServiceFactory,
-            ITrainingService trainingService) : base(context)
+            ITrainingService trainingService,
+            IDataExchangeService dataExchangeService,
+            Func<IAppSettingsService> appSettingsServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
@@ -37,6 +47,8 @@ namespace Sportik.Desktop.Core.States.App
             _exercisesServiceFactory = exercisesServiceFactory;
             _synchronizationServiceFactory = synchronizationServiceFactory;
             _trainingService = trainingService;
+            _dataExchangeService = dataExchangeService;
+            _appSettingsServiceFactory = appSettingsServiceFactory;
         }
 
         protected override void HandleEnter()
@@ -95,6 +107,20 @@ namespace Sportik.Desktop.Core.States.App
             {
                 ISynchronizer synchronizer = new AllSynchronizer();
                 await synchronizationService.SyncAsync(synchronizer, ActiveCancellationToken);
+            });
+
+            IAppSettingsService appSettingsService = _appSettingsServiceFactory();
+            AutomaticDataExchangeSettings settings = appSettingsService.GetSettings<AutomaticDataExchangeSettings>();
+
+            IEnumerable<IDataExchangeConfig> configs = settings.Configs.OrderBy(config => config.Type);
+
+            Task.Run(async () =>
+            {
+                foreach (IDataExchangeConfig config in configs)
+                {
+                    IDataExchanger dataExchanger = config.CreateExchanger();
+                    await _dataExchangeService.ExchangeAsync(dataExchanger, ActiveCancellationToken);
+                }
             });
         }
 

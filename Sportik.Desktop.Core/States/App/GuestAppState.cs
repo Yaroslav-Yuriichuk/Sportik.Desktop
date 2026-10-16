@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.AppSettings;
 using Sportik.Desktop.Core.Models.Automation;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -16,18 +19,28 @@ namespace Sportik.Desktop.Core.States.App
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly IPersistentCacheService _persistentCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
+        private readonly IDataExchangeService _dataExchangeService;
+        private readonly Func<IAppSettingsService> _appSettingsServiceFactory;
 
         public override ApplicationState ApplicationState => ApplicationState.Guest;
 
-        public GuestAppState(AppStatesContext context, IEventsService eventsService,
-            IReminderService reminderService, IRuntimeCacheService runtimeCacheService,
-            IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory) : base(context)
+        public GuestAppState(
+            AppStatesContext context,
+            IEventsService eventsService,
+            IReminderService reminderService,
+            IRuntimeCacheService runtimeCacheService,
+            IPersistentCacheService persistentCacheService,
+            Func<IExercisesService> exercisesServiceFactory,
+            IDataExchangeService dataExchangeService,
+            Func<IAppSettingsService> appSettingsServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
             _runtimeCacheService = runtimeCacheService;
             _persistentCacheService = persistentCacheService;
             _exercisesServiceFactory = exercisesServiceFactory;
+            _dataExchangeService = dataExchangeService;
+            _appSettingsServiceFactory = appSettingsServiceFactory;
         }
 
         protected override void HandleEnter()
@@ -71,6 +84,20 @@ namespace Sportik.Desktop.Core.States.App
                 foreach (Exercise exercise in result.Value)
                 {
                     _reminderService.AddExercise(exercise.Id);
+                }
+            });
+
+            IAppSettingsService appSettingsService = _appSettingsServiceFactory();
+            AutomaticDataExchangeSettings settings = appSettingsService.GetSettings<AutomaticDataExchangeSettings>();
+
+            IEnumerable<IDataExchangeConfig> configs = settings.Configs.OrderBy(config => config.Type);
+
+            Task.Run(async () =>
+            {
+                foreach (IDataExchangeConfig config in configs)
+                {
+                    IDataExchanger dataExchanger = config.CreateExchanger();
+                    await _dataExchangeService.ExchangeAsync(dataExchanger, ActiveCancellationToken);
                 }
             });
         }

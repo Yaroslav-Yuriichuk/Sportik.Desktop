@@ -13,10 +13,9 @@ namespace Sportik.Desktop.Core.Services.Implementations
     {
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly IEventsService _eventsService;
-        private readonly IExercisesRepository _remoteExercisesRepository;
-        private readonly IExercisesRepository _localExercisesRepository;
-        private readonly IExerciseStatisticsRepository _remoteExerciseStatisticsRepository;
-        private readonly IExerciseStatisticsRepository _localExerciseStatisticsRepository;
+        private readonly Func<DataSource, IExercisesRepository> _exercisesRepositoryFactory;
+        private readonly Func<DataSource, IExerciseStatisticsRepository> _exerciseStatisticsRepositoryFactory;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         private IExercisesRepository ExercisesRepository
         {
@@ -24,10 +23,10 @@ namespace Sportik.Desktop.Core.Services.Implementations
             {
                 if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache))
                 {
-                    return _localExercisesRepository;
+                    return _exercisesRepositoryFactory(DataSource.Local);
                 }
 
-                return appModeCache.IsGuest ? _localExercisesRepository : _remoteExercisesRepository;
+                return _exercisesRepositoryFactory(appModeCache.IsGuest ? DataSource.Local : DataSource.Remote);
             }
         }
 
@@ -37,10 +36,10 @@ namespace Sportik.Desktop.Core.Services.Implementations
             {
                 if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache))
                 {
-                    return _localExerciseStatisticsRepository;
+                    return _exerciseStatisticsRepositoryFactory(DataSource.Local);
                 }
 
-                return appModeCache.IsGuest ? _localExerciseStatisticsRepository : _remoteExerciseStatisticsRepository;
+                return _exerciseStatisticsRepositoryFactory(appModeCache.IsGuest ? DataSource.Local : DataSource.Remote);
             }
         }
 
@@ -52,14 +51,14 @@ namespace Sportik.Desktop.Core.Services.Implementations
         {
             _runtimeCacheService = runtimeCacheService;
             _eventsService = eventsService;
-            _remoteExercisesRepository = exercisesRepositoryFactory(DataSource.Remote);
-            _localExercisesRepository = exercisesRepositoryFactory(DataSource.Local);
-            _remoteExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Remote);
-            _localExerciseStatisticsRepository = exerciseStatisticsRepositoryFactory(DataSource.Local);
+            _exercisesRepositoryFactory = exercisesRepositoryFactory;
+            _exerciseStatisticsRepositoryFactory = exerciseStatisticsRepositoryFactory;
         }
 
         public async Task<OperationResult> ExchangeAsync(IDataExchanger exchanger, CancellationToken cancellationToken = default)
         {
+            await _semaphore.WaitAsync(cancellationToken);
+
             try
             {
                 exchanger.Initialize(ExercisesRepository, ExerciseStatisticsRepository, _eventsService);
@@ -74,6 +73,10 @@ namespace Sportik.Desktop.Core.Services.Implementations
             catch (Exception ex)
             {
                 return OperationResult.Failure(new[] { $"Data exchange failed: {ex.Message}", });
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }

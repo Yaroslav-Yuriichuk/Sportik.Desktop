@@ -33,5 +33,35 @@ namespace Sportik.Desktop.Core.Models.AppSettings
 
             return true;
         }
+
+        public bool TryRemove(IDataExchangeConfig config)
+        {
+            AutomaticDataExchangeCache cache = _persistentCacheService.GetOrNew<AutomaticDataExchangeCache>();
+
+            if (!cache.TryRemoveConfig(config))
+            {
+                return false;
+            }
+
+            _persistentCacheService.Set(cache);
+            _eventsService.RaiseEvent(new DataExchangeConfigRemovedEventArgs(config));
+
+            return true;
+        }
+
+        public bool TryEdit(IDataExchangeConfig oldConfig, IDataExchangeConfig newConfig)
+        {
+            AutomaticDataExchangeCache cache = _persistentCacheService.GetOrNew<AutomaticDataExchangeCache>();
+
+            if (!cache.TryRemoveConfig(oldConfig) || !cache.TryAddConfig(newConfig))
+            {
+                return false;
+            }
+
+            _persistentCacheService.Set(cache);
+            _eventsService.RaiseEvent(new DataExchangeConfigEditedEventArgs(oldConfig, newConfig));
+
+            return true;
+        }
     }
 }

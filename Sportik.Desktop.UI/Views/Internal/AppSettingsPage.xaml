@@ -94,7 +94,7 @@
                                             <Border x:Name="CardBorder"
                                                     Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
                                                     BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
-                                                    BorderThickness="0"
+                                                    BorderThickness="1"
                                                     CornerRadius="8" />
 
                                             <ContentPresenter x:Name="ContentPresenter"
@@ -114,7 +114,7 @@
                         <DataTemplate x:DataType="appsettings:DataExchangeConfigViewModel">
                             <StackPanel HorizontalAlignment="Stretch">
 
-                                <Grid Margin="5 15 5 15">
+                                <Grid Margin="10 15 10 15">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="200" />
                                         <ColumnDefinition Width="*" />
@@ -138,11 +138,13 @@
 
                                     <Button Grid.Column="2"
                                             Margin="0 0 10 0"
-                                            Content="Edit">
+                                            Content="Edit"
+                                            Command="{Binding EditCommand}">
                                     </Button>
 
                                     <Button Grid.Column="3"
-                                            Content="Remove">
+                                            Content="Remove"
+                                            Command="{Binding RemoveCommand}">
                                     </Button>
 
                                 </Grid>
@@ -167,7 +169,7 @@
         <Grid Grid.Row="0"
               Grid.RowSpan="3"
               Background="#80000000"
-              DataContext="{Binding AutomaticDataExchange.AddConfig}"
+              DataContext="{Binding AutomaticDataExchange.AddOrEditConfig}"
               Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
 
             <Border Width="420"
@@ -180,7 +182,7 @@
                     VerticalAlignment="Center">
 
                 <StackPanel>
-                    <TextBlock Text="Add configuration"
+                    <TextBlock Text="{Binding Title}"
                                FontSize="20"
                                FontWeight="SemiBold"
                                Margin="0 0 0 15" />
@@ -256,10 +258,10 @@
                                 Margin="0 0 10 0"
                                 Command="{Binding CloseCommand}" />
 
-                        <Button Content="Add"
+                        <Button Content="{Binding SubmitText}"
                                 MinWidth="120"
                                 Style="{ThemeResource AccentButtonStyle}"
-                                Command="{Binding AddConfigCommand}" />
+                                Command="{Binding SubmitCommand}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

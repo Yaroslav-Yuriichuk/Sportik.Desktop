@@ -14,7 +14,6 @@ namespace Sportik.Desktop.Core
             services.AddTransient<IExerciseStatisticsService, ExerciseStatisticsService>();
             services.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
             services.AddTransient<ISynchronizationService, SynchronizationService>();
-            services.AddTransient<IDataExchangeService, DataExchangeService>();
             services.AddTransient<IWeekGoalsService, WeekGoalsService>();
             services.AddTransient<IAppSettingsService, AppSettingsService>();
 
@@ -23,6 +22,7 @@ namespace Sportik.Desktop.Core
             services.AddSingleton<IReminderService, ReminderService>();
             services.AddSingleton<ITrainingService, TrainingService>();
             services.AddSingleton<IApplicationStatesService, ApplicationStatesService>();
+            services.AddSingleton<IDataExchangeService, DataExchangeService>();
 
             services.AddTransient<Func<IExerciseSettingsService>>(sp => sp.GetRequiredService<IExerciseSettingsService>);
             services.AddTransient<Func<INotificationService>>(sp => sp.GetRequiredService<INotificationService>);
@@ -30,6 +30,7 @@ namespace Sportik.Desktop.Core
             services.AddTransient<Func<IAuthService>>(sp => sp.GetRequiredService<IAuthService>);
             services.AddTransient<Func<IExerciseStatisticsService>>(sp => sp.GetRequiredService<IExerciseStatisticsService>);
             services.AddTransient<Func<ISynchronizationService>>(sp => sp.GetRequiredService<ISynchronizationService>);
+            services.AddTransient<Func<IAppSettingsService>>(sp => sp.GetRequiredService<IAppSettingsService>);
 
             services.AddTransient<AutomaticDataExchangeSettings>();
             services.AddTransient<Func<Type, ISettings>>(sp => type => (ISettings)sp.GetRequiredService(type));

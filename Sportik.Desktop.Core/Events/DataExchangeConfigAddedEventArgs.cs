@@ -5,11 +5,11 @@ namespace Sportik.Desktop.Core.Events
 {
     public sealed class DataExchangeConfigAddedEventArgs : EventArgs
     {
-        public IDataExchangeConfig DataExchangeConfig { get; }
+        public IDataExchangeConfig Config { get; }
 
-        public DataExchangeConfigAddedEventArgs(IDataExchangeConfig dataExchangeConfig)
+        public DataExchangeConfigAddedEventArgs(IDataExchangeConfig config)
         {
-            DataExchangeConfig = dataExchangeConfig;
+            Config = config;
         }
     }
 }

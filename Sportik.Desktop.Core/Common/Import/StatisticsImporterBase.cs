@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.ImportExport;
@@ -12,7 +13,7 @@ using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Core.Common.Import
 {
-    public abstract class StatisticsImporterBase : IStatisticsImporter
+    public abstract class StatisticsImporterBase : IDataExchanger
     {
         private readonly bool _validateDuplicates;
 
@@ -25,7 +26,9 @@ namespace Sportik.Desktop.Core.Common.Import
             _validateDuplicates = validateDuplicates;
         }
 
-        void IStatisticsImporter.Initialize(IExercisesRepository exercisesRepository, IExerciseStatisticsRepository exerciseStatisticsRepository,
+        void IDataExchanger.Initialize(
+            IExercisesRepository exercisesRepository,
+            IExerciseStatisticsRepository exerciseStatisticsRepository,
             IEventsService eventsService)
         {
             _exercisesRepository = exercisesRepository;
@@ -33,7 +36,7 @@ namespace Sportik.Desktop.Core.Common.Import
             _eventsService = eventsService;
         }
 
-        public async Task ImportAsync(CancellationToken cancellationToken)
+        public async Task ExchangeAsync(CancellationToken cancellationToken)
         {
             if (_exercisesRepository is null || _exerciseStatisticsRepository is null || _eventsService is null)
             {

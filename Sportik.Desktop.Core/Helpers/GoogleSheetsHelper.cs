@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Sportik.Desktop.Core.Helpers
@@ -21,6 +22,32 @@ namespace Sportik.Desktop.Core.Helpers
         public static string EscapeSheetName(string sheetName)
         {
             return $"'{sheetName.Replace("'", "''")}'";
+        }
+
+        public static string BuildDescription(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
+        {
+            List<string> parts = new List<string>();
+
+            if (TryParseSheetId(sheetUrlOrId, out string sheetId))
+            {
+                parts.Add($"Sheet id: {sheetId}");
+            }
+            else if (!string.IsNullOrWhiteSpace(sheetUrlOrId))
+            {
+                parts.Add($"Sheet: {sheetUrlOrId}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(exercisesSheetName))
+            {
+                parts.Add($"Exercises sheet: {exercisesSheetName}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(setsSheetName))
+            {
+                parts.Add($"Sets sheet: {setsSheetName}");
+            }
+
+            return string.Join(", ", parts);
         }
 
         public static bool TryParseSheetId(string urlOrId, out string sheetId)

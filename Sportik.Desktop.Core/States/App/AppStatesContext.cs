@@ -21,18 +21,25 @@ namespace Sportik.Desktop.Core.States.App
 
         private readonly IEventsService _eventsService;
 
-        public AppStatesContext(IEventsService eventsService, IReminderService reminderService,
-            IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory,
-            IRuntimeCacheService runtimeCacheService, Func<IAuthService> authServiceFactory,
-            Func<ISynchronizationService> synchronizationServiceFactory, ITrainingService trainingService)
+        public AppStatesContext(
+            IEventsService eventsService,
+            IReminderService reminderService,
+            IPersistentCacheService persistentCacheService,
+            Func<IExercisesService> exercisesServiceFactory,
+            IRuntimeCacheService runtimeCacheService,
+            Func<IAuthService> authServiceFactory,
+            Func<ISynchronizationService> synchronizationServiceFactory,
+            ITrainingService trainingService,
+            IDataExchangeService dataExchangeService,
+            Func<IAppSettingsService> appSettingsServiceFactory)
         {
             _eventsService = eventsService;
 
             DeterminingAppState = new DeterminingAppState(this, persistentCacheService, authServiceFactory);
-            AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, runtimeCacheService, exercisesServiceFactory, synchronizationServiceFactory, trainingService);
+            AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, runtimeCacheService, exercisesServiceFactory, synchronizationServiceFactory, trainingService, dataExchangeService, appSettingsServiceFactory);
             LoginAppState = new LoginAppState(this, eventsService);
             RegistrationAppState = new RegistrationAppState(this, eventsService);
-            GuestAppState = new GuestAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory);
+            GuestAppState = new GuestAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory, dataExchangeService, appSettingsServiceFactory);
 
             Switch(DeterminingAppState);
         }

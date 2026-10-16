@@ -20,13 +20,22 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly Func<IAuthService> _authServiceFactory;
         private readonly Func<ISynchronizationService> _synchronizationServiceFactory;
         private readonly ITrainingService _trainingService;
+        private readonly IDataExchangeService _dataExchangeService;
+        private readonly Func<IAppSettingsService> _appSettingsServiceFactory;
 
         private AppStatesContext _appStatesContext;
 
-        public ApplicationStatesService(IEventsService eventsService, IReminderService reminderService,
-            IPersistentCacheService persistentCacheService, Func<IExercisesService> exercisesServiceFactory,
-            IRuntimeCacheService runtimeCacheService, Func<IAuthService> authServiceFactory,
-            Func<ISynchronizationService> synchronizationServiceFactory, ITrainingService trainingService)
+        public ApplicationStatesService(
+            IEventsService eventsService,
+            IReminderService reminderService,
+            IPersistentCacheService persistentCacheService,
+            Func<IExercisesService> exercisesServiceFactory,
+            IRuntimeCacheService runtimeCacheService,
+            Func<IAuthService> authServiceFactory,
+            Func<ISynchronizationService> synchronizationServiceFactory,
+            ITrainingService trainingService,
+            IDataExchangeService dataExchangeService,
+            Func<IAppSettingsService> appSettingsServiceFactory)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
@@ -36,6 +45,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
             _authServiceFactory = authServiceFactory;
             _synchronizationServiceFactory = synchronizationServiceFactory;
             _trainingService = trainingService;
+            _dataExchangeService = dataExchangeService;
+            _appSettingsServiceFactory = appSettingsServiceFactory;
         }
 
         public void Start()
@@ -45,9 +56,17 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 return;
             }
 
-            _appStatesContext = new AppStatesContext(_eventsService, _reminderService, _persistentCacheService,
-                _exercisesServiceFactory, _runtimeCacheService, _authServiceFactory, _synchronizationServiceFactory,
-                _trainingService);
+            _appStatesContext = new AppStatesContext(
+                _eventsService,
+                _reminderService,
+                _persistentCacheService,
+                _exercisesServiceFactory,
+                _runtimeCacheService,
+                _authServiceFactory,
+                _synchronizationServiceFactory,
+                _trainingService,
+                _dataExchangeService,
+                _appSettingsServiceFactory);
         }
 
         public void Stop()

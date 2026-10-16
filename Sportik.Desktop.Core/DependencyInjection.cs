@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Models.AppSettings;
 using Sportik.Desktop.Core.Services.Implementations;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -13,15 +14,15 @@ namespace Sportik.Desktop.Core
             services.AddTransient<IExerciseStatisticsService, ExerciseStatisticsService>();
             services.AddTransient<IExerciseSettingsService, ExerciseSettingsService>();
             services.AddTransient<ISynchronizationService, SynchronizationService>();
-            services.AddTransient<IStatisticsImportService, StatisticsImportService>();
-            services.AddTransient<IStatisticsExportService, StatisticsExportService>();
             services.AddTransient<IWeekGoalsService, WeekGoalsService>();
+            services.AddTransient<IAppSettingsService, AppSettingsService>();
 
             services.AddSingleton<IEventsService, EventsService>();
             services.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
             services.AddSingleton<IReminderService, ReminderService>();
             services.AddSingleton<ITrainingService, TrainingService>();
             services.AddSingleton<IApplicationStatesService, ApplicationStatesService>();
+            services.AddSingleton<IDataExchangeService, DataExchangeService>();
 
             services.AddTransient<Func<IExerciseSettingsService>>(sp => sp.GetRequiredService<IExerciseSettingsService>);
             services.AddTransient<Func<INotificationService>>(sp => sp.GetRequiredService<INotificationService>);
@@ -29,6 +30,10 @@ namespace Sportik.Desktop.Core
             services.AddTransient<Func<IAuthService>>(sp => sp.GetRequiredService<IAuthService>);
             services.AddTransient<Func<IExerciseStatisticsService>>(sp => sp.GetRequiredService<IExerciseStatisticsService>);
             services.AddTransient<Func<ISynchronizationService>>(sp => sp.GetRequiredService<ISynchronizationService>);
+            services.AddTransient<Func<IAppSettingsService>>(sp => sp.GetRequiredService<IAppSettingsService>);
+
+            services.AddTransient<AutomaticDataExchangeSettings>();
+            services.AddTransient<Func<Type, ISettings>>(sp => type => (ISettings)sp.GetRequiredService(type));
 
             return services;
         }

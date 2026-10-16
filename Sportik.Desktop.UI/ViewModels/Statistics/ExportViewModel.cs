@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Export;
 using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -86,7 +87,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public ReactiveRelayCommand ExportCommand { get; }
         public ReactiveRelayCommand CloseCommand { get; }
 
-        private IStatisticsExportService StatisticsExportService => App.ServiceProvider.GetRequiredService<IStatisticsExportService>();
+        private IDataExchangeService DataExchangeService => App.ServiceProvider.GetRequiredService<IDataExchangeService>();
         private IPersistentCacheService PersistentCacheService => App.ServiceProvider.GetRequiredService<IPersistentCacheService>();
 
         private readonly CancellationTokenSource _exportCts = new CancellationTokenSource();
@@ -150,7 +151,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             string exercisesSheetName = ExercisesSheetName;
             string setsSheetName = SetsSheetName;
 
-            IStatisticsExporter exporter = scope switch
+            IDataExchanger exporter = scope switch
             {
                 ImportExportScope.Exercises => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, exercisesSheetName, null),
                 ImportExportScope.Sets => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, null, setsSheetName),
@@ -158,7 +159,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 _ => throw new ArgumentOutOfRangeException(nameof(Scope), Scope, "Invalid import/export scope.")
             };
 
-            OperationResult result = await StatisticsExportService.ExportAsync(exporter, cancellationToken);
+            OperationResult result = await DataExchangeService.ExchangeAsync(exporter, cancellationToken);
 
             ExportCommand.IsExecutable = true;
             CloseCommand.IsExecutable = true;

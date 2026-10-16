@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Import;
 using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -94,7 +95,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public ReactiveRelayCommand ImportCommand { get; }
         public ReactiveRelayCommand CloseCommand { get; }
 
-        private IStatisticsImportService StatisticsImportService => App.ServiceProvider.GetRequiredService<IStatisticsImportService>();
+        private IDataExchangeService DataExchangeService => App.ServiceProvider.GetRequiredService<IDataExchangeService>();
         private IPersistentCacheService PersistentCacheService => App.ServiceProvider.GetRequiredService<IPersistentCacheService>();
 
         private readonly CancellationTokenSource _importCts = new CancellationTokenSource();
@@ -158,7 +159,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             string exercisesSheetName = ExercisesSheetName;
             string setsSheetName = SetsSheetName;
 
-            IStatisticsImporter importer = scope switch
+            IDataExchanger importer = scope switch
             {
                 ImportExportScope.Exercises => new GoogleSheetStatisticsImporter(googleSheetUrlOrId, exercisesSheetName, null, ValidateDuplicates),
                 ImportExportScope.Sets => new GoogleSheetStatisticsImporter(googleSheetUrlOrId, null, setsSheetName, ValidateDuplicates),
@@ -166,7 +167,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 _ => throw new ArgumentOutOfRangeException(nameof(Scope), Scope, "Invalid import/export scope.")
             };
 
-            OperationResult result = await StatisticsImportService.ImportAsync(importer, cancellationToken);
+            OperationResult result = await DataExchangeService.ExchangeAsync(importer, cancellationToken);
 
             ImportCommand.IsExecutable = true;
             CloseCommand.IsExecutable = true;

@@ -4,19 +4,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:account="using:Sportik.Desktop.UI.ViewModels.Account"
+    xmlns:appsettings="using:Sportik.Desktop.UI.ViewModels.AppSettings"
     xmlns:converters="using:Sportik.Desktop.UI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.DataContext>
-        <account:AccountViewModel />
+        <appsettings:AppSettingsViewModel />
     </Page.DataContext>
 
     <Page.Resources>
         <converters:GuidToStringConverter x:Name="GuidToStringConverter" />
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
+        <converters:DataExchangeOptionToStringConverter x:Name="DataExchangeOptionToStringConverter" />
+        <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
     </Page.Resources>
 
     <Grid>
@@ -39,9 +41,231 @@
                 BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Padding="15">
+                Padding="15"
+                DataContext="{Binding AutomaticDataExchange}">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Text="Automatic Import and Export"
+                           FontSize="20"
+                           FontWeight="SemiBold" />
+
+                <ListView Grid.Row="1"
+                          Margin="0 0 0 0"
+                          IsItemClickEnabled="True"
+                          SelectionMode="None"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          ItemsSource="{Binding DataExchangeConfigs}">
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0 12 0 0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewItem">
+                                        <Grid Background="Transparent">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal" />
+                                                    <VisualState x:Name="PointerOver">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <VisualState.Setters>
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                            <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+
+                                            <Border x:Name="CardBorder"
+                                                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8" />
+
+                                            <ContentPresenter x:Name="ContentPresenter"
+                                                              Content="{TemplateBinding Content}"
+                                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                              Margin="{TemplateBinding Padding}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="appsettings:DataExchangeConfigViewModel">
+                            <StackPanel HorizontalAlignment="Stretch">
+
+                                <Grid Margin="10 15 10 15">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center">
+                                        <Run Text="{Binding Config.Option, Converter={StaticResource DataExchangeOptionToStringConverter}}" />
+                                        <Run Text="{Binding Config.Type}" />
+                                    </TextBlock>
+
+                                    <TextBlock Grid.Column="1"
+                                               Margin="0 0 10 0"
+                                               Text="{Binding Config.Description}"
+                                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                               VerticalAlignment="Center">
+                                    </TextBlock>
+
+                                    <Button Grid.Column="2"
+                                            Margin="0 0 10 0"
+                                            Content="Edit"
+                                            Command="{Binding EditCommand}">
+                                    </Button>
+
+                                    <Button Grid.Column="3"
+                                            Content="Remove"
+                                            Command="{Binding RemoveCommand}">
+                                    </Button>
+
+                                </Grid>
+
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+                <Button Grid.Row="2"
+                        Content="Add"
+                        HorizontalAlignment="Right"
+                        Margin="0 12 0 0"
+                        Command="{Binding ShowAddConfigCommand}"
+                        Style="{ThemeResource AccentButtonStyle}" />
+
+            </Grid>
 
         </Border>
+
+        <Grid Grid.Row="0"
+              Grid.RowSpan="3"
+              Background="#80000000"
+              DataContext="{Binding AutomaticDataExchange.AddOrEditConfig}"
+              Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+
+            <Border Width="420"
+                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
+                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="15"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0 0 0 15" />
+
+                    <TextBlock Text="Type"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <ComboBox HorizontalAlignment="Stretch"
+                              Margin="0 0 0 15"
+                              ItemsSource="{Binding TypeOptions}"
+                              SelectedValue="{Binding SelectedTypeOption, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Text="Scope"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <ComboBox HorizontalAlignment="Stretch"
+                              Margin="0 0 0 15"
+                              ItemsSource="{Binding ScopeOptions}"
+                              SelectedValue="{Binding SelectedScopeOption, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Text="Google Sheet Url or Id"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter Google Sheet Url or Id"
+                             Text="{Binding GoogleSheetUrlOrId, Mode=TwoWay}" />
+
+                    <TextBlock Text="Exercises sheet name"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5"
+                               Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter exercises sheet name"
+                             Text="{Binding ExercisesSheetName, Mode=TwoWay}"
+                             Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}" />
+
+                    <TextBlock Text="Sets sheet name"
+                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Margin="0 0 0 5"
+                               Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Sets,ExercisesAndSets'}" />
+
+                    <TextBox Margin="0 0 0 15"
+                             PlaceholderText="Enter sets sheet name"
+                             Text="{Binding SetsSheetName, Mode=TwoWay}"
+                             Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Sets,ExercisesAndSets'}" />
+
+                    <CheckBox Content="Validate duplicates"
+                              Margin="0 0 0 15"
+                              IsChecked="{Binding ValidateDuplicates, Mode=TwoWay}"
+                              Visibility="{Binding Type, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Import'}" />
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+
+                        <Button Content="Close"
+                                MinWidth="100"
+                                Margin="0 0 10 0"
+                                Command="{Binding CloseCommand}" />
+
+                        <Button Content="{Binding SubmitText}"
+                                MinWidth="120"
+                                Style="{ThemeResource AccentButtonStyle}"
+                                Command="{Binding SubmitCommand}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
 
     </Grid>
 </Page>

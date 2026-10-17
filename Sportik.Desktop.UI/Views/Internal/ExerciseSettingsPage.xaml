@@ -96,12 +96,14 @@
                             </Grid.ColumnDefinitions>
 
                             <SymbolIcon Grid.Column="0"
+                                        VerticalAlignment="Center"
                                         Symbol="World"
                                         Width="27"
                                         Height="27"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
 
                             <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
                                        Text="{Binding Name}"
                                        FontSize="20"
                                        FontWeight="SemiBold"

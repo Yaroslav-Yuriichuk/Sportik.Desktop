@@ -106,12 +106,14 @@
                                 </Grid.ColumnDefinitions>
 
                                 <SymbolIcon Grid.Column="0"
+                                            VerticalAlignment="Center"
                                             Symbol="World"
                                             Width="27"
                                             Height="27"
                                             Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
 
                                 <TextBlock Grid.Column="1"
+                                           VerticalAlignment="Center"
                                            Text="{Binding ExerciseName}"
                                            FontSize="20"
                                            FontWeight="SemiBold"
@@ -120,12 +122,14 @@
                                 <Grid Grid.Column="3"
                                       Height="24"
                                       MinHeight="24"
-                                      HorizontalAlignment="Right">
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Center">
 
                                     <ProgressBar MinWidth="180"
                                                  Height="24"
                                                  MinHeight="24"
                                                  CornerRadius="4"
+                                                 VerticalAlignment="Center"
                                                  Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                                  Value="{Binding CompletedRepetitions}"
                                                  Maximum="{Binding TargetRepetitions}">

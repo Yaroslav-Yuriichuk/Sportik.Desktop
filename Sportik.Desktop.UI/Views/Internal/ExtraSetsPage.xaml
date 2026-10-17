@@ -178,6 +178,7 @@
                         </Grid.ColumnDefinitions>
 
                         <SymbolIcon Grid.Column="0"
+                                    VerticalAlignment="Center"
                                     Symbol="World"
                                     Width="27"
                                     Height="27"

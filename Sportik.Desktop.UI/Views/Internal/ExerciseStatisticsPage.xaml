@@ -126,11 +126,13 @@
                                             </interactivity:Interaction.Behaviors>
 
                                             <SymbolIcon Symbol="Accept"
+                                                        VerticalAlignment="Center"
                                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                         Width="20"
                                                         Height="20" />
 
                                             <TextBlock Text="{Binding Date, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=dddd}"
+                                                       VerticalAlignment="Center"
                                                        FontSize="16"
                                                        FontWeight="SemiBold"
                                                        Margin="15 0 0 0"/>
@@ -160,6 +162,7 @@
                                                         </Grid.ColumnDefinitions>
 
                                                         <SymbolIcon Grid.Column="0"
+                                                                    VerticalAlignment="Center"
                                                                     Symbol="World"
                                                                     Width="20"
                                                                     Height="20"

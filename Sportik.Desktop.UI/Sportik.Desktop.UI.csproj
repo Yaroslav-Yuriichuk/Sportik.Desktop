@@ -1,411 +1,45 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{46A750B8-48A8-49A3-91A6-F914537862C6}</ProjectGuid>
-    <OutputType>AppContainerExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Sportik.Desktop.UI</RootNamespace>
     <AssemblyName>Sportik.Desktop.UI</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.22621.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <PackageCertificateThumbprint>6874953EC1850629213980BB1A5C009BF12641A8</PackageCertificateThumbprint>
     <PackageCertificateKeyFile />
-    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampServerUrl>http://timestamp.sectigo.com</AppxPackageSigningTimestampServerUrl>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm|arm64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>ARM</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
-    <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>ARM</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\ARM64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>ARM64</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
-    <OutputPath>bin\ARM64\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>ARM64</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
-    <NoWarn>;2008</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
-    <LangVersion>8</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Behaviors\MainAppNavigationBehavior.cs" />
-    <Compile Include="Behaviors\NavigationViewCollapseBehavior.cs" />
-    <Compile Include="Converters\BoolToInvertedVisibilityConverter.cs" />
-    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
-    <Compile Include="Converters\DataExchangeOptionToStringConverter.cs" />
-    <Compile Include="Converters\DateTimeOffsetToStringConverter.cs" />
-    <Compile Include="Converters\DateTimeToStringConverter.cs" />
-    <Compile Include="Converters\EnumTargetValueToVisibilityConverter.cs" />
-    <Compile Include="Converters\GuidToStringConverter.cs" />
-    <Compile Include="Converters\IntToStringConverter.cs" />
-    <Compile Include="Converters\TimeSpanToLongHoursMinutesSecondsStringConverter.cs" />
-    <Compile Include="Converters\TimeSpanToLongHoursMinutesStringConverter.cs" />
-    <Compile Include="Helpers\UIThreadHelper.cs" />
-    <Compile Include="Models\Dashboard\BarChartColumn.cs" />
-    <Compile Include="Models\Dashboard\DashboardCache.cs" />
-    <Compile Include="Models\Dashboard\DashboardGrouping.cs" />
-    <Compile Include="Models\Dashboard\DashboardTarget.cs" />
-    <Compile Include="Models\ImportExportCache.cs" />
-    <Compile Include="Models\ImportExportScope.cs" />
-    <Compile Include="Models\NavigationScope.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Implementations\FrameNavigationService.cs" />
-    <Compile Include="Services\Interfaces\INavigationService.cs" />
-    <Compile Include="ViewModels\Account\AccountViewModel.cs" />
-    <Compile Include="ViewModels\AppSettings\AddOrEditConfigViewModel.cs" />
-    <Compile Include="ViewModels\AppSettings\DataExchangeConfigViewModel.cs" />
-    <Compile Include="ViewModels\AppSettings\DataExchangeTypeOption.cs" />
-    <Compile Include="ViewModels\AppSettings\AutomaticDataExchangeViewModel.cs" />
-    <Compile Include="ViewModels\Create\CreateExerciseViewModel.cs" />
-    <Compile Include="ViewModels\Dashboard\BarChartLoaders\DaySetsBarChartLoader.cs" />
-    <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseRepetitionsBarChartLoader.cs" />
-    <Compile Include="ViewModels\Dashboard\BarChartLoaders\ExerciseSetsBarChartLoader.cs" />
-    <Compile Include="ViewModels\Dashboard\DashboardGroupingOption.cs" />
-    <Compile Include="ViewModels\Dashboard\DashboardTargetOption.cs" />
-    <Compile Include="ViewModels\Dashboard\DashboardViewModel.cs" />
-    <Compile Include="ViewModels\Dashboard\IDashboardBarChartLoader.cs" />
-    <Compile Include="ViewModels\ExerciseOption.cs" />
-    <Compile Include="ViewModels\Exercises\ExercisesViewModel.cs" />
-    <Compile Include="ViewModels\Exercises\ParallelExerciseViewModel.cs" />
-    <Compile Include="ViewModels\Exercises\ReminderModeOption.cs" />
-    <Compile Include="ViewModels\Exercises\SequentialExerciseViewModel.cs" />
-    <Compile Include="ViewModels\Extra\ExtraSetsViewModel.cs" />
-    <Compile Include="ViewModels\Extra\SetViewModel.cs" />
-    <Compile Include="ViewModels\ILazyCommand.cs" />
-    <Compile Include="ViewModels\IntOption.cs" />
-    <Compile Include="ViewModels\IReactiveCommand.cs" />
-    <Compile Include="ViewModels\Login\LoginViewModel.cs" />
-    <Compile Include="ViewModels\Navigation\NavigationOption.cs" />
-    <Compile Include="ViewModels\Navigation\InternalNavigationViewModel.cs" />
-    <Compile Include="ViewModels\PopUpViewModel.cs" />
-    <Compile Include="ViewModels\Registration\RegistrationViewModel.cs" />
-    <Compile Include="ViewModels\RelayCommand.cs" />
-    <Compile Include="ViewModels\ExerciseSettings\ExerciseSettingsViewModel.cs" />
-    <Compile Include="ViewModels\ExerciseSettings\SettingsViewModel.cs" />
-    <Compile Include="ViewModels\AppSettings\AppSettingsViewModel.cs" />
-    <Compile Include="ViewModels\Statistics\DayStatisticsViewModel.cs" />
-    <Compile Include="ViewModels\Statistics\ExerciseStatisticsViewModel.cs" />
-    <Compile Include="ViewModels\Statistics\ExportViewModel.cs" />
-    <Compile Include="ViewModels\Statistics\ImportExportScopeOption.cs" />
-    <Compile Include="ViewModels\Statistics\ImportViewModel.cs" />
-    <Compile Include="ViewModels\Statistics\StatisticsViewModel.cs" />
-    <Compile Include="ViewModels\Statistics\WeekStatisticsViewModel.cs" />
-    <Compile Include="ViewModels\TimeSpanOption.cs" />
-    <Compile Include="ViewModels\Training\SetupSetViewModel.cs" />
-    <Compile Include="ViewModels\Training\TrainingExecutionViewModel.cs" />
-    <Compile Include="ViewModels\Training\TrainingSetupViewModel.cs" />
-    <Compile Include="ViewModels\Training\ExecutionSetViewModel.cs" />
-    <Compile Include="ViewModels\Training\TrainingViewModel.cs" />
-    <Compile Include="ViewModels\ViewModel.cs" />
-    <Compile Include="ViewModels\Goals\AddExerciseGoalViewModel.cs" />
-    <Compile Include="ViewModels\Goals\ExerciseGoalViewModel.cs" />
-    <Compile Include="ViewModels\Goals\WeekGoalViewModel.cs" />
-    <Compile Include="Views\Internal\AccountPage.xaml.cs">
-      <DependentUpon>AccountPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\CreateExercisePage.xaml.cs">
-      <DependentUpon>CreateExercisePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\DashboardPage.xaml.cs">
-      <DependentUpon>DashboardPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\ExercisesPage.xaml.cs">
-      <DependentUpon>ExercisesPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\ExtraSetsPage.xaml.cs">
-      <DependentUpon>ExtraSetsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\ExerciseSettingsPage.xaml.cs">
-      <DependentUpon>ExerciseSettingsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\ExerciseStatisticsPage.xaml.cs">
-      <DependentUpon>ExerciseStatisticsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\AppSettingsPage.xaml.cs">
-      <DependentUpon>AppSettingsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\TrainingPage.xaml.cs">
-      <DependentUpon>TrainingPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Internal\WeekGoalPage.xaml.cs">
-      <DependentUpon>WeekGoalPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Main\LoginPage.xaml.cs">
-      <DependentUpon>LoginPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Main\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Main\RegistrationPage.xaml.cs">
-      <DependentUpon>RegistrationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Main\WelcomePage.xaml.cs">
-      <DependentUpon>WelcomePage.xaml</DependentUpon>
-    </Compile>
+    <Content Include="Assets\**" />
   </ItemGroup>
+
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest">
-      <SubType>Designer</SubType>
-    </AppxManifest>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260921001" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
   </ItemGroup>
+
   <ItemGroup>
-    <Content Include="Assets\Account\User.png" />
-    <Content Include="Assets\Logo\LargeTile.scale-100.png" />
-    <Content Include="Assets\Logo\LargeTile.scale-125.png" />
-    <Content Include="Assets\Logo\LargeTile.scale-150.png" />
-    <Content Include="Assets\Logo\LargeTile.scale-200.png" />
-    <Content Include="Assets\Logo\LargeTile.scale-400.png" />
-    <Content Include="Assets\Logo\Logo.png" />
-    <Content Include="Assets\Logo\SmallTile.scale-100.png" />
-    <Content Include="Assets\Logo\SmallTile.scale-125.png" />
-    <Content Include="Assets\Logo\SmallTile.scale-150.png" />
-    <Content Include="Assets\Logo\SmallTile.scale-200.png" />
-    <Content Include="Assets\Logo\SmallTile.scale-400.png" />
-    <Content Include="Assets\Logo\SplashScreen.scale-100.png" />
-    <Content Include="Assets\Logo\SplashScreen.scale-125.png" />
-    <Content Include="Assets\Logo\SplashScreen.scale-150.png" />
-    <Content Include="Assets\Logo\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Logo\SplashScreen.scale-400.png" />
-    <Content Include="Assets\Logo\Square150x150Logo.scale-100.png" />
-    <Content Include="Assets\Logo\Square150x150Logo.scale-125.png" />
-    <Content Include="Assets\Logo\Square150x150Logo.scale-150.png" />
-    <Content Include="Assets\Logo\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Logo\Square150x150Logo.scale-400.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-lightunplated_targetsize-256.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-lightunplated_targetsize-32.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-lightunplated_targetsize-48.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-unplated_targetsize-16.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-unplated_targetsize-24.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-unplated_targetsize-256.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-unplated_targetsize-32.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.altform-unplated_targetsize-48.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.scale-100.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.scale-125.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.scale-150.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.scale-400.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.targetsize-16.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.targetsize-24.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.targetsize-256.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.targetsize-32.png" />
-    <Content Include="Assets\Logo\Square44x44Logo.targetsize-48.png" />
-    <Content Include="Assets\Logo\StoreLogo.scale-100.png" />
-    <Content Include="Assets\Logo\StoreLogo.scale-125.png" />
-    <Content Include="Assets\Logo\StoreLogo.scale-150.png" />
-    <Content Include="Assets\Logo\StoreLogo.scale-200.png" />
-    <Content Include="Assets\Logo\StoreLogo.scale-400.png" />
-    <Content Include="Assets\Logo\Wide310x150Logo.scale-100.png" />
-    <Content Include="Assets\Logo\Wide310x150Logo.scale-125.png" />
-    <Content Include="Assets\Logo\Wide310x150Logo.scale-150.png" />
-    <Content Include="Assets\Logo\Wide310x150Logo.scale-200.png" />
-    <Content Include="Assets\Logo\Wide310x150Logo.scale-400.png" />
-    <Content Include="Assets\Sound\Completed.mp3" />
-    <Content Include="Properties\Default.rd.xml" />
+    <ProjectReference Include="..\Sportik.Desktop.Core\Sportik.Desktop.Core.csproj" />
+    <ProjectReference Include="..\Sportik.Desktop.Infrastructure\Sportik.Desktop.Infrastructure.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection">
-      <Version>9.0.9</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <Version>9.0.9</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.14</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
-      <Version>2.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="WinRTXamlToolkit.Controls.DataVisualization.UWP">
-      <Version>2.3.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Views\Internal\AccountPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\CreateExercisePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\DashboardPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\ExercisesPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\ExtraSetsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\ExerciseSettingsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\ExerciseStatisticsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\AppSettingsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\TrainingPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Internal\WeekGoalPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Main\LoginPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Main\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Main\RegistrationPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Main\WelcomePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Sportik.Desktop.Core\Sportik.Desktop.Core.csproj">
-      <Project>{74a53f28-1bd6-4fe6-b24d-0fcae2bd5394}</Project>
-      <Name>Sportik.Desktop.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sportik.Desktop.Infrastructure\Sportik.Desktop.Infrastructure.csproj">
-      <Project>{eabbe09d-f0bf-42fd-b721-4e0c444cc3b0}</Project>
-      <Name>Sportik.Desktop.Infrastructure</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SportikDesktop.pfx" />
-  </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
-    <VisualStudioVersion>14.0</VisualStudioVersion>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

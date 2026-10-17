@@ -52,12 +52,12 @@
                                             <VisualState x:Name="Normal" />
                                             <VisualState x:Name="PointerOver">
                                                 <VisualState.Setters>
-                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}" />
                                                 </VisualState.Setters>
                                             </VisualState>
                                             <VisualState x:Name="Pressed">
                                                 <VisualState.Setters>
-                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}" />
                                                     <Setter Target="ContentPresenter.Opacity" Value="0.8" />
                                                 </VisualState.Setters>
                                             </VisualState>
@@ -65,8 +65,8 @@
                                     </VisualStateManager.VisualStateGroups>
 
                                     <Border x:Name="CardBorder"
-                                            Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                                            BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8" />
 
@@ -99,7 +99,7 @@
                                         Symbol="World"
                                         Width="27"
                                         Height="27"
-                                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
 
                             <TextBlock Grid.Column="1"
                                        Text="{Binding Name}"
@@ -114,7 +114,7 @@
                                     Visibility="Visible">
 
                             <TextBlock Text="Target repetitions:"
-                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                        Margin="0 0 15 0"
                                        VerticalAlignment="Center" />
 
@@ -136,7 +136,7 @@
                                     Visibility="Visible">
 
                             <TextBlock Text="Time between sets:"
-                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                        Margin="0 0 15 0"
                                        VerticalAlignment="Center" />
 
@@ -158,7 +158,7 @@
                                     Visibility="Visible">
 
                             <TextBlock Text="Execution time:"
-                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                        Margin="0 0 15 0"
                                        VerticalAlignment="Center" />
 

@@ -24,10 +24,11 @@ Install the application:
 ## Build
 
 To build the application, you need to have the following tools installed:
-- Windows SDK
+- .NET 8 SDK
+- Windows 10 SDK version 10.0.19041.0 or later
 - Visual Studio 2022 with following workloads:
-  - .NET desktop development      
-  - Universal Windows Platform development
+  - .NET desktop development
+  - Windows application development
 
 To build the application, follow these steps:
 - Clone the repository:

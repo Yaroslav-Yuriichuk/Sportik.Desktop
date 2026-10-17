@@ -1,5 +1,5 @@
-using System;
-using Windows.UI.Xaml.Data;
+﻿using System;
+using Microsoft.UI.Xaml.Data;
 using Sportik.Desktop.Core.Common.DataExchange;
 
 namespace Sportik.Desktop.UI.Converters

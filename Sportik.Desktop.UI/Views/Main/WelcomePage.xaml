@@ -12,8 +12,8 @@
                 VerticalAlignment="Center"
                 Width="400"
                 Padding="40"
-                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
             <StackPanel Spacing="16">
@@ -25,7 +25,7 @@
 
                 <TextBlock Text="Welcome to Sportik Desktop"
                            FontSize="14"
-                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                            HorizontalAlignment="Center"
                            TextWrapping="WrapWholeWords"
                            TextAlignment="Center" />

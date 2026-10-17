@@ -1,5 +1,5 @@
-﻿using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+﻿using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.UI.Behaviors;
 using Sportik.Desktop.UI.Models;

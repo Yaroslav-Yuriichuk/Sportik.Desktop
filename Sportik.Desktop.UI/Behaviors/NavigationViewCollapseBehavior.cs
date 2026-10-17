@@ -1,7 +1,6 @@
 ﻿using System;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Sportik.Desktop.UI.Behaviors
 {
@@ -9,22 +8,24 @@ namespace Sportik.Desktop.UI.Behaviors
     {
         private readonly NavigationView _navigationView;
         private readonly double _collapseThreshold;
+        private readonly Window _window;
 
         public NavigationViewCollapseBehavior(NavigationView navigationView, double collapseThreshold)
         {
             _navigationView = navigationView;
             _collapseThreshold = collapseThreshold;
+            _window = App.MainWindow;
 
-            UpdatePaneDisplayMode(Window.Current.Bounds.Width);
-            Window.Current.SizeChanged += UpdatePaneDisplayMode;
+            UpdatePaneDisplayMode(_window.Bounds.Width);
+            _window.SizeChanged += Window_SizeChanged;
         }
 
         public void Dispose()
         {
-            Window.Current.SizeChanged -= UpdatePaneDisplayMode;
+            _window.SizeChanged -= Window_SizeChanged;
         }
 
-        private void UpdatePaneDisplayMode(object sender, WindowSizeChangedEventArgs args)
+        private void Window_SizeChanged(object sender, WindowSizeChangedEventArgs args)
         {
             double windowWidth = args.Size.Width;
             UpdatePaneDisplayMode(windowWidth);

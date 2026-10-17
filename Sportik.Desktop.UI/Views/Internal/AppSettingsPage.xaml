@@ -37,8 +37,8 @@
 
         <Border Grid.Row="1"
                 Margin="15 15 15 0"
-                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="15"
@@ -79,12 +79,12 @@
                                                     <VisualState x:Name="Normal" />
                                                     <VisualState x:Name="PointerOver">
                                                         <VisualState.Setters>
-                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}" />
                                                         </VisualState.Setters>
                                                     </VisualState>
                                                     <VisualState x:Name="Pressed">
                                                         <VisualState.Setters>
-                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}" />
                                                             <Setter Target="ContentPresenter.Opacity" Value="0.8" />
                                                         </VisualState.Setters>
                                                     </VisualState>
@@ -92,8 +92,8 @@
                                             </VisualStateManager.VisualStateGroups>
 
                                             <Border x:Name="CardBorder"
-                                                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                                     BorderThickness="1"
                                                     CornerRadius="8" />
 
@@ -132,7 +132,7 @@
                                     <TextBlock Grid.Column="1"
                                                Margin="0 0 10 0"
                                                Text="{Binding Config.Description}"
-                                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                VerticalAlignment="Center">
                                     </TextBlock>
 
@@ -173,8 +173,8 @@
               Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
 
             <Border Width="420"
-                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                    Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
                     Padding="15"
@@ -188,7 +188,7 @@
                                Margin="0 0 0 15" />
 
                     <TextBlock Text="Type"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 5" />
 
                     <ComboBox HorizontalAlignment="Stretch"
@@ -203,7 +203,7 @@
                     </ComboBox>
 
                     <TextBlock Text="Scope"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 5" />
 
                     <ComboBox HorizontalAlignment="Stretch"
@@ -218,7 +218,7 @@
                     </ComboBox>
 
                     <TextBlock Text="Google Sheet Url or Id"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 5" />
 
                     <TextBox Margin="0 0 0 15"
@@ -226,7 +226,7 @@
                              Text="{Binding GoogleSheetUrlOrId, Mode=TwoWay}" />
 
                     <TextBlock Text="Exercises sheet name"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 5"
                                Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}" />
 
@@ -236,7 +236,7 @@
                              Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}" />
 
                     <TextBlock Text="Sets sheet name"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 5"
                                Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Sets,ExercisesAndSets'}" />
 

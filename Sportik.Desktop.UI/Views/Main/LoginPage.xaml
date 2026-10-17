@@ -17,8 +17,8 @@
                 VerticalAlignment="Center"
                 Width="400"
                 Padding="40"
-                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
             <StackPanel Spacing="16">
@@ -30,7 +30,7 @@
 
                 <TextBlock Text="Log in to continue to Sportik Desktop"
                            FontSize="14"
-                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,24" />
 
@@ -57,9 +57,9 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Rectangle Grid.Column="0" Height="1" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="or" Margin="16,0" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" FontSize="13" />
-                    <Rectangle Grid.Column="2" Height="1" Fill="{ThemeResource SystemControlForegroundBaseLowBrush}" VerticalAlignment="Center" />
+                    <Rectangle Grid.Column="0" Height="1" Fill="{ThemeResource ControlStrokeColorDefaultBrush}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="or" Margin="16,0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" />
+                    <Rectangle Grid.Column="2" Height="1" Fill="{ThemeResource ControlStrokeColorDefaultBrush}" VerticalAlignment="Center" />
                 </Grid>
 
                 <Button Content="Sign up"
@@ -71,7 +71,7 @@
                 <HyperlinkButton Content="Continue as guest"
                                  HorizontalAlignment="Center"
                                  Margin="0,8,0,0"
-                                 Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                  Command="{Binding UseGuestModeCommand}" />
             </StackPanel>
         </Border>

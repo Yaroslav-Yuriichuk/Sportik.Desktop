@@ -34,8 +34,8 @@
 
         <Border Grid.Row="1"
                 Margin="15 15 15 0"
-                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="15">
@@ -67,7 +67,7 @@
                             Margin="0 0 0 15"
                             Visibility="Visible">
                     <TextBlock Text="Date:"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 15 0"
                                VerticalAlignment="Center" />
                     <DatePicker Date="{Binding SelectedDate, Mode=TwoWay}" />
@@ -79,7 +79,7 @@
                             Margin="0 0 0 15"
                             Visibility="Visible">
                     <TextBlock Text="Time:"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 15 0"
                                VerticalAlignment="Center" />
                     <TimePicker Time="{Binding SelectedTime, Mode=TwoWay}" />
@@ -91,7 +91,7 @@
                             Margin="15 0 0 15"
                             Visibility="Visible">
                     <TextBlock Text="Repetitions:"
-                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 15 0"
                                VerticalAlignment="Center" />
                     <ComboBox MinWidth="100"
@@ -136,12 +136,12 @@
                                             <VisualState x:Name="Normal" />
                                             <VisualState x:Name="PointerOver">
                                                 <VisualState.Setters>
-                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}" />
                                                 </VisualState.Setters>
                                             </VisualState>
                                             <VisualState x:Name="Pressed">
                                                 <VisualState.Setters>
-                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}" />
                                                     <Setter Target="ContentPresenter.Opacity" Value="0.8" />
                                                 </VisualState.Setters>
                                             </VisualState>
@@ -149,8 +149,8 @@
                                     </VisualStateManager.VisualStateGroups>
 
                                     <Border x:Name="CardBorder"
-                                            Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                                            BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                             BorderThickness="1"
                                             CornerRadius="8" />
 
@@ -178,10 +178,11 @@
                         </Grid.ColumnDefinitions>
 
                         <SymbolIcon Grid.Column="0"
+                                    VerticalAlignment="Center"
                                     Symbol="World"
                                     Width="27"
                                     Height="27"
-                                    Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                     Margin="0 0 15 0"/>
 
                         <TextBlock Grid.Column="1"
@@ -192,7 +193,7 @@
 
                         <TextBlock Grid.Column="2"
                                    FontSize="14"
-                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                    VerticalAlignment="Center"
                                    Margin="0 0 30 0">
                             <Run Text="Date:" />
@@ -203,7 +204,7 @@
 
                         <TextBlock Grid.Column="3"
                                    FontSize="14"
-                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                    VerticalAlignment="Center">
                             <Run Text="Repetitions:" />
                             <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />

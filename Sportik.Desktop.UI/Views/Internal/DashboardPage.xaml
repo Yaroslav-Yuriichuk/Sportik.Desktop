@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:dashboard="using:Sportik.Desktop.UI.ViewModels.Dashboard"
     xmlns:converters="using:Sportik.Desktop.UI.Converters"
-    xmlns:charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
+    xmlns:charting="using:Sportik.Desktop.UI.Controls.Charting"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -16,7 +16,7 @@
 
     <Page.Resources>
         <Style x:Key="RoundedColumnDataPointStyle" TargetType="charting:ColumnDataPoint">
-            <Setter Property="Background" Value="{ThemeResource SystemControlHighlightAccentBrush}" />
+            <Setter Property="Background" Value="{ThemeResource AccentFillColorDefaultBrush}" />
             <Setter Property="BorderBrush" Value="{x:Null}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="IsTabStop" Value="False" />
@@ -34,7 +34,8 @@
                                            FontSize="24"
                                            FontWeight="Bold"
                                            HorizontalAlignment="Center"
-                                           VerticalAlignment="Top" />
+                                           VerticalAlignment="Top"
+                                           Margin="0 8 0 0" />
                             </Grid>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="RevealStates">
@@ -88,7 +89,7 @@
                     Margin="15 15 15 0">
 
             <TextBlock Text="Group by:"
-                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Margin="0 0 15 0"
                        VerticalAlignment="Center" />
 
@@ -104,7 +105,7 @@
             </ComboBox>
 
             <TextBlock Text="Select:"
-                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Margin="0 0 15 0"
                        VerticalAlignment="Center" />
 
@@ -122,8 +123,8 @@
 
         <Border Grid.Row="2"
                 Margin="15 15 15 0"
-                Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
                 Padding="15">
@@ -131,7 +132,7 @@
             <Grid>
 
                 <StackPanel>
-                    <TextBlock Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 10">
                         <Run Text="{Binding SelectedTargetOption.Name}" />
                         <Run Text="statistics grouped by" />
@@ -140,49 +141,7 @@
 
                     <charting:Chart Height="400">
 
-                        <charting:Chart.LegendStyle>
-                            <Style TargetType="Control">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Setter Property="Width" Value="0" />
-                                <Setter Property="Height" Value="0" />
-                            </Style>
-                        </charting:Chart.LegendStyle>
-
-                        <charting:Chart.Axes>
-
-                            <charting:LinearAxis Orientation="Y"
-                                                 Minimum="0">
-                                <charting:LinearAxis.GridLineStyle>
-                                    <Style TargetType="Line">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </Style>
-                                </charting:LinearAxis.GridLineStyle>
-                                <charting:LinearAxis.AxisLabelStyle>
-                                    <Style TargetType="Control">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Setter Property="Width" Value="0" />
-                                    </Style>
-                                </charting:LinearAxis.AxisLabelStyle>
-                            </charting:LinearAxis>
-
-                            <charting:CategoryAxis Orientation="X">
-                                <charting:CategoryAxis.GridLineStyle>
-                                    <Style TargetType="Line">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </Style>
-                                </charting:CategoryAxis.GridLineStyle>
-
-                                <charting:CategoryAxis.MajorTickMarkStyle>
-                                    <Style TargetType="Line">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </Style>
-                                </charting:CategoryAxis.MajorTickMarkStyle>
-                            </charting:CategoryAxis>
-
-                        </charting:Chart.Axes>
-
-                        <charting:ColumnSeries Title="Weekly completed sets"
-                                               IndependentValuePath="Key"
+                        <charting:ColumnSeries IndependentValuePath="Key"
                                                DependentValuePath="Value"
                                                DataPointStyle="{StaticResource RoundedColumnDataPointStyle}"
                                                ItemsSource="{Binding BarChartData, Mode=OneWay}" />

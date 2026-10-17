@@ -87,6 +87,11 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             {
                 if (SetField(ref _selectedTargetOption, value))
                 {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
                     DashboardCache dashboardCache = new DashboardCache
                     {
                         LastGrouping = SelectedGroupingOption.Grouping,

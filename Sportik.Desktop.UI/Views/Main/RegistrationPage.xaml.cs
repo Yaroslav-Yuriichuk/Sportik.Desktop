@@ -1,5 +1,5 @@
-﻿using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+﻿using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using Sportik.Desktop.UI.ViewModels.Registration;
 
 namespace Sportik.Desktop.UI.Views.Main

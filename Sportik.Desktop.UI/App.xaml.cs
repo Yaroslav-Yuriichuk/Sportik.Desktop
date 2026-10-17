@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Globalization;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Sportik.Desktop.Core;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.Infrastructure;
@@ -20,14 +18,13 @@ namespace Sportik.Desktop.UI
     {
         public static IServiceProvider ServiceProvider { get; private set; }
 
+        public static Window MainWindow { get; private set; }
+
         private MainAppNavigationBehavior _navigationBehavior;
 
         public App()
         {
             this.InitializeComponent();
-
-            this.Suspending += OnSuspending;
-            this.Resuming += OnResuming;
 
             ServiceCollection services = new ServiceCollection();
 
@@ -45,53 +42,18 @@ namespace Sportik.Desktop.UI
 
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Frame rootFrame = Window.Current.Content as Frame;
+            MainWindow mainWindow = new MainWindow();
+            MainWindow = mainWindow;
 
-            if (rootFrame == null)
-            {
-                rootFrame = new Frame();
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
-                Window.Current.Content = rootFrame;
-            }
+            Frame rootFrame = mainWindow.GetRootFrame();
 
             if (ServiceProvider.GetService<INavigationService>() is FrameNavigationService frameNavigationService)
             {
                 frameNavigationService.SetFrame(rootFrame, NavigationScope.Main);
             }
 
-            if (e.PrelaunchActivated == false)
-            {
-                Window.Current.Activate();
-            }
+            MainWindow.Activate();
 
-            IApplicationStatesService applicationStatesService = ServiceProvider.GetService<IApplicationStatesService>();
-            applicationStatesService.Start();
-
-            IEventsService eventsService = ServiceProvider.GetService<IEventsService>();
-            INavigationService navigationService = ServiceProvider.GetService<INavigationService>();
-
-            _navigationBehavior = new MainAppNavigationBehavior(applicationStatesService, eventsService, navigationService);
-        }
-
-        private void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            var deferral = e.SuspendingOperation.GetDeferral();
-
-            _navigationBehavior.Dispose();
-
-            IApplicationStatesService applicationStatesService = ServiceProvider.GetService<IApplicationStatesService>();
-            applicationStatesService.Stop();
-
-            deferral.Complete();
-        }
-
-        private void OnResuming(object sender, object e)
-        {
             IApplicationStatesService applicationStatesService = ServiceProvider.GetService<IApplicationStatesService>();
             applicationStatesService.Start();
 

@@ -1,46 +1,54 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
-using Windows.UI.Core;
+using Microsoft.UI.Dispatching;
 
 namespace Sportik.Desktop.UI.Helpers
 {
     internal static class UIThreadHelper
     {
-        public static async Task RunOnUIThreadAsync(Action action, CoreDispatcherPriority priority = CoreDispatcherPriority.Normal, CancellationToken cancellationToken = default)
+        public static Task RunOnUIThreadAsync(Action action, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal, CancellationToken cancellationToken = default)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 throw new OperationCanceledException(cancellationToken);
             }
 
-            CoreDispatcher dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+            DispatcherQueue dispatcherQueue = App.MainWindow.DispatcherQueue;
 
-            if (dispatcher.HasThreadAccess)
+            if (dispatcherQueue.HasThreadAccess)
             {
                 action();
-                return;
+                return Task.CompletedTask;
             }
 
-            bool wasCanceled = false;
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            await dispatcher.RunAsync(
-                priority, () =>
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        wasCanceled = true;
-                        return;
-                    }
-
-                    action();
-                });
-
-            if (wasCanceled)
+            bool enqueued = dispatcherQueue.TryEnqueue(priority, () =>
             {
-                throw new OperationCanceledException(cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    taskCompletionSource.TrySetCanceled(cancellationToken);
+                    return;
+                }
+
+                try
+                {
+                    action();
+                    taskCompletionSource.TrySetResult(true);
+                }
+                catch (Exception exception)
+                {
+                    taskCompletionSource.TrySetException(exception);
+                }
+            });
+
+            if (!enqueued)
+            {
+                taskCompletionSource.TrySetResult(false);
             }
+
+            return taskCompletionSource.Task;
         }
     }
 }

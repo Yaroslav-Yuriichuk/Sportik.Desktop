@@ -45,8 +45,8 @@
 
                 <Border Grid.Row="0"
                         Margin="15 15 15 0"
-                        Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                        BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="15">
@@ -82,7 +82,7 @@
                                     Visibility="Visible">
 
                             <TextBlock Text="Repetitions:"
-                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                        Margin="0 0 15 0"
                                        VerticalAlignment="Center" />
 
@@ -132,12 +132,12 @@
                                                     <VisualState x:Name="Normal" />
                                                     <VisualState x:Name="PointerOver">
                                                         <VisualState.Setters>
-                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}" />
                                                         </VisualState.Setters>
                                                     </VisualState>
                                                     <VisualState x:Name="Pressed">
                                                         <VisualState.Setters>
-                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}" />
                                                             <Setter Target="ContentPresenter.Opacity" Value="0.8" />
                                                         </VisualState.Setters>
                                                     </VisualState>
@@ -145,8 +145,8 @@
                                             </VisualStateManager.VisualStateGroups>
 
                                             <Border x:Name="CardBorder"
-                                                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                                     BorderThickness="1"
                                                     CornerRadius="8" />
 
@@ -174,10 +174,11 @@
                                 </Grid.ColumnDefinitions>
 
                                 <SymbolIcon Grid.Column="0"
+                                            VerticalAlignment="Center"
                                             Symbol="World"
                                             Width="27"
                                             Height="27"
-                                            Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             Margin="0 0 15 0"/>
 
                                 <TextBlock Grid.Column="1"
@@ -188,7 +189,7 @@
 
                                 <TextBlock Grid.Column="2"
                                            FontSize="14"
-                                           Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                            VerticalAlignment="Center">
                                     <Run Text="Repetitions:" />
                                     <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />
@@ -250,12 +251,12 @@
                                                     <VisualState x:Name="Normal" />
                                                     <VisualState x:Name="PointerOver">
                                                         <VisualState.Setters>
-                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListLowBrush}" />
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}" />
                                                         </VisualState.Setters>
                                                     </VisualState>
                                                     <VisualState x:Name="Pressed">
                                                         <VisualState.Setters>
-                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
+                                                            <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}" />
                                                             <Setter Target="ContentPresenter.Opacity" Value="0.8" />
                                                         </VisualState.Setters>
                                                     </VisualState>
@@ -263,8 +264,8 @@
                                             </VisualStateManager.VisualStateGroups>
 
                                             <Border x:Name="CardBorder"
-                                                    Background="{ThemeResource SystemControlBackgroundAltHighBrush}"
-                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                                                     BorderThickness="1"
                                                     CornerRadius="8" />
 
@@ -294,34 +295,37 @@
                                     </Grid.ColumnDefinitions>
 
                                     <SymbolIcon Grid.Column="0"
+                                                VerticalAlignment="Center"
                                                 Symbol="World"
                                                 Width="27"
                                                 Height="27"
-                                                Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
 
                                     <TextBlock Grid.Column="1"
+                                               VerticalAlignment="Center"
                                                Text="{Binding ExerciseName}"
                                                FontSize="20"
                                                FontWeight="SemiBold"
                                                Margin="15 0 0 0" />
 
                                     <StackPanel Grid.Column="3"
+                                                VerticalAlignment="Center"
                                                 Orientation="Horizontal"
                                                 HorizontalAlignment="Right"
                                                 Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Completed}">
 
                                         <TextBlock Margin="0 0 10 0"
                                                    Text="Completed"
-                                                   Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                    VerticalAlignment="Center">
                                         </TextBlock>
 
-                                        <SymbolIcon Symbol="Accept" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" />
+                                        <SymbolIcon Symbol="Accept" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
 
                                     </StackPanel>
 
                                     <TextBlock Grid.Column="3"
-                                               Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                Visibility="{Binding State, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Executing}"
                                                VerticalAlignment="Center">
                                         <Run Text="Repetitions:" />

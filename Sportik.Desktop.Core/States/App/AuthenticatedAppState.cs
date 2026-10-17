@@ -16,8 +16,6 @@ namespace Sportik.Desktop.Core.States.App
 {
     internal sealed class AuthenticatedAppState : AppState
     {
-        public override ApplicationState ApplicationState => ApplicationState.Authenticated;
-
         private readonly IEventsService _eventsService;
         private readonly IReminderService _reminderService;
         private readonly IPersistentCacheService _persistentCacheService;
@@ -27,6 +25,8 @@ namespace Sportik.Desktop.Core.States.App
         private readonly ITrainingService _trainingService;
         private readonly IDataExchangeService _dataExchangeService;
         private readonly Func<IAppSettingsService> _appSettingsServiceFactory;
+
+        public override ApplicationState ApplicationState => ApplicationState.Authenticated;
 
         public AuthenticatedAppState(
             AppStatesContext context,

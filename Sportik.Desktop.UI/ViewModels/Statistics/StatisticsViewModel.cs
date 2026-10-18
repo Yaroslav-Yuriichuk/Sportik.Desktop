@@ -11,6 +11,7 @@ using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.UI.Models.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
@@ -22,6 +23,42 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         {
             get => _weekStatistics;
             private set => SetField(ref _weekStatistics, value);
+        }
+
+        private ObservableCollection<MonthStatisticsViewModel> _monthStatistics = new ObservableCollection<MonthStatisticsViewModel>();
+
+        public ObservableCollection<MonthStatisticsViewModel> MonthStatistics
+        {
+            get => _monthStatistics;
+            private set => SetField(ref _monthStatistics, value);
+        }
+
+        private ObservableCollection<StatisticsGroupingOption> _groupingOptions;
+
+        public ObservableCollection<StatisticsGroupingOption> GroupingOptions
+        {
+            get => _groupingOptions;
+            private set
+            {
+                if (SetField(ref _groupingOptions, value))
+                {
+                    SetField(ref _selectedGroupingOption, value[0], nameof(SelectedGroupingOption));
+                }
+            }
+        }
+
+        private StatisticsGroupingOption _selectedGroupingOption;
+
+        public StatisticsGroupingOption SelectedGroupingOption
+        {
+            get => _selectedGroupingOption;
+            set
+            {
+                if (SetField(ref _selectedGroupingOption, value))
+                {
+                    _ = LoadStatisticsAsync(SelectedGroupingOption.Grouping, _loadCts.Token);
+                }
+            }
         }
 
         public ImportViewModel Import { get; } = new ImportViewModel();
@@ -42,7 +79,13 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ShowImportCommand = new ReactiveRelayCommand(OpenImport);
             ShowExportCommand = new ReactiveRelayCommand(OpenExport);
 
-            _ = LoadDayStatisticsAsync(_loadCts.Token);
+            GroupingOptions = new ObservableCollection<StatisticsGroupingOption>
+            {
+                new StatisticsGroupingOption("Week", StatisticsGrouping.Week),
+                new StatisticsGroupingOption("Month", StatisticsGrouping.Month),
+            };
+
+            _ = LoadStatisticsAsync(SelectedGroupingOption.Grouping, _loadCts.Token);
 
             EventsService.AddListener<ExerciseSetAddedEventArgs>(EventsService_Event);
         }
@@ -58,11 +101,28 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 weekStatisticsViewModel.Dispose();
             }
 
+            foreach (MonthStatisticsViewModel monthStatisticsViewModel in MonthStatistics)
+            {
+                monthStatisticsViewModel.Dispose();
+            }
+
             Import.Dispose();
             Export.Dispose();
         }
 
-        private async Task LoadDayStatisticsAsync(CancellationToken cancellationToken)
+        private async Task LoadStatisticsAsync(StatisticsGrouping grouping, CancellationToken cancellationToken)
+        {
+            if (grouping == StatisticsGrouping.Month)
+            {
+                await LoadMonthStatisticsAsync(cancellationToken);
+            }
+            else
+            {
+                await LoadWeekStatisticsAsync(cancellationToken);
+            }
+        }
+
+        private async Task LoadWeekStatisticsAsync(CancellationToken cancellationToken)
         {
             OperationResult<IEnumerable<WeekStatistics>> result = await ExerciseStatisticsService.GetWeeklyAsync(cancellationToken);
 
@@ -76,6 +136,22 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
                 weekStatistics.Select(statistics => new WeekStatisticsViewModel(statistics)));
+        }
+
+        private async Task LoadMonthStatisticsAsync(CancellationToken cancellationToken)
+        {
+            OperationResult<IEnumerable<MonthStatistics>> result = await ExerciseStatisticsService.GetMonthlyAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error.
+                return;
+            }
+
+            IEnumerable<MonthStatistics> monthStatistics = result.Value;
+
+            MonthStatistics = new ObservableCollection<MonthStatisticsViewModel>(
+                monthStatistics.Select(statistics => new MonthStatisticsViewModel(statistics)));
         }
 
         private void OpenImport()
@@ -92,23 +168,46 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         {
             DateTime date = args.Set.LoggedAt.Date;
 
-            WeekStatisticsViewModel weekStatisticsViewModel =
-                WeekStatistics.FirstOrDefault(vm => CalendarHelper.IsBetween(date, vm.FirstWeekDayDate, vm.LastWeekDayDate));
-
-            if (weekStatisticsViewModel == null)
+            if (SelectedGroupingOption.Grouping == StatisticsGrouping.Month)
             {
-                DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(date);
-                DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(date);
+                MonthStatisticsViewModel monthStatisticsViewModel =
+                    MonthStatistics.FirstOrDefault(vm => CalendarHelper.IsBetween(date, vm.FirstMonthDayDate, vm.LastMonthDayDate));
 
-                weekStatisticsViewModel = new WeekStatisticsViewModel(new WeekStatistics(firstWeekDayDate, lastWeekDayDate, new List<DayStatistics>()));
+                if (monthStatisticsViewModel == null)
+                {
+                    DateTime firstMonthDayDate = CalendarHelper.GetFirstDayOfMonth(date);
+                    DateTime lastMonthDayDate = CalendarHelper.GetLastDayOfMonth(firstMonthDayDate);
 
-                WeekStatistics.Add(weekStatisticsViewModel);
+                    monthStatisticsViewModel = new MonthStatisticsViewModel(new MonthStatistics(firstMonthDayDate, lastMonthDayDate, new List<WeekStatistics>()));
 
-                WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
-                    WeekStatistics.OrderByDescending(vm => vm.FirstWeekDayDate));
+                    MonthStatistics.Add(monthStatisticsViewModel);
+
+                    MonthStatistics = new ObservableCollection<MonthStatisticsViewModel>(
+                        MonthStatistics.OrderByDescending(vm => vm.FirstMonthDayDate));
+                }
+
+                monthStatisticsViewModel.AddSet(args.Set);
             }
+            else
+            {
+                WeekStatisticsViewModel weekStatisticsViewModel =
+                    WeekStatistics.FirstOrDefault(vm => CalendarHelper.IsBetween(date, vm.FirstWeekDayDate, vm.LastWeekDayDate));
 
-            weekStatisticsViewModel.AddSet(args.Set);
+                if (weekStatisticsViewModel == null)
+                {
+                    DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(date);
+                    DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(firstWeekDayDate);
+
+                    weekStatisticsViewModel = new WeekStatisticsViewModel(new WeekStatistics(firstWeekDayDate, lastWeekDayDate, new List<DayStatistics>()));
+
+                    WeekStatistics.Add(weekStatisticsViewModel);
+
+                    WeekStatistics = new ObservableCollection<WeekStatisticsViewModel>(
+                        WeekStatistics.OrderByDescending(vm => vm.FirstWeekDayDate));
+                }
+
+                weekStatisticsViewModel.AddSet(args.Set);
+            }
         }
     }
 }

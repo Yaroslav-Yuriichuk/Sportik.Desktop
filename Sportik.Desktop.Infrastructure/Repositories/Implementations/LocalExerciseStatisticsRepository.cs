@@ -83,6 +83,74 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return weekStatistics.OrderByDescending(StatisticsHelper.GetFirstDayDate);
         }
 
+        public async Task<IEnumerable<MonthStatistics>> GetMonthlyAsync(CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            IEnumerable<IGrouping<DateTime, ExerciseStatistics>> groupedStatistics = sets
+                .OrderBy(s => s.LoggedAt)
+                .GroupBy(s => s.LoggedAt.ToOffset(offset).Date)
+                .Select(group =>
+                {
+                    DateTime groupKey = group.Key;
+
+                    IEnumerable<ExerciseStatistics> exerciseStatistics = group
+                        .GroupBy(s => s.ExerciseId)
+                        .Select(g =>
+                        {
+                            UserExercise exercise = g.First().Exercise;
+
+                            return new ExerciseStatistics(
+                                ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id)),
+                                g
+                                    .Select(s => SetMapper.ToDomain(s, offset))
+                                    .ToList());
+                        });
+
+                    return (IGrouping<DateTime, ExerciseStatistics>)new Grouping<DateTime, ExerciseStatistics>(groupKey, exerciseStatistics);
+                });
+
+            IEnumerable<DayStatistics> dayStatistics = groupedStatistics
+                .Select(group => new DayStatistics(
+                    group.Key,
+                    group.ToList()))
+                .OrderByDescending(statistics => statistics.Date);
+
+            IEnumerable<MonthStatistics> monthStatistics = dayStatistics
+                .GroupBy(statistics => CalendarHelper.GetFirstDayOfMonth(statistics.Date))
+                .Select(group =>
+                {
+                    DateTime firstMonthDayDate = group.Key;
+                    DateTime lastMonthDayDate = CalendarHelper.GetLastDayOfMonth(firstMonthDayDate);
+
+                    List<WeekStatistics> weekStatistics = group
+                        .GroupBy(statistics => CalendarHelper.GetFirstDayOfWeek(statistics.Date))
+                        .Select(weekGroup =>
+                        {
+                            DateTime firstWeekDayDate = weekGroup.Key;
+                            DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(firstWeekDayDate);
+
+                            return new WeekStatistics(
+                                CalendarHelper.Max(firstWeekDayDate, firstMonthDayDate),
+                                CalendarHelper.Min(lastWeekDayDate, lastMonthDayDate),
+                                weekGroup.ToList());
+                        })
+                        .ToList();
+
+                    return new MonthStatistics(firstMonthDayDate, lastMonthDayDate, weekStatistics);
+                });
+
+            return monthStatistics.OrderByDescending(statistics => statistics.FirstMonthDayDate);
+        }
+
         public async Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             IEnumerable<UserSet> sets = await _dbContext.Sets

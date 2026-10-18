@@ -11,7 +11,7 @@ namespace Sportik.Desktop.Core.Models.AppSettings
         private readonly IPersistentCacheService _persistentCacheService;
         private readonly IEventsService _eventsService;
 
-        public IList<IDataExchangeConfig> Configs => _persistentCacheService.GetOrNew<AutomaticDataExchangeCache>().Configs;
+        public IReadOnlyList<IDataExchangeConfig> Configs => _persistentCacheService.GetOrNew<AutomaticDataExchangeCache>().Configs;
 
         public AutomaticDataExchangeSettings(IPersistentCacheService persistentCacheService, IEventsService eventsService)
         {

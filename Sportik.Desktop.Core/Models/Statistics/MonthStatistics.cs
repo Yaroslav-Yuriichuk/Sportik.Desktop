@@ -9,9 +9,9 @@ namespace Sportik.Desktop.Core.Models.Statistics
 
         public DateTime LastMonthDayDate { get; }
 
-        public List<WeekStatistics> WeekStatistics { get; }
+        public IReadOnlyList<WeekStatistics> WeekStatistics { get; }
 
-        public MonthStatistics(DateTime firstMonthDayDate, DateTime lastMonthDayDate, List<WeekStatistics> weekStatistics)
+        public MonthStatistics(DateTime firstMonthDayDate, DateTime lastMonthDayDate, IReadOnlyList<WeekStatistics> weekStatistics)
         {
             FirstMonthDayDate = firstMonthDayDate;
             LastMonthDayDate = lastMonthDayDate;

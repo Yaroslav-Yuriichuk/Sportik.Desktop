@@ -7,9 +7,9 @@ namespace Sportik.Desktop.Core.Models.Statistics
     {
         public DateTime Date { get; }
 
-        public List<ExerciseStatistics> ExerciseStatistics { get; }
+        public IReadOnlyList<ExerciseStatistics> ExerciseStatistics { get; }
 
-        public DayStatistics(DateTime date, List<ExerciseStatistics> exerciseStatistics)
+        public DayStatistics(DateTime date, IReadOnlyList<ExerciseStatistics> exerciseStatistics)
         {
             Date = date;
             ExerciseStatistics = exerciseStatistics;

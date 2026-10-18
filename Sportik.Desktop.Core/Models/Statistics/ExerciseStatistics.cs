@@ -6,9 +6,9 @@ namespace Sportik.Desktop.Core.Models.Statistics
     {
         public Exercise Exercise { get; }
 
-        public List<ExerciseSet> Sets { get; }
+        public IReadOnlyList<ExerciseSet> Sets { get; }
 
-        public ExerciseStatistics(Exercise exercise, List<ExerciseSet> sets)
+        public ExerciseStatistics(Exercise exercise, IReadOnlyList<ExerciseSet> sets)
         {
             Exercise = exercise;
             Sets = sets;

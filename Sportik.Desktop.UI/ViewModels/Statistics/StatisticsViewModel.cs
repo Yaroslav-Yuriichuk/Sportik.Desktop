@@ -33,6 +33,14 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             private set => SetField(ref _monthStatistics, value);
         }
 
+        private ObservableCollection<YearStatisticsViewModel> _yearStatistics = new ObservableCollection<YearStatisticsViewModel>();
+
+        public ObservableCollection<YearStatisticsViewModel> YearStatistics
+        {
+            get => _yearStatistics;
+            private set => SetField(ref _yearStatistics, value);
+        }
+
         private ObservableCollection<StatisticsGroupingOption> _groupingOptions;
 
         public ObservableCollection<StatisticsGroupingOption> GroupingOptions
@@ -83,6 +91,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             {
                 new StatisticsGroupingOption("Week", StatisticsGrouping.Week),
                 new StatisticsGroupingOption("Month", StatisticsGrouping.Month),
+                new StatisticsGroupingOption("Year", StatisticsGrouping.Year),
             };
 
             _ = LoadStatisticsAsync(SelectedGroupingOption.Grouping, _loadCts.Token);
@@ -106,6 +115,11 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 monthStatisticsViewModel.Dispose();
             }
 
+            foreach (YearStatisticsViewModel yearStatisticsViewModel in YearStatistics)
+            {
+                yearStatisticsViewModel.Dispose();
+            }
+
             Import.Dispose();
             Export.Dispose();
         }
@@ -115,6 +129,10 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             if (grouping == StatisticsGrouping.Month)
             {
                 await LoadMonthStatisticsAsync(cancellationToken);
+            }
+            else if (grouping == StatisticsGrouping.Year)
+            {
+                await LoadYearStatisticsAsync(cancellationToken);
             }
             else
             {
@@ -154,6 +172,22 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 monthStatistics.Select(statistics => new MonthStatisticsViewModel(statistics)));
         }
 
+        private async Task LoadYearStatisticsAsync(CancellationToken cancellationToken)
+        {
+            OperationResult<IEnumerable<YearStatistics>> result = await ExerciseStatisticsService.GetYearlyAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error.
+                return;
+            }
+
+            IEnumerable<YearStatistics> yearStatistics = result.Value;
+
+            YearStatistics = new ObservableCollection<YearStatisticsViewModel>(
+                yearStatistics.Select(statistics => new YearStatisticsViewModel(statistics)));
+        }
+
         private void OpenImport()
         {
             Import.Open();
@@ -187,6 +221,26 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 }
 
                 monthStatisticsViewModel.AddSet(args.Set);
+            }
+            else if (SelectedGroupingOption.Grouping == StatisticsGrouping.Year)
+            {
+                YearStatisticsViewModel yearStatisticsViewModel =
+                    YearStatistics.FirstOrDefault(vm => CalendarHelper.IsBetween(date, vm.FirstYearDate, vm.LastYearDate));
+
+                if (yearStatisticsViewModel == null)
+                {
+                    DateTime firstYearDate = CalendarHelper.GetFirstDayOfYear(date);
+                    DateTime lastYearDate = CalendarHelper.GetLastDayOfYear(firstYearDate);
+
+                    yearStatisticsViewModel = new YearStatisticsViewModel(new YearStatistics(firstYearDate, lastYearDate, new List<MonthStatistics>()));
+
+                    YearStatistics.Add(yearStatisticsViewModel);
+
+                    YearStatistics = new ObservableCollection<YearStatisticsViewModel>(
+                        YearStatistics.OrderByDescending(vm => vm.FirstYearDate));
+                }
+
+                yearStatisticsViewModel.AddSet(args.Set);
             }
             else
             {

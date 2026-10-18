@@ -25,6 +25,16 @@ namespace Sportik.Desktop.Core.Helpers
             return GetFirstDayOfMonth(date).AddMonths(1).AddDays(-1);
         }
 
+        public static DateTime GetFirstDayOfYear(DateTime date)
+        {
+            return new DateTime(date.Year, 1, 1).Date;
+        }
+
+        public static DateTime GetLastDayOfYear(DateTime date)
+        {
+            return GetFirstDayOfYear(date).AddYears(1).AddDays(-1);
+        }
+
         public static int GetWeekDayIndex(DayOfWeek dayOfWeek)
         {
             return (dayOfWeek - DayOfWeek.Monday + 7) % 7;

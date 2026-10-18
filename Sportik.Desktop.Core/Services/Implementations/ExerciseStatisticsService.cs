@@ -74,6 +74,23 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        public async Task<OperationResult<IEnumerable<YearStatistics>>> GetYearlyAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                IEnumerable<YearStatistics> yearStatistics = await ExerciseStatisticsRepository.GetYearlyAsync(cancellationToken);
+                return OperationResult<IEnumerable<YearStatistics>>.Success(yearStatistics);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<IEnumerable<YearStatistics>>.Failure(new[] { "Failed to retrieve yearly exercise statistics." });
+            }
+        }
+
         public async Task<OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             try

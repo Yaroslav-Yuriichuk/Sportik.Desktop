@@ -51,6 +51,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             throw new NotImplementedException("Monthly exercise statistics are not supported in the remote repository.");
         }
 
+        public async Task<IEnumerable<YearStatistics>> GetYearlyAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException("Yearly exercise statistics are not supported in the remote repository.");
+        }
+
         public async Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException("Aggregated repetitions exercise statistics are not supported in the remote repository.");

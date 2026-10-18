@@ -4,5 +4,6 @@
     {
         Week,
         Month,
+        Year,
     }
 }

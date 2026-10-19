@@ -230,6 +230,41 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return yearStatistics.OrderByDescending(statistics => statistics.FirstYearDate);
         }
 
+        public async Task<DayStatistics> GetTodayAsync(CancellationToken cancellationToken = default)
+        {
+            DateTime today = DateTimeOffset.Now.Date;
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            DateTimeOffset firstTodayDateOffset = new DateTimeOffset(today, offset).ToUniversalTime();
+            DateTimeOffset lastTodayDateOffset = new DateTimeOffset(today.AddDays(1).AddTicks(-1), offset).ToUniversalTime();
+
+            List<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .Where(s => s.LoggedAt >= firstTodayDateOffset && s.LoggedAt <= lastTodayDateOffset)
+                .OrderBy(s => s.LoggedAt)
+                .ToListAsync(cancellationToken);
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            List<ExerciseStatistics> exerciseStatistics = sets
+                .GroupBy(s => s.ExerciseId)
+                .Select(g =>
+                {
+                    UserExercise exercise = g.First().Exercise;
+
+                    return new ExerciseStatistics(
+                        ExerciseMapper.ToDomain(exercise, enabledExercisesCache.IncludesExercise(exercise.Id)),
+                        g
+                            .Select(s => SetMapper.ToDomain(s, offset))
+                            .ToList());
+                })
+                .ToList();
+
+            return new DayStatistics(today, exerciseStatistics);
+        }
+
         public async Task<IEnumerable<AggregatedRepetitionsExerciseStatistics>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             IEnumerable<UserSet> sets = await _dbContext.Sets

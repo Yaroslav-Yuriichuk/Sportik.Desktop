@@ -91,6 +91,23 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        public async Task<OperationResult<DayStatistics>> GetTodayAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                DayStatistics dayStatistics = await ExerciseStatisticsRepository.GetTodayAsync(cancellationToken);
+                return OperationResult<DayStatistics>.Success(dayStatistics);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<DayStatistics>.Failure(new[] { "Failed to retrieve today's exercise statistics." });
+            }
+        }
+
         public async Task<OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             try

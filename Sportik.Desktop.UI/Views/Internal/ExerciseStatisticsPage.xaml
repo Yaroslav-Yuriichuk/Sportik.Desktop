@@ -21,11 +21,13 @@
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
         <converters:DateTimeToWeekConverter x:Name="DateTimeToWeekConverter" />
+        <converters:EmptyCollectionToVisibilityConverter x:Name="EmptyCollectionToVisibilityConverter" />
     </Page.Resources>
 
     <Grid>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -60,7 +62,110 @@
             </ComboBox>
         </StackPanel>
 
-        <ListView Grid.Row="2"
+        <Border Grid.Row="2"
+                Margin="15 15 15 0"
+                Padding="15"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+
+            <StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Stretch"
+                            Margin="0 0 0 0"
+                            Background="Transparent">
+
+                    <SymbolIcon Symbol="CalendarDay"
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Width="20"
+                                Height="20" />
+
+                    <TextBlock FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="15 0 0 0">
+                        <Run Text="Today" />
+                        <Run Text="-" />
+                        <Run Text="{Binding TodayStatistics.Date, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='dddd, MMMM dd, yyyy'}" />
+                    </TextBlock>
+
+                </StackPanel>
+
+                <ListView IsItemClickEnabled="False"
+                          SelectionMode="None"
+                          ItemsSource="{Binding TodayStatistics.ExerciseStatistics}">
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="statistics:ExerciseStatisticsViewModel">
+                            <Grid Margin="35 15 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <SymbolIcon Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Symbol="World"
+                                            Width="20"
+                                            Height="20"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Margin="0 0 10 0" />
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           Margin="0 5 0 5" />
+
+                                <TextBlock Grid.Column="2"
+                                           FontSize="14"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           Margin="0 5 0 5">
+                                    <Run Text="Sets:" />
+                                    <Run Text="{Binding Sets}" FontWeight="SemiBold" />
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="3"
+                                           FontSize="14"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           Margin="0 5 0 5">
+                                    <Run Text="Repetitions:" />
+                                    <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />
+                                </TextBlock>
+
+                            </Grid>
+
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+                <TextBlock Text="No exercises for today"
+                           FontSize="14"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Margin="35 15 0 0"
+                           Visibility="{Binding TodayStatistics.ExerciseStatistics, Converter={StaticResource EmptyCollectionToVisibilityConverter}}" />
+
+            </StackPanel>
+
+        </Border>
+
+        <ListView Grid.Row="3"
                   Margin="15 15 15 0"
                   IsItemClickEnabled="False"
                   SelectionMode="None"
@@ -237,7 +342,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <ListView Grid.Row="2"
+        <ListView Grid.Row="3"
                   Margin="15 15 15 0"
                   IsItemClickEnabled="False"
                   SelectionMode="None"
@@ -415,7 +520,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <ListView Grid.Row="2"
+        <ListView Grid.Row="3"
                   Margin="15 15 15 0"
                   IsItemClickEnabled="False"
                   SelectionMode="None"
@@ -591,7 +696,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <StackPanel Grid.Row="3"
+        <StackPanel Grid.Row="4"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="15 15 15 15">
@@ -611,7 +716,7 @@
         </StackPanel>
 
         <Grid Grid.Row="0"
-              Grid.RowSpan="4"
+              Grid.RowSpan="5"
               Background="#80000000"
               DataContext="{Binding Import}"
               Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -696,7 +801,7 @@
         </Grid>
 
         <Grid Grid.Row="0"
-              Grid.RowSpan="4"
+              Grid.RowSpan="5"
               Background="#80000000"
               DataContext="{Binding Export}"
               Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">

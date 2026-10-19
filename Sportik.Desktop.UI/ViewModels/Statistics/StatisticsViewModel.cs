@@ -41,6 +41,14 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             private set => SetField(ref _yearStatistics, value);
         }
 
+        private DayStatisticsViewModel _todayStatistics;
+
+        public DayStatisticsViewModel TodayStatistics
+        {
+            get => _todayStatistics;
+            private set => SetField(ref _todayStatistics, value);
+        }
+
         private ObservableCollection<StatisticsGroupingOption> _groupingOptions;
 
         public ObservableCollection<StatisticsGroupingOption> GroupingOptions
@@ -94,6 +102,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 new StatisticsGroupingOption("Year", StatisticsGrouping.Year),
             };
 
+            _ = LoadTodayStatisticsAsync(_loadCts.Token);
             _ = LoadStatisticsAsync(SelectedGroupingOption.Grouping, _loadCts.Token);
 
             EventsService.AddListener<ExerciseSetAddedEventArgs>(EventsService_Event);
@@ -119,6 +128,8 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             {
                 yearStatisticsViewModel.Dispose();
             }
+
+            TodayStatistics?.Dispose();
 
             Import.Dispose();
             Export.Dispose();
@@ -188,6 +199,21 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 yearStatistics.Select(statistics => new YearStatisticsViewModel(statistics)));
         }
 
+        private async Task LoadTodayStatisticsAsync(CancellationToken cancellationToken)
+        {
+            OperationResult<DayStatistics> result = await ExerciseStatisticsService.GetTodayAsync(cancellationToken);
+
+            if (!result.Succeeded)
+            {
+                // TODO: Handle error.
+                return;
+            }
+
+            DayStatistics dayStatistics = result.Value;
+
+            TodayStatistics = new DayStatisticsViewModel(dayStatistics, isCollapsed: false);
+        }
+
         private void OpenImport()
         {
             Import.Open();
@@ -201,6 +227,14 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         private void EventsService_Event(ExerciseSetAddedEventArgs args)
         {
             DateTime date = args.Set.LoggedAt.Date;
+
+            if (TodayStatistics == null)
+            {
+                DayStatistics dayStatistics = new DayStatistics(date, new List<ExerciseStatistics>());
+                TodayStatistics = new DayStatisticsViewModel(dayStatistics, isCollapsed: false);
+            }
+
+            TodayStatistics.AddSet(args.Set);
 
             if (SelectedGroupingOption.Grouping == StatisticsGrouping.Month)
             {

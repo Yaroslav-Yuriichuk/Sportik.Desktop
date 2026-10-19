@@ -15,6 +15,8 @@ namespace Sportik.Desktop.Core.Services.Interfaces
 
         Task<OperationResult<IEnumerable<YearStatistics>>> GetYearlyAsync(CancellationToken cancellationToken = default);
 
+        Task<OperationResult<DayStatistics>> GetTodayAsync(CancellationToken cancellationToken = default);
+
         Task<OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default);
 
         Task<OperationResult<IEnumerable<AggregatedSetsExerciseStatistics>>> GetAggregatedExerciseSetsAsync(CancellationToken cancellationToken = default);

@@ -110,7 +110,7 @@
                        VerticalAlignment="Center" />
 
             <ComboBox MinWidth="140"
-                      Margin="0 0 15 0"
+                      Margin="0 0 0 0"
                       ItemsSource="{Binding TargetOptions}"
                       SelectedValue="{Binding SelectedTargetOption, Mode=TwoWay}">
                 <ComboBox.ItemTemplate>

@@ -1,0 +1,8 @@
+﻿{
+  "profiles": {
+    "Sportik.Desktop.UI (Package)": {
+      "commandName": "MsixPackage",
+      "nativeDebugging": false
+    }
+  }
+}

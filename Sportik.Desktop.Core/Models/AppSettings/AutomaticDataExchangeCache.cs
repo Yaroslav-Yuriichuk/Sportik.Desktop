@@ -11,7 +11,7 @@ namespace Sportik.Desktop.Core.Models.AppSettings
         private HashSet<string> _configs = new HashSet<string>();
 
         [JsonIgnore]
-        public IList<IDataExchangeConfig> Configs
+        public IReadOnlyList<IDataExchangeConfig> Configs
         {
             get
             {

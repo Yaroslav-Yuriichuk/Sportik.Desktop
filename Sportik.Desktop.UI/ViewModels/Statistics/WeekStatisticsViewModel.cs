@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Statistics;
@@ -34,13 +35,36 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             private set => SetField(ref _dayStatistics, value);
         }
 
+        private ObservableCollection<ExerciseStatisticsViewModel> _exerciseStatistics;
+
+        public ObservableCollection<ExerciseStatisticsViewModel> ExerciseStatistics
+        {
+            get => _exerciseStatistics;
+            private set => SetField(ref _exerciseStatistics, value);
+        }
+
+        private bool _isCollapsed;
+
+        public bool IsCollapsed
+        {
+            get => _isCollapsed;
+            private set => SetField(ref _isCollapsed, value);
+        }
+
+        public ICommand ToggleCollapsedCommand { get; }
+
         public WeekStatisticsViewModel(WeekStatistics weekStatistics)
         {
             DayStatistics = new ObservableCollection<DayStatisticsViewModel>(
                                weekStatistics.DayStatistics.Select(statistics => new DayStatisticsViewModel(statistics)));
 
+            ExerciseStatistics = BuildExerciseStatistics();
+
             FirstWeekDayDate = weekStatistics.FirstWeekDayDate;
             LastWeekDayDate = weekStatistics.LastWeekDayDate;
+
+            IsCollapsed = true;
+            ToggleCollapsedCommand = new ReactiveRelayCommand(ToggleCollapsed);
         }
 
         public void Dispose()
@@ -60,8 +84,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 return;
             }
 
-            DayStatisticsViewModel dayStatisticsViewModel = DayStatistics
-                .FirstOrDefault(statistics => statistics.Date == date);
+            DayStatisticsViewModel dayStatisticsViewModel = DayStatistics.FirstOrDefault(statistics => statistics.Date == date);
 
             if (dayStatisticsViewModel == null)
             {
@@ -74,6 +97,32 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             }
 
             dayStatisticsViewModel.AddSet(set);
+
+            ExerciseStatistics = BuildExerciseStatistics();
+        }
+
+        private ObservableCollection<ExerciseStatisticsViewModel> BuildExerciseStatistics()
+        {
+            return new ObservableCollection<ExerciseStatisticsViewModel>(
+                DayStatistics
+                    .SelectMany(dayStatistics => dayStatistics.ExerciseStatistics)
+                    .GroupBy(statistics => statistics.ExerciseId)
+                    .Select(group =>
+                    {
+                        ExerciseStatisticsViewModel groupedStatistics = group.First().Clone();
+
+                        foreach (ExerciseStatisticsViewModel statistics in group.Skip(1))
+                        {
+                            groupedStatistics.Merge(statistics);
+                        }
+
+                        return groupedStatistics;
+                    }));
+        }
+
+        private void ToggleCollapsed()
+        {
+            IsCollapsed = !IsCollapsed;
         }
     }
 }

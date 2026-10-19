@@ -45,14 +45,14 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
-        public DayStatisticsViewModel(DayStatistics dayStatistics)
+        public DayStatisticsViewModel(DayStatistics dayStatistics, bool isCollapsed = true)
         {
             Date = dayStatistics.Date;
 
             ExerciseStatistics = new ObservableCollection<ExerciseStatisticsViewModel>(
                                dayStatistics.ExerciseStatistics.Select(statistics => new ExerciseStatisticsViewModel(statistics)));
 
-            IsCollapsed = true;
+            IsCollapsed = isCollapsed;
             ToggleCollapsedCommand = new ReactiveRelayCommand(ToggleCollapsed);
         }
 
@@ -99,7 +99,8 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ExerciseStatisticsViewModel exerciseStatisticsViewModel =
                 new ExerciseStatisticsViewModel(new ExerciseStatistics(result.Value, new List<ExerciseSet> { set }));
 
-            ExerciseStatistics.Add(exerciseStatisticsViewModel);
+            ExerciseStatistics = new ObservableCollection<ExerciseStatisticsViewModel>(
+                ExerciseStatistics.Append(exerciseStatisticsViewModel));
         }
 
         private void ToggleCollapsed()

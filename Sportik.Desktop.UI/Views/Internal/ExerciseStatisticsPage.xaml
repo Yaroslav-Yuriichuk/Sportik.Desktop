@@ -20,11 +20,15 @@
         <converters:DateTimeToStringConverter x:Name="DateTimeToStringConverter" />
         <converters:BoolToVisibilityConverter x:Name="BoolToVisibilityConverter" />
         <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
+        <converters:DateTimeToWeekConverter x:Name="DateTimeToWeekConverter" />
+        <converters:EmptyCollectionToVisibilityConverter x:Name="EmptyCollectionToVisibilityConverter" />
     </Page.Resources>
 
     <Grid>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -36,11 +40,137 @@
                    FontWeight="SemiBold"
                    Margin="15 15 15 0"/>
 
-        <ListView Grid.Row="1"
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="15 15 15 0">
+
+            <TextBlock Text="Group by:"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Margin="0 0 15 0"
+                       VerticalAlignment="Center" />
+
+            <ComboBox MinWidth="140"
+                      Margin="0"
+                      ItemsSource="{Binding GroupingOptions}"
+                      SelectedValue="{Binding SelectedGroupingOption, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <Border Grid.Row="2"
+                Margin="15 15 15 0"
+                Padding="15"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+
+            <StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Stretch"
+                            Margin="0 0 0 0"
+                            Background="Transparent">
+
+                    <SymbolIcon Symbol="CalendarDay"
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Width="20"
+                                Height="20" />
+
+                    <TextBlock FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="15 0 0 0">
+                        <Run Text="Today" />
+                        <Run Text="-" />
+                        <Run Text="{Binding TodayStatistics.Date, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='dddd, MMMM dd, yyyy'}" />
+                    </TextBlock>
+
+                </StackPanel>
+
+                <ListView IsItemClickEnabled="False"
+                          SelectionMode="None"
+                          ItemsSource="{Binding TodayStatistics.ExerciseStatistics}">
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="statistics:ExerciseStatisticsViewModel">
+                            <Grid Margin="35 15 0 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"></ColumnDefinition>
+                                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <SymbolIcon Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Symbol="World"
+                                            Width="20"
+                                            Height="20"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                            Margin="0 0 10 0" />
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           Margin="0 5 0 5" />
+
+                                <TextBlock Grid.Column="2"
+                                           FontSize="14"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           Margin="0 5 0 5">
+                                    <Run Text="Sets:" />
+                                    <Run Text="{Binding Sets}" FontWeight="SemiBold" />
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="3"
+                                           FontSize="14"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           VerticalAlignment="Center"
+                                           Margin="0 5 0 5">
+                                    <Run Text="Repetitions:" />
+                                    <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />
+                                </TextBlock>
+
+                            </Grid>
+
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+                <TextBlock Text="No exercises for today"
+                           FontSize="14"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Margin="35 15 0 0"
+                           Visibility="{Binding TodayStatistics.ExerciseStatistics, Converter={StaticResource EmptyCollectionToVisibilityConverter}}" />
+
+            </StackPanel>
+
+        </Border>
+
+        <ListView Grid.Row="3"
                   Margin="15 15 15 0"
                   IsItemClickEnabled="False"
                   SelectionMode="None"
-                  ItemsSource="{Binding WeekStatistics}">
+                  ItemsSource="{Binding WeekStatistics}"
+                  Visibility="{Binding SelectedGroupingOption.Grouping, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Week}">
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
@@ -55,7 +185,7 @@
 
                         <TextBlock FontSize="20"
                                    FontWeight="SemiBold"
-                                   Margin="0 0 0 15">
+                                   Margin="0 0 0 12">
                             <Run Text="{Binding FirstWeekDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
                             <Run Text="-" />
                             <Run Text="{Binding LastWeekDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
@@ -121,7 +251,7 @@
 
                                             <interactivity:Interaction.Behaviors>
                                                 <core:EventTriggerBehavior EventName="Tapped">
-                                                    <core:InvokeCommandAction Command="{Binding ToggleCollapsedCommand}"/>
+                                                    <core:InvokeCommandAction Command="{Binding ToggleCollapsedCommand}" />
                                                 </core:EventTriggerBehavior>
                                             </interactivity:Interaction.Behaviors>
 
@@ -135,7 +265,7 @@
                                                        VerticalAlignment="Center"
                                                        FontSize="16"
                                                        FontWeight="SemiBold"
-                                                       Margin="15 0 0 0"/>
+                                                       Margin="15 0 0 0" />
 
                                         </StackPanel>
 
@@ -167,7 +297,7 @@
                                                                     Width="20"
                                                                     Height="20"
                                                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                                    Margin="0 0 10 0"/>
+                                                                    Margin="0 0 10 0" />
 
                                                         <TextBlock Grid.Column="1"
                                                                    Text="{Binding Name}"
@@ -210,10 +340,363 @@
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
-
         </ListView>
 
-        <StackPanel Grid.Row="2"
+        <ListView Grid.Row="3"
+                  Margin="15 15 15 0"
+                  IsItemClickEnabled="False"
+                  SelectionMode="None"
+                  ItemsSource="{Binding MonthStatistics}"
+                  Visibility="{Binding SelectedGroupingOption.Grouping, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Month}">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="statistics:MonthStatisticsViewModel">
+                    <StackPanel>
+
+                        <TextBlock FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 0 12">
+                            <Run Text="{Binding FirstMonthDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
+                            <Run Text="-" />
+                            <Run Text="{Binding LastMonthDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM dd, yyyy'}" />
+                        </TextBlock>
+
+                        <ListView ItemsSource="{Binding WeekStatistics}"
+                                  IsItemClickEnabled="False"
+                                  SelectionMode="None">
+
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="0,0,0,12" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <Grid Background="Transparent">
+                                                    <VisualStateManager.VisualStateGroups>
+                                                        <VisualStateGroup x:Name="CommonStates">
+                                                            <VisualState x:Name="Normal" />
+                                                            <VisualState x:Name="PointerOver">
+                                                                <VisualState.Setters>
+                                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}" />
+                                                                </VisualState.Setters>
+                                                            </VisualState>
+                                                            <VisualState x:Name="Pressed">
+                                                                <VisualState.Setters>
+                                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}" />
+                                                                    <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                                </VisualState.Setters>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                    </VisualStateManager.VisualStateGroups>
+
+                                                    <Border x:Name="CardBorder"
+                                                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="8" />
+
+                                                    <ContentPresenter x:Name="ContentPresenter"
+                                                                      Content="{TemplateBinding Content}"
+                                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                                      Margin="{TemplateBinding Padding}" />
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="statistics:WeekStatisticsViewModel">
+                                    <StackPanel HorizontalAlignment="Stretch">
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Stretch"
+                                                    Margin="15 15 15 15"
+                                                    Background="Transparent">
+
+                                            <interactivity:Interaction.Behaviors>
+                                                <core:EventTriggerBehavior EventName="Tapped">
+                                                    <core:InvokeCommandAction Command="{Binding ToggleCollapsedCommand}" />
+                                                </core:EventTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+
+                                            <SymbolIcon Symbol="Accept"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                        Width="20"
+                                                        Height="20" />
+
+                                            <TextBlock FontSize="16"
+                                                       FontWeight="SemiBold"
+                                                       Margin="15 0 0 0">
+                                                <Run Text="Week" />
+                                                <Run Text="{Binding FirstWeekDayDate, Converter={StaticResource DateTimeToWeekConverter}}" />
+                                            </TextBlock>
+
+                                        </StackPanel>
+
+                                        <ListView IsItemClickEnabled="False"
+                                                  SelectionMode="None"
+                                                  ItemsSource="{Binding ExerciseStatistics}"
+                                                  Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
+
+                                            <ListView.ItemContainerStyle>
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    <Setter Property="Padding" Value="0" />
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
+
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="statistics:ExerciseStatisticsViewModel">
+                                                    <Grid Margin="50 0 15 15">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="30"></ColumnDefinition>
+                                                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <SymbolIcon Grid.Column="0"
+                                                                    VerticalAlignment="Center"
+                                                                    Symbol="World"
+                                                                    Width="20"
+                                                                    Height="20"
+                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                    Margin="0 0 10 0" />
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding Name}"
+                                                                   FontSize="14"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0 5 0 5" />
+
+                                                        <TextBlock Grid.Column="2"
+                                                                   FontSize="14"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0 5 0 5">
+                                                            <Run Text="Sets:" />
+                                                            <Run Text="{Binding Sets}" FontWeight="SemiBold" />
+                                                        </TextBlock>
+
+                                                        <TextBlock Grid.Column="3"
+                                                                   FontSize="14"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0 5 0 5">
+                                                            <Run Text="Repetitions:" />
+                                                            <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />
+                                                        </TextBlock>
+
+                                                    </Grid>
+
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+
+                                        </ListView>
+
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+                        </ListView>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ListView Grid.Row="3"
+                  Margin="15 15 15 0"
+                  IsItemClickEnabled="False"
+                  SelectionMode="None"
+                  ItemsSource="{Binding YearStatistics}"
+                  Visibility="{Binding SelectedGroupingOption.Grouping, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Year}">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="0" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="statistics:YearStatisticsViewModel">
+                    <StackPanel>
+
+                        <TextBlock FontSize="20"
+                                   FontWeight="SemiBold"
+                                   Margin="0 0 0 12">
+                            <Run Text="Year" />
+                            <Run Text="{Binding FirstYearDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='yyyy'}" />
+                        </TextBlock>
+
+                        <ListView ItemsSource="{Binding MonthStatistics}"
+                                  IsItemClickEnabled="False"
+                                  SelectionMode="None">
+
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="0,0,0,12" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <Grid Background="Transparent">
+                                                    <VisualStateManager.VisualStateGroups>
+                                                        <VisualStateGroup x:Name="CommonStates">
+                                                            <VisualState x:Name="Normal" />
+                                                            <VisualState x:Name="PointerOver">
+                                                                <VisualState.Setters>
+                                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorSecondaryBrush}" />
+                                                                </VisualState.Setters>
+                                                            </VisualState>
+                                                            <VisualState x:Name="Pressed">
+                                                                <VisualState.Setters>
+                                                                    <Setter Target="CardBorder.Background" Value="{ThemeResource ControlFillColorTertiaryBrush}" />
+                                                                    <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                                                </VisualState.Setters>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                    </VisualStateManager.VisualStateGroups>
+
+                                                    <Border x:Name="CardBorder"
+                                                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                                            BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="8" />
+
+                                                    <ContentPresenter x:Name="ContentPresenter"
+                                                                      Content="{TemplateBinding Content}"
+                                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                                      Margin="{TemplateBinding Padding}" />
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="statistics:MonthStatisticsViewModel">
+                                    <StackPanel HorizontalAlignment="Stretch">
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Stretch"
+                                                    Margin="15 15 15 15"
+                                                    Background="Transparent">
+
+                                            <interactivity:Interaction.Behaviors>
+                                                <core:EventTriggerBehavior EventName="Tapped">
+                                                    <core:InvokeCommandAction Command="{Binding ToggleCollapsedCommand}" />
+                                                </core:EventTriggerBehavior>
+                                            </interactivity:Interaction.Behaviors>
+
+                                            <SymbolIcon Symbol="Accept"
+                                                        VerticalAlignment="Center"
+                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                        Width="20"
+                                                        Height="20" />
+
+                                            <TextBlock Text="{Binding FirstMonthDayDate, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter='MMMM'}"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="16"
+                                                       FontWeight="SemiBold"
+                                                       Margin="15 0 0 0" />
+
+                                        </StackPanel>
+
+                                        <ListView IsItemClickEnabled="False"
+                                                  SelectionMode="None"
+                                                  ItemsSource="{Binding ExerciseStatistics}"
+                                                  Visibility="{Binding IsCollapsed, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
+
+                                            <ListView.ItemContainerStyle>
+                                                <Style TargetType="ListViewItem">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                                    <Setter Property="Padding" Value="0" />
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
+
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate x:DataType="statistics:ExerciseStatisticsViewModel">
+                                                    <Grid Margin="50 0 15 15">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="30"></ColumnDefinition>
+                                                            <ColumnDefinition Width="2*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <SymbolIcon Grid.Column="0"
+                                                                    VerticalAlignment="Center"
+                                                                    Symbol="World"
+                                                                    Width="20"
+                                                                    Height="20"
+                                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                    Margin="0 0 10 0" />
+
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding Name}"
+                                                                   FontSize="14"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0 5 0 5" />
+
+                                                        <TextBlock Grid.Column="2"
+                                                                   FontSize="14"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0 5 0 5">
+                                                            <Run Text="Sets:" />
+                                                            <Run Text="{Binding Sets}" FontWeight="SemiBold" />
+                                                        </TextBlock>
+
+                                                        <TextBlock Grid.Column="3"
+                                                                   FontSize="14"
+                                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="0 5 0 5">
+                                                            <Run Text="Repetitions:" />
+                                                            <Run Text="{Binding Repetitions}" FontWeight="SemiBold" />
+                                                        </TextBlock>
+
+                                                    </Grid>
+
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+
+                                        </ListView>
+
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+                        </ListView>
+
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Grid.Row="4"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="15 15 15 15">
@@ -233,7 +716,7 @@
         </StackPanel>
 
         <Grid Grid.Row="0"
-              Grid.RowSpan="3"
+              Grid.RowSpan="5"
               Background="#80000000"
               DataContext="{Binding Import}"
               Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -318,7 +801,7 @@
         </Grid>
 
         <Grid Grid.Row="0"
-              Grid.RowSpan="3"
+              Grid.RowSpan="5"
               Background="#80000000"
               DataContext="{Binding Export}"
               Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter}}">

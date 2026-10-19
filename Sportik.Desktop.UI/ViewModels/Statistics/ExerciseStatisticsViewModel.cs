@@ -34,16 +34,25 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         public Guid ExerciseId { get; }
 
-        private readonly HashSet<Guid> _setIds;
+        private readonly Exercise _exercise;
+        private readonly List<ExerciseSet> _exerciseSets;
+        private readonly HashSet<Guid> _exerciseSetIds;
 
         public ExerciseStatisticsViewModel(ExerciseStatistics exerciseStatistics)
+            : this(exerciseStatistics.Exercise, new List<ExerciseSet>(exerciseStatistics.Sets))
         {
-            ExerciseId = exerciseStatistics.Exercise.Id;
-            _setIds = exerciseStatistics.Sets.Select(set => set.Id).ToHashSet();
+        }
 
-            Name = exerciseStatistics.Exercise.Name;
-            Sets = exerciseStatistics.Sets.Count;
-            Repetitions = exerciseStatistics.Sets.Aggregate(0, (sum, set) => sum + set.Repetitions);
+        private ExerciseStatisticsViewModel(Exercise exercise, List<ExerciseSet> sets)
+        {
+            _exercise = exercise;
+            _exerciseSets = sets.ToList();
+            _exerciseSetIds = sets.Select(set => set.Id).ToHashSet();
+
+            ExerciseId = exercise.Id;
+            Name = exercise.Name;
+            Sets = sets.Count;
+            Repetitions = sets.Aggregate(0, (sum, set) => sum + set.Repetitions);
         }
 
         public void Dispose() { }
@@ -55,10 +64,30 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 return;
             }
 
-            if (_setIds.Add(set.Id))
+            if (_exerciseSetIds.Add(set.Id))
             {
+                _exerciseSets.Add(set);
+
                 Sets++;
                 Repetitions += set.Repetitions;
+            }
+        }
+
+        public ExerciseStatisticsViewModel Clone()
+        {
+            return new ExerciseStatisticsViewModel(_exercise, new List<ExerciseSet>(_exerciseSets));
+        }
+
+        public void Merge(ExerciseStatisticsViewModel other)
+        {
+            if (ExerciseId != other.ExerciseId)
+            {
+                return;
+            }
+
+            foreach (ExerciseSet set in other._exerciseSets)
+            {
+                AddSet(set);
             }
         }
     }

@@ -7,9 +7,9 @@ namespace Sportik.Desktop.Core.Models.Goal
     {
         public DateTime FirstWeekDayDate { get; }
 
-        public List<ExerciseGoal> ExerciseGoals { get; }
+        public IReadOnlyList<ExerciseGoal> ExerciseGoals { get; }
 
-        public WeekGoal(DateTime firstWeekDayDate, List<ExerciseGoal> exerciseGoals)
+        public WeekGoal(DateTime firstWeekDayDate, IReadOnlyList<ExerciseGoal> exerciseGoals)
         {
             FirstWeekDayDate = firstWeekDayDate;
             ExerciseGoals = exerciseGoals ?? throw new ArgumentNullException(nameof(exerciseGoals));

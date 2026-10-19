@@ -57,6 +57,57 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        public async Task<OperationResult<IEnumerable<MonthStatistics>>> GetMonthlyAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                IEnumerable<MonthStatistics> monthStatistics = await ExerciseStatisticsRepository.GetMonthlyAsync(cancellationToken);
+                return OperationResult<IEnumerable<MonthStatistics>>.Success(monthStatistics);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<IEnumerable<MonthStatistics>>.Failure(new[] { "Failed to retrieve monthly exercise statistics." });
+            }
+        }
+
+        public async Task<OperationResult<IEnumerable<YearStatistics>>> GetYearlyAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                IEnumerable<YearStatistics> yearStatistics = await ExerciseStatisticsRepository.GetYearlyAsync(cancellationToken);
+                return OperationResult<IEnumerable<YearStatistics>>.Success(yearStatistics);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<IEnumerable<YearStatistics>>.Failure(new[] { "Failed to retrieve yearly exercise statistics." });
+            }
+        }
+
+        public async Task<OperationResult<DayStatistics>> GetTodayAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                DayStatistics dayStatistics = await ExerciseStatisticsRepository.GetTodayAsync(cancellationToken);
+                return OperationResult<DayStatistics>.Success(dayStatistics);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<DayStatistics>.Failure(new[] { "Failed to retrieve today's exercise statistics." });
+            }
+        }
+
         public async Task<OperationResult<IEnumerable<AggregatedRepetitionsExerciseStatistics>>> GetAggregatedExerciseRepetitionsAsync(CancellationToken cancellationToken = default)
         {
             try

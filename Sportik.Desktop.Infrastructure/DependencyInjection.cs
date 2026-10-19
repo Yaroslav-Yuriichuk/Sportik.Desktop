@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using Sportik.Desktop.Infrastructure.Persistence;
 using Sportik.Desktop.Infrastructure.Repositories.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Interfaces;
+using Windows.Storage;
 
 namespace Sportik.Desktop.Infrastructure
 {
@@ -34,7 +36,7 @@ namespace Sportik.Desktop.Infrastructure
 
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection")!);
+                options.UseSqlite(ResolveDatabasePath(configuration));
             }, ServiceLifetime.Transient);
 
             services.AddTransient<INotificationService, ToastNotificationService>();
@@ -108,6 +110,19 @@ namespace Sportik.Desktop.Infrastructure
             });
 
             return services;
+        }
+
+        private static string ResolveDatabasePath(IConfiguration configuration)
+        {
+            SqliteConnectionStringBuilder connectionStringBuilder =
+                new SqliteConnectionStringBuilder(configuration.GetConnectionString("DefaultConnection")!);
+
+            string dataDirectoryPath = ApplicationData.Current.LocalFolder.Path;
+            Directory.CreateDirectory(dataDirectoryPath);
+
+            connectionStringBuilder.DataSource = Path.Combine(dataDirectoryPath, Path.GetFileName(connectionStringBuilder.DataSource)!);
+
+            return connectionStringBuilder.ToString();
         }
     }
 }

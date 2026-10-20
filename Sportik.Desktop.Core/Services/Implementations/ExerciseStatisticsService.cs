@@ -159,6 +159,23 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        public async Task<OperationResult<IEnumerable<AggregatedSetsMonthStatistics>>> GetAggregatedMonthSetsAsync(int year, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                IEnumerable<AggregatedSetsMonthStatistics> aggregatedMonthSets = await ExerciseStatisticsRepository.GetAggregatedMonthSetsAsync(year, cancellationToken);
+                return OperationResult<IEnumerable<AggregatedSetsMonthStatistics>>.Success(aggregatedMonthSets);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<IEnumerable<AggregatedSetsMonthStatistics>>.Failure(new[] { "Failed to retrieve aggregated month sets exercise statistics." });
+            }
+        }
+
         public async Task<OperationResult<ExerciseSet>> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
         {
             try

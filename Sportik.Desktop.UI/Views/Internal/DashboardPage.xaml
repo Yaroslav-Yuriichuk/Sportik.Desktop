@@ -15,6 +15,8 @@
     </Page.DataContext>
 
     <Page.Resources>
+        <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
+
         <Style x:Key="RoundedColumnDataPointStyle" TargetType="charting:ColumnDataPoint">
             <Setter Property="Background" Value="{ThemeResource AccentFillColorDefaultBrush}" />
             <Setter Property="BorderBrush" Value="{x:Null}" />
@@ -74,6 +76,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -121,7 +124,30 @@
             </ComboBox>
         </StackPanel>
 
-        <Border Grid.Row="2"
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0 15 15 0"
+                    Visibility="{Binding SelectedGroupingOption.Grouping, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Month}">
+
+            <TextBlock Text="Year:"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Margin="0 0 15 0"
+                       VerticalAlignment="Center" />
+
+            <ComboBox MinWidth="140"
+                      Margin="0 0 0 0"
+                      ItemsSource="{Binding YearOptions}"
+                      SelectedValue="{Binding SelectedYearOption, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <Border Grid.Row="3"
                 Margin="15 15 15 0"
                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"

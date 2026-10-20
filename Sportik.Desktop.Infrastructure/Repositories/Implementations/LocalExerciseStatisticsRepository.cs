@@ -347,6 +347,41 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return aggregatedStatistics;
         }
 
+        public async Task<IEnumerable<AggregatedSetsMonthStatistics>> GetAggregatedMonthSetsAsync(int year, CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .Include(s => s.Exercise)
+                .ThenInclude(e => e.Settings)
+                .ToListAsync(cancellationToken);
+
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            List<AggregatedSetsMonthStatistics> aggregatedStatistics = sets
+                .Where(s => s.LoggedAt.ToOffset(offset).Year == year)
+                .GroupBy(s => s.LoggedAt.ToOffset(offset).Month)
+                .Select(group =>
+                {
+                    int groupKey = group.Key;
+                    return new AggregatedSetsMonthStatistics(groupKey, group.Count());
+                })
+                .ToList();
+
+            HashSet<int> existingMonths = aggregatedStatistics.Select(s => s.Month).ToHashSet();
+
+            for (int month = 1; month <= 12; month++)
+            {
+                if (!existingMonths.Contains(month))
+                {
+                    aggregatedStatistics.Add(new AggregatedSetsMonthStatistics(month, 0));
+                }
+            }
+
+            aggregatedStatistics.Sort((x, y) => x.Month.CompareTo(y.Month));
+
+            return aggregatedStatistics;
+        }
+
         public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             List<UserSet> setEntities = await _dbContext.Sets

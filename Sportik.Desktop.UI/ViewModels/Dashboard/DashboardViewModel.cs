@@ -24,6 +24,22 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             private set => SetField(ref _barChartData, value);
         }
 
+        private StatisticsCard _bestStatistic;
+
+        public StatisticsCard BestStatistic
+        {
+            get => _bestStatistic;
+            private set => SetField(ref _bestStatistic, value);
+        }
+
+        private StatisticsCard _averageStatistic;
+
+        public StatisticsCard AverageStatistic
+        {
+            get => _averageStatistic;
+            private set => SetField(ref _averageStatistic, value);
+        }
+
         private ObservableCollection<DashboardGroupingOption> _groupingOptions;
 
         public ObservableCollection<DashboardGroupingOption> GroupingOptions
@@ -245,6 +261,33 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             }
 
             BarChartData = new ObservableCollection<BarChartColumn>(result.Value);
+
+            UpdateStatistics(result.Value);
+        }
+
+        private void UpdateStatistics(IEnumerable<BarChartColumn> columns)
+        {
+            List<BarChartColumn> columnList = columns.ToList();
+
+            if (columnList.Count == 0)
+            {
+                BestStatistic = new StatisticsCard("Best", "—", "No data");
+                AverageStatistic = new StatisticsCard("Average", "—", "No data");
+                return;
+            }
+
+            BarChartColumn best = columnList.OrderByDescending(c => Convert.ToDouble(c.Value ?? 0)).First();
+            double average = columnList.Average(c => Convert.ToDouble(c.Value ?? 0));
+
+            BestStatistic = new StatisticsCard(
+                "Best",
+                best.Value?.ToString() ?? "0",
+                best.Key?.ToString() ?? string.Empty);
+
+            AverageStatistic = new StatisticsCard(
+                "Average",
+                average.ToString("0.##"),
+                $"{columnList.Count} entr{(columnList.Count == 1 ? "y" : "ies")}");
         }
     }
 }

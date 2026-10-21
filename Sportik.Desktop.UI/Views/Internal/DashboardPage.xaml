@@ -158,12 +158,60 @@
             <Grid>
 
                 <StackPanel>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               Margin="0 0 0 10">
-                        <Run Text="{Binding SelectedTargetOption.Name}" />
-                        <Run Text="statistics grouped by" />
-                        <Run Text="{Binding SelectedGroupingOption.Name}" />
-                    </TextBlock>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 0 0 15">
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="15"
+                                MinWidth="180"
+                                Margin="0 0 15 0">
+
+                            <StackPanel>
+                                <TextBlock Text="{Binding BestStatistic.Title}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           FontSize="16"
+                                           FontWeight="Medium" />
+
+                                <TextBlock Text="{Binding BestStatistic.Value}"
+                                           FontSize="28"
+                                           FontWeight="Bold"
+                                           Margin="0 4 0 4" />
+
+                                <TextBlock Text="{Binding BestStatistic.Subtitle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           FontSize="12" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="15"
+                                MinWidth="180">
+
+                            <StackPanel>
+                                <TextBlock Text="{Binding AverageStatistic.Title}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           FontSize="16"
+                                           FontWeight="Medium" />
+
+                                <TextBlock Text="{Binding AverageStatistic.Value}"
+                                           FontSize="28"
+                                           FontWeight="Bold"
+                                           Margin="0 4 0 4" />
+
+                                <TextBlock Text="{Binding AverageStatistic.Subtitle}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           FontSize="12" />
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
 
                     <charting:Chart Height="400">
 

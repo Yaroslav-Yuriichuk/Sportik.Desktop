@@ -5,5 +5,7 @@
         public DashboardGrouping LastGrouping { get; set; }
 
         public DashboardTarget LastTarget { get; set; }
+
+        public int LastYear { get; set; }
     }
 }

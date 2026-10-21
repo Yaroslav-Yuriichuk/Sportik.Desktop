@@ -4,5 +4,6 @@ namespace Sportik.Desktop.UI.Models.Dashboard
     {
         Exercise,
         Day,
+        Month,
     }
 }

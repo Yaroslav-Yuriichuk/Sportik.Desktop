@@ -6,7 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
+using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.UI.Constants;
 using Sportik.Desktop.UI.Models.Dashboard;
 using Sportik.Desktop.UI.ViewModels.Dashboard.BarChartLoaders;
 
@@ -20,6 +22,22 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
         {
             get => _barChartData;
             private set => SetField(ref _barChartData, value);
+        }
+
+        private StatisticsCard _bestStatistic;
+
+        public StatisticsCard BestStatistic
+        {
+            get => _bestStatistic;
+            private set => SetField(ref _bestStatistic, value);
+        }
+
+        private StatisticsCard _averageStatistic;
+
+        public StatisticsCard AverageStatistic
+        {
+            get => _averageStatistic;
+            private set => SetField(ref _averageStatistic, value);
         }
 
         private ObservableCollection<DashboardGroupingOption> _groupingOptions;
@@ -48,11 +66,10 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 {
                     TargetOptions = new ObservableCollection<DashboardTargetOption>(SelectedGroupingOption.TargetOptions);
 
-                    DashboardCache dashboardCache = new DashboardCache
-                    {
-                        LastGrouping = SelectedGroupingOption.Grouping,
-                        LastTarget = SelectedTargetOption.Target
-                    };
+                    DashboardCache dashboardCache = PersistentCacheService.GetOrNew<DashboardCache>();
+
+                    dashboardCache.LastGrouping = SelectedGroupingOption.Grouping;
+                    dashboardCache.LastTarget = SelectedTargetOption.Target;
 
                     PersistentCacheService.Set(dashboardCache);
 
@@ -92,10 +109,54 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                         return;
                     }
 
+                    DashboardCache dashboardCache = PersistentCacheService.GetOrNew<DashboardCache>();
+
+                    dashboardCache.LastGrouping = SelectedGroupingOption.Grouping;
+                    dashboardCache.LastTarget = SelectedTargetOption.Target;
+
+                    PersistentCacheService.Set(dashboardCache);
+
+                    _loadCts.Cancel();
+                    _loadCts = new CancellationTokenSource();
+
+                    _ = LoadDashboardAsync(SelectedGroupingOption.Grouping, SelectedTargetOption.Target, _loadCts.Token);
+                }
+            }
+        }
+
+        private ObservableCollection<DashboardYearOption> _yearOptions;
+
+        public ObservableCollection<DashboardYearOption> YearOptions
+        {
+            get => _yearOptions;
+            private set
+            {
+                if (SetField(ref _yearOptions, value))
+                {
+                    SetField(ref _selectedYearOption, value[0], nameof(SelectedYearOption));
+                }
+            }
+        }
+
+        private DashboardYearOption _selectedYearOption;
+
+        public DashboardYearOption SelectedYearOption
+        {
+            get => _selectedYearOption;
+            set
+            {
+                if (SetField(ref _selectedYearOption, value))
+                {
+                    if (value == null || SelectedGroupingOption?.Grouping != DashboardGrouping.Month)
+                    {
+                        return;
+                    }
+
                     DashboardCache dashboardCache = new DashboardCache
                     {
                         LastGrouping = SelectedGroupingOption.Grouping,
-                        LastTarget = SelectedTargetOption.Target
+                        LastTarget = SelectedTargetOption.Target,
+                        LastYear = SelectedYearOption.Year
                     };
 
                     PersistentCacheService.Set(dashboardCache);
@@ -126,13 +187,24 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 new DashboardTargetOption("Sets", DashboardTarget.Sets),
             };
 
+            List<DashboardTargetOption> monthTargetOptions = new List<DashboardTargetOption>
+            {
+                new DashboardTargetOption("Sets", DashboardTarget.Sets),
+            };
+
             List<DashboardGroupingOption> groupingOptions = new List<DashboardGroupingOption>
             {
                 new DashboardGroupingOption("Exercise", DashboardGrouping.Exercise, exerciseTargetOptions),
                 new DashboardGroupingOption("Day of Week", DashboardGrouping.Day, dayTargetOptions),
+                new DashboardGroupingOption("Month", DashboardGrouping.Month, monthTargetOptions),
             };
 
+            List<DashboardYearOption> yearOptions = DashboardConstants.Years
+                .Select(year => new DashboardYearOption(year.ToString(), year))
+                .ToList();
+
             DashboardGroupingOption selectedGroupingOption = groupingOptions[0];
+            DashboardYearOption selectedYearOption = yearOptions.First();
 
             List<DashboardTargetOption> targetOptions = selectedGroupingOption.TargetOptions.ToList();
             DashboardTargetOption selectedTargetOption = targetOptions.First();
@@ -146,7 +218,13 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
 
                 DashboardTargetOption lastSelectedTargetOption = targetOptions.FirstOrDefault(to => to.Target == dashboardCache.LastTarget);
                 selectedTargetOption = lastSelectedTargetOption ?? targetOptions.First();
+
+                DashboardYearOption lastSelectedYearOption = yearOptions.FirstOrDefault(yo => yo.Year == dashboardCache.LastYear);
+                selectedYearOption = lastSelectedYearOption ?? selectedYearOption;
             }
+
+            SetField(ref _yearOptions, new ObservableCollection<DashboardYearOption>(yearOptions), nameof(YearOptions));
+            SetField(ref _selectedYearOption, selectedYearOption, nameof(SelectedYearOption));
 
             SetField(ref _groupingOptions, new ObservableCollection<DashboardGroupingOption>(groupingOptions), nameof(GroupingOptions));
             SetField(ref _selectedGroupingOption, selectedGroupingOption, nameof(SelectedGroupingOption));
@@ -170,6 +248,7 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 DashboardGrouping.Exercise when target == DashboardTarget.Repetitions => new ExerciseRepetitionsBarChartLoader(ExerciseStatisticsService),
                 DashboardGrouping.Exercise when target == DashboardTarget.Sets => new ExerciseSetsBarChartLoader(ExerciseStatisticsService),
                 DashboardGrouping.Day when target == DashboardTarget.Sets => new DaySetsBarChartLoader(ExerciseStatisticsService),
+                DashboardGrouping.Month when target == DashboardTarget.Sets => new MonthSetsBarChartLoader(ExerciseStatisticsService, SelectedYearOption.Year),
                 _ => throw new ArgumentOutOfRangeException(nameof(grouping), grouping, null)
             };
 
@@ -182,6 +261,33 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             }
 
             BarChartData = new ObservableCollection<BarChartColumn>(result.Value);
+
+            UpdateStatistics(result.Value);
+        }
+
+        private void UpdateStatistics(IEnumerable<BarChartColumn> columns)
+        {
+            List<BarChartColumn> columnList = columns.ToList();
+
+            if (columnList.Count == 0)
+            {
+                BestStatistic = new StatisticsCard("Best", "—", "No data");
+                AverageStatistic = new StatisticsCard("Average", "—", "No data");
+                return;
+            }
+
+            BarChartColumn best = columnList.OrderByDescending(c => Convert.ToDouble(c.Value ?? 0)).First();
+            double average = columnList.Average(c => Convert.ToDouble(c.Value ?? 0));
+
+            BestStatistic = new StatisticsCard(
+                "Best",
+                best.Value?.ToString() ?? "0",
+                best.Key?.ToString() ?? string.Empty);
+
+            AverageStatistic = new StatisticsCard(
+                "Average",
+                average.ToString("0.##"),
+                $"{columnList.Count} entr{(columnList.Count == 1 ? "y" : "ies")}");
         }
     }
 }

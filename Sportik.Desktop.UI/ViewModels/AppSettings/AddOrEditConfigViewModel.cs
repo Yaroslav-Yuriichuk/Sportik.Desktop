@@ -1,18 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Export;
 using Sportik.Desktop.Core.Common.Import;
+using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models.AppSettings;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.UI.Helpers;
 using Sportik.Desktop.UI.Models;
 using Sportik.Desktop.UI.ViewModels.Statistics;
 
 namespace Sportik.Desktop.UI.ViewModels.AppSettings
 {
-    internal sealed class AddOrEditConfigViewModel : PopUpViewModel
+    internal sealed class AddOrEditConfigViewModel : PopUpViewModel, IDisposable
     {
         private ObservableCollection<DataExchangeTypeOption> _typeOptions;
 
@@ -93,23 +98,40 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
         public string GoogleSheetUrlOrId
         {
             get => _googleSheetUrlOrId;
-            set => SetField(ref _googleSheetUrlOrId, value);
+            set
+            {
+                if (SetField(ref _googleSheetUrlOrId, value))
+                {
+                    _loadSheetNamesCts?.Cancel();
+                    _loadSheetNamesCts = new CancellationTokenSource();
+
+                    _ = LoadSheetNamesAsync(value, _loadSheetNamesCts.Token);
+                }
+            }
         }
 
-        private string _exercisesSheetName;
+        private ObservableCollection<SheetOption> _sheetNames;
 
-        public string ExercisesSheetName
+        public ObservableCollection<SheetOption> SheetNames
         {
-            get => _exercisesSheetName;
-            set => SetField(ref _exercisesSheetName, value);
+            get => _sheetNames;
+            private set => SetField(ref _sheetNames, value);
         }
 
-        private string _setsSetsSheetName;
+        private SheetOption _selectedExercisesSheetOption;
 
-        public string SetsSheetName
+        public SheetOption SelectedExercisesSheetOption
         {
-            get => _setsSetsSheetName;
-            set => SetField(ref _setsSetsSheetName, value);
+            get => _selectedExercisesSheetOption;
+            set => SetField(ref _selectedExercisesSheetOption, value);
+        }
+
+        private SheetOption _selectedSetsSheetOption;
+
+        public SheetOption SelectedSetsSheetOption
+        {
+            get => _selectedSetsSheetOption;
+            set => SetField(ref _selectedSetsSheetOption, value);
         }
 
         private bool _validateDuplicates = true;
@@ -140,7 +162,10 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
 
         private IAppSettingsService AppSettingsService => App.ServiceProvider.GetRequiredService<IAppSettingsService>();
 
+        private CancellationTokenSource _loadSheetNamesCts;
         private IDataExchangeConfig _editedConfig;
+        private string _editedExercisesSheetName;
+        private string _editedSetsSheetName;
 
         public AddOrEditConfigViewModel()
         {
@@ -160,12 +185,20 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             SubmitCommand = new ReactiveRelayCommand(Submit);
         }
 
+        public void Dispose()
+        {
+            _loadSheetNamesCts?.Cancel();
+            _loadSheetNamesCts?.Dispose();
+        }
+
         public void OpenAdd()
         {
             _editedConfig = null;
 
             Title = "Add configuration";
             SubmitText = "Add";
+
+            SheetNames = new ObservableCollection<SheetOption>();
 
             Open();
         }
@@ -194,10 +227,10 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             _editedConfig = config;
 
             SelectedTypeOption = TypeOptions.FirstOrDefault(option => option.Type == config.Type) ?? TypeOptions[0];
-            SelectedScopeOption = ScopeOptions.FirstOrDefault(option => option.Scope == GetScope(exercisesSheetName, setsSheetName)) ?? ScopeOptions[0];
+            SelectedScopeOption = ScopeOptions.FirstOrDefault(option => option.Scope == GetScope(_editedExercisesSheetName, _editedSetsSheetName)) ?? ScopeOptions[0];
             GoogleSheetUrlOrId = sheetUrlOrId;
-            ExercisesSheetName = exercisesSheetName;
-            SetsSheetName = setsSheetName;
+            _editedExercisesSheetName = exercisesSheetName;
+            _editedSetsSheetName = setsSheetName;
             ValidateDuplicates = validateDuplicates;
 
             Title = "Edit configuration";
@@ -226,13 +259,44 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             return ImportExportScope.ExercisesAndSets;
         }
 
+        private async Task LoadSheetNamesAsync(string sheetUrlOrId, CancellationToken cancellationToken = default)
+        {
+            if (!GoogleSheetsHelper.TryParseSheetId(sheetUrlOrId, out _))
+            {
+                SheetNames = new ObservableCollection<SheetOption>();
+                SelectedExercisesSheetOption = null;
+                SelectedSetsSheetOption = null;
+                return;
+            }
+
+            IReadOnlyList<string> names = await GoogleSheetsHelper.GetSheetNamesAsync(sheetUrlOrId, cancellationToken);
+
+            await UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                SheetNames = new ObservableCollection<SheetOption>(names.Select(n => new SheetOption(n)));
+
+                SelectedExercisesSheetOption = SheetNames.FirstOrDefault(o => o.Name == _editedExercisesSheetName) ?? SheetNames[0];
+                SelectedSetsSheetOption = SheetNames.FirstOrDefault(o => o.Name == _editedSetsSheetName) ?? SheetNames[0];
+            }, cancellationToken: cancellationToken);
+        }
+
         private void Submit()
         {
             DataExchangeType type = Type;
             ImportExportScope scope = Scope;
             string googleSheetUrlOrId = GoogleSheetUrlOrId;
-            string exercisesSheetName = scope == ImportExportScope.Exercises || scope == ImportExportScope.ExercisesAndSets ? ExercisesSheetName : null;
-            string setsSheetName = scope == ImportExportScope.Sets || scope == ImportExportScope.ExercisesAndSets ? SetsSheetName : null;
+            string exercisesSheetName = scope == ImportExportScope.Exercises || scope == ImportExportScope.ExercisesAndSets ? _editedExercisesSheetName : null;
+            string setsSheetName = scope == ImportExportScope.Sets || scope == ImportExportScope.ExercisesAndSets ? _editedSetsSheetName : null;
+
+            if (string.IsNullOrWhiteSpace(googleSheetUrlOrId))
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName))
+            {
+                return;
+            }
 
             IDataExchangeConfig config = type switch
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -8,7 +9,9 @@ using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Export;
 using Sportik.Desktop.Core.Extensions;
+using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.UI.Helpers;
 using Sportik.Desktop.UI.Models;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
@@ -65,23 +68,40 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public string GoogleSheetUrlOrId
         {
             get => _googleSheetUrlOrId;
-            set => SetField(ref _googleSheetUrlOrId, value);
+            set
+            {
+                if (SetField(ref _googleSheetUrlOrId, value))
+                {
+                    _loadSheetNamesCts?.Cancel();
+                    _loadSheetNamesCts = new CancellationTokenSource();
+
+                    _ = LoadSheetNamesAsync(value, _loadSheetNamesCts.Token);
+                }
+            }
         }
 
-        private string _exercisesSheetName;
+        private ObservableCollection<SheetOption> _sheetNames;
 
-        public string ExercisesSheetName
+        public ObservableCollection<SheetOption> SheetNames
         {
-            get => _exercisesSheetName;
-            set => SetField(ref _exercisesSheetName, value);
+            get => _sheetNames;
+            private set => SetField(ref _sheetNames, value);
         }
 
-        private string _setsSetsSheetName;
+        private SheetOption _selectedExercisesSheetOption;
 
-        public string SetsSheetName
+        public SheetOption SelectedExercisesSheetOption
         {
-            get => _setsSetsSheetName;
-            set => SetField(ref _setsSetsSheetName, value);
+            get => _selectedExercisesSheetOption;
+            set => SetField(ref _selectedExercisesSheetOption, value);
+        }
+
+        private SheetOption _selectedSetsSheetOption;
+
+        public SheetOption SelectedSetsSheetOption
+        {
+            get => _selectedSetsSheetOption;
+            set => SetField(ref _selectedSetsSheetOption, value);
         }
 
         public ReactiveRelayCommand ExportCommand { get; }
@@ -91,6 +111,8 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         private IPersistentCacheService PersistentCacheService => App.ServiceProvider.GetRequiredService<IPersistentCacheService>();
 
         private readonly CancellationTokenSource _exportCts = new CancellationTokenSource();
+
+        private CancellationTokenSource _loadSheetNamesCts;
 
         public ExportViewModel()
         {
@@ -115,8 +137,6 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 }
 
                 GoogleSheetUrlOrId = importExportCache.LastExportGoogleSheetUrlOrId;
-                ExercisesSheetName = importExportCache.LastExportExercisesSheetName;
-                SetsSheetName = importExportCache.LastExportSetsSheetName;
             }
         }
 
@@ -124,6 +144,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         {
             _exportCts.Cancel();
             _exportCts.Dispose();
+
+            _loadSheetNamesCts?.Cancel();
+            _loadSheetNamesCts?.Dispose();
         }
 
         public void Open()
@@ -141,6 +164,29 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             IsOpen = false;
         }
 
+        private async Task LoadSheetNamesAsync(string sheetUrlOrId, CancellationToken cancellationToken = default)
+        {
+            if (!GoogleSheetsHelper.TryParseSheetId(sheetUrlOrId, out _))
+            {
+                SheetNames = new ObservableCollection<SheetOption>();
+                SelectedExercisesSheetOption = null;
+                SelectedSetsSheetOption = null;
+                return;
+            }
+
+            IReadOnlyList<string> names = await GoogleSheetsHelper.GetSheetNamesAsync(sheetUrlOrId, cancellationToken);
+
+            ImportExportCache importExportCache = PersistentCacheService.GetOrNew<ImportExportCache>();
+
+            await UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                SheetNames = new ObservableCollection<SheetOption>(names.Select(n => new SheetOption(n)));
+
+                SelectedExercisesSheetOption = SheetNames.FirstOrDefault(o => o.Name == importExportCache.LastExportExercisesSheetName) ?? SheetNames[0];
+                SelectedSetsSheetOption = SheetNames.FirstOrDefault(o => o.Name == importExportCache.LastExportSetsSheetName) ?? SheetNames[0];
+            }, cancellationToken: cancellationToken);
+        }
+
         private async Task ExportAsync(CancellationToken cancellationToken)
         {
             ExportCommand.IsExecutable = false;
@@ -148,8 +194,24 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             ImportExportScope scope = Scope;
             string googleSheetUrlOrId = GoogleSheetUrlOrId;
-            string exercisesSheetName = ExercisesSheetName;
-            string setsSheetName = SetsSheetName;
+            string exercisesSheetName = SelectedExercisesSheetOption?.Name;
+            string setsSheetName = SelectedSetsSheetOption?.Name;
+
+            if (string.IsNullOrWhiteSpace(googleSheetUrlOrId))
+            {
+                ExportCommand.IsExecutable = true;
+                CloseCommand.IsExecutable = true;
+
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName))
+            {
+                ExportCommand.IsExecutable = true;
+                CloseCommand.IsExecutable = true;
+
+                return;
+            }
 
             IDataExchanger exporter = scope switch
             {

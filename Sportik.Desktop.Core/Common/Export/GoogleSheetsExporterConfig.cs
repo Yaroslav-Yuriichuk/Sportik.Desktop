@@ -1,3 +1,4 @@
+using System;
 using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Helpers;
 
@@ -19,6 +20,16 @@ namespace Sportik.Desktop.Core.Common.Export
 
         public GoogleSheetsExporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
         {
+            if (string.IsNullOrWhiteSpace(sheetUrlOrId))
+            {
+                throw new InvalidOperationException("Sheet url or id cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName))
+            {
+                throw new InvalidOperationException("Exercises and sets sheet name cannot be empty.");
+            }
+
             SheetUrlOrId = sheetUrlOrId;
             ExercisesSheetName = exercisesSheetName;
             SetsSheetName = setsSheetName;

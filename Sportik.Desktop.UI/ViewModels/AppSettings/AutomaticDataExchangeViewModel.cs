@@ -44,6 +44,8 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             EventsService.RemoveListener<DataExchangeConfigAddedEventArgs>(EventsService_Event);
             EventsService.RemoveListener<DataExchangeConfigRemovedEventArgs>(EventsService_Event);
             EventsService.RemoveListener<DataExchangeConfigEditedEventArgs>(EventsService_Event);
+
+            AddOrEditConfig.Dispose();
         }
 
         private void OpenAddConfig()

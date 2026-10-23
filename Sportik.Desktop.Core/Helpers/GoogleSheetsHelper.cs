@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4;
+using Google.Apis.Sheets.v4.Data;
 
 namespace Sportik.Desktop.Core.Helpers
 {
-    internal static class GoogleSheetsHelper
+    public static class GoogleSheetsHelper
     {
         public static string LoadServiceAccountJson(string fileName)
         {
@@ -75,6 +82,35 @@ namespace Sportik.Desktop.Core.Helpers
 
             sheetId = urlOrId;
             return true;
+        }
+
+        public static async Task<IReadOnlyList<string>> GetSheetNamesAsync(string sheetUrlOrId, CancellationToken cancellationToken = default)
+        {
+            if (!TryParseSheetId(sheetUrlOrId, out string sheetId))
+            {
+                return new List<string>();
+            }
+
+            string serviceAccountJson = LoadServiceAccountJson("google-service-account.json");
+
+            GoogleCredential credential = GoogleCredential
+                .FromJson(serviceAccountJson)
+                .CreateScoped(SheetsService.Scope.Spreadsheets);
+
+            using SheetsService sheetsService = new SheetsService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Sportik.Desktop"
+            });
+
+            Spreadsheet spreadsheet = await sheetsService.Spreadsheets.Get(sheetId).ExecuteAsync(cancellationToken);
+
+            List<string> sheetNames = spreadsheet.Sheets
+                .Select(sheet => sheet.Properties?.Title)
+                .Where(title => !string.IsNullOrWhiteSpace(title))
+                .ToList();
+
+            return sheetNames;
         }
     }
 }

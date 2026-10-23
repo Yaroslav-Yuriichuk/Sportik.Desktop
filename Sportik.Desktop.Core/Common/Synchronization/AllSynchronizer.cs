@@ -109,7 +109,7 @@ namespace Sportik.Desktop.Core.Common.Synchronization
 
             foreach (ExerciseSet exerciseSet in addLocalSetsTask.Result)
             {
-                EventsService.RaiseEvent(new ExerciseSetAddedEventArgs(exerciseSet, false));
+                EventsService.RaiseEvent(new ExerciseSetAddedEventArgs(exerciseSet, CreationSource.Synchronization));
             }
         }
     }

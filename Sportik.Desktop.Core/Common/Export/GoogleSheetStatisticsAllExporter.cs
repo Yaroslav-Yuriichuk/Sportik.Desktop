@@ -8,19 +8,19 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Helpers;
-using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.ImportExport;
 
 namespace Sportik.Desktop.Core.Common.Export
 {
-    public sealed class GoogleSheetStatisticsExporter : StatisticsExporterBase
+    public sealed class GoogleSheetStatisticsAllExporter : StatisticsAllExporterBase
     {
         private readonly string _sheetUrlOrId;
         private readonly string _exercisesSheetName;
         private readonly string _setsSheetName;
 
-        public GoogleSheetStatisticsExporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
+        public GoogleSheetStatisticsAllExporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
         {
             if (string.IsNullOrWhiteSpace(sheetUrlOrId))
             {

@@ -7,6 +7,6 @@ namespace Sportik.Desktop.Core.Services.Interfaces
 {
     public interface IDataExchangeService
     {
-        Task<OperationResult> ExchangeAsync(IDataExchanger exchanger, CancellationToken cancellationToken = default);
+        Task<OperationResult> ExchangeAsync(IDataExchanger exchanger, DataExchangeContext context = null, CancellationToken cancellationToken = default);
     }
 }

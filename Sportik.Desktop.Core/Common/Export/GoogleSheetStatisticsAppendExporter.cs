@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,20 +8,20 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.ImportExport;
 
-namespace Sportik.Desktop.Core.Common.Import
+namespace Sportik.Desktop.Core.Common.Export
 {
-    public sealed class GoogleSheetStatisticsImporter : StatisticsImporterBase
+    public sealed class GoogleSheetStatisticsAppendExporter : StatisticsAppendExporterBase
     {
         private readonly string _sheetUrlOrId;
         private readonly string _exercisesSheetName;
         private readonly string _setsSheetName;
 
-        public GoogleSheetStatisticsImporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, bool validateDuplicates)
-            : base(validateDuplicates)
+        public GoogleSheetStatisticsAppendExporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
         {
             if (string.IsNullOrWhiteSpace(sheetUrlOrId))
             {
@@ -38,17 +38,17 @@ namespace Sportik.Desktop.Core.Common.Import
             _setsSheetName = setsSheetName;
         }
 
-        protected override bool ToImportExercises()
+        protected override bool ToExportExercises()
         {
             return !string.IsNullOrWhiteSpace(_exercisesSheetName);
         }
 
-        protected override bool ToImportSets()
+        protected override bool ToExportSets()
         {
             return !string.IsNullOrWhiteSpace(_setsSheetName);
         }
 
-        protected override async Task<IList<ImportExercise>> GetExercisesAsync(CancellationToken cancellationToken)
+        protected override async Task AppendExercisesAsync(IList<ExportExercise> exercises, CancellationToken cancellationToken)
         {
             if (!GoogleSheetsHelper.TryParseSheetId(_sheetUrlOrId, out string sheetId))
             {
@@ -56,7 +56,6 @@ namespace Sportik.Desktop.Core.Common.Import
             }
 
             string serviceAccountJson = GoogleSheetsHelper.LoadServiceAccountJson("google-service-account.json");
-
             GoogleCredential credential = GoogleCredential
                 .FromJson(serviceAccountJson)
                 .CreateScoped(SheetsService.Scope.Spreadsheets);
@@ -68,29 +67,34 @@ namespace Sportik.Desktop.Core.Common.Import
             });
 
             string escapedExercisesSheetName = GoogleSheetsHelper.EscapeSheetName(_exercisesSheetName);
-            string readRange = $"{escapedExercisesSheetName}!A:D";
+            string appendRange = $"{escapedExercisesSheetName}!A:D";
 
-            SpreadsheetsResource.ValuesResource.GetRequest request =
-                sheetsService.Spreadsheets.Values.Get(sheetId, readRange);
+            List<IList<object>> values = exercises
+                .Select(exercise => (IList<object>)new List<object>
+                {
+                    exercise.Name,
+                    exercise.TargetRepetitions,
+                    exercise.TimeBetweenSets.TotalMinutes,
+                    exercise.ExecutionTime.TotalMinutes,
+                })
+                .ToList();
 
-            ValueRange response = await request.ExecuteAsync(cancellationToken);
-
-            List<ImportExercise> importExercises = new List<ImportExercise>();
-
-            foreach (IList<object> row in response.Values ?? Enumerable.Empty<IList<object>>())
+            if (values.Count == 0)
             {
-                string exerciseName = row[0].ToString();
-                int targetRepetitions = int.Parse(row[1].ToString());
-                TimeSpan timeBetweenSets = TimeSpan.FromMinutes(double.Parse(row[2].ToString()));
-                TimeSpan executionTime = TimeSpan.FromMinutes(double.Parse(row[3].ToString()));
-
-                importExercises.Add(new ImportExercise(exerciseName, targetRepetitions, timeBetweenSets, executionTime));
+                return;
             }
 
-            return importExercises;
+            ValueRange appendBody = new ValueRange { Values = values };
+            SpreadsheetsResource.ValuesResource.AppendRequest appendRequest =
+                sheetsService.Spreadsheets.Values.Append(appendBody, sheetId, appendRange);
+
+            appendRequest.ValueInputOption =
+                SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.RAW;
+
+            await appendRequest.ExecuteAsync(cancellationToken);
         }
 
-        protected override async Task<IList<ImportSet>> GetSetsAsync(CancellationToken cancellationToken)
+        protected override async Task AppendSetsAsync(IList<ExportSet> sets, CancellationToken cancellationToken)
         {
             if (!GoogleSheetsHelper.TryParseSheetId(_sheetUrlOrId, out string sheetId))
             {
@@ -98,7 +102,6 @@ namespace Sportik.Desktop.Core.Common.Import
             }
 
             string serviceAccountJson = GoogleSheetsHelper.LoadServiceAccountJson("google-service-account.json");
-
             GoogleCredential credential = GoogleCredential
                 .FromJson(serviceAccountJson)
                 .CreateScoped(SheetsService.Scope.Spreadsheets);
@@ -110,25 +113,30 @@ namespace Sportik.Desktop.Core.Common.Import
             });
 
             string escapedSetsSheetName = GoogleSheetsHelper.EscapeSheetName(_setsSheetName);
-            string readRange = $"{escapedSetsSheetName}!A:C";
+            string appendRange = $"{escapedSetsSheetName}!A:C";
 
-            SpreadsheetsResource.ValuesResource.GetRequest request =
-                sheetsService.Spreadsheets.Values.Get(sheetId, readRange);
+            List<IList<object>> values = sets
+                .Select(set => (IList<object>)new List<object>
+                {
+                    set.Name,
+                    set.LoggedAt.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture),
+                    set.Repetitions,
+                })
+                .ToList();
 
-            ValueRange response = await request.ExecuteAsync(cancellationToken);
-
-            List<ImportSet> importExercises = new List<ImportSet>();
-
-            foreach (IList<object> row in response.Values ?? Enumerable.Empty<IList<object>>())
+            if (values.Count == 0)
             {
-                string exerciseName = row[0].ToString();
-                DateTimeOffset loggedAt = DateTimeOffset.Parse(row[1].ToString(), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-                int repetitions = int.Parse(row[2].ToString());
-
-                importExercises.Add(new ImportSet(exerciseName, loggedAt, repetitions));
+                return;
             }
 
-            return importExercises;
+            ValueRange appendBody = new ValueRange { Values = values };
+            SpreadsheetsResource.ValuesResource.AppendRequest appendRequest =
+                sheetsService.Spreadsheets.Values.Append(appendBody, sheetId, appendRange);
+
+            appendRequest.ValueInputOption =
+                SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.RAW;
+
+            await appendRequest.ExecuteAsync(cancellationToken);
         }
     }
 }

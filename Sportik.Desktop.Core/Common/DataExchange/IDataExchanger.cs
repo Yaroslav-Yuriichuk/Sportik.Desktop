@@ -12,6 +12,6 @@ namespace Sportik.Desktop.Core.Common.DataExchange
             IExerciseStatisticsRepository exerciseStatisticsRepository,
             IEventsService eventsService);
 
-        Task ExchangeAsync(CancellationToken cancellationToken);
+        Task ExchangeAsync(DataExchangeContext context, CancellationToken cancellationToken);
     }
 }

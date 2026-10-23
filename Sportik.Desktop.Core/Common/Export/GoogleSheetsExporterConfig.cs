@@ -35,9 +35,14 @@ namespace Sportik.Desktop.Core.Common.Export
             SetsSheetName = setsSheetName;
         }
 
-        public IDataExchanger CreateExchanger()
+        public IDataExchanger CreateExchanger(DataExchangeMode mode)
         {
-            return new GoogleSheetStatisticsExporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName);
+            return mode switch
+            {
+                DataExchangeMode.All => new GoogleSheetStatisticsAllExporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName),
+                DataExchangeMode.Append => new GoogleSheetStatisticsAppendExporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName),
+                _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, "Invalid data exchange mode.")
+            };
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Sportik.Desktop.Core.Common.Import
             _eventsService = eventsService;
         }
 
-        public async Task ExchangeAsync(CancellationToken cancellationToken)
+        public async Task ExchangeAsync(DataExchangeContext context, CancellationToken cancellationToken)
         {
             if (_exercisesRepository is null || _exerciseStatisticsRepository is null || _eventsService is null)
             {
@@ -48,16 +48,14 @@ namespace Sportik.Desktop.Core.Common.Import
                 IList<ImportExercise> importExercises = await GetExercisesAsync(cancellationToken);
                 IList<AddExerciseModel> exercisesToAdd = await FilterExercises(importExercises, cancellationToken);
 
-                if (exercisesToAdd.Count == 0)
+                if (exercisesToAdd.Count > 0)
                 {
-                    return;
-                }
+                    IEnumerable<Exercise> addedExercises = await _exercisesRepository.AddRangeAsync(exercisesToAdd, cancellationToken);
 
-                IEnumerable<Exercise> addedExercises = await _exercisesRepository.AddRangeAsync(exercisesToAdd, cancellationToken);
-
-                foreach (Exercise addedExercise in addedExercises)
-                {
-                    _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(addedExercise, CreationSource.Import));
+                    foreach (Exercise addedExercise in addedExercises)
+                    {
+                        _eventsService.RaiseEvent(new ExerciseCreatedEventArgs(addedExercise, CreationSource.Import));
+                    }
                 }
             }
 
@@ -66,16 +64,14 @@ namespace Sportik.Desktop.Core.Common.Import
                 IList<ImportSet> importSets = await GetSetsAsync(cancellationToken);
                 IList<AddExerciseSetModel> setsToAdd = await FilterSets(importSets, cancellationToken);
 
-                if (setsToAdd.Count == 0)
+                if (setsToAdd.Count > 0)
                 {
-                    return;
-                }
+                    IEnumerable<ExerciseSet> addedSets = await _exerciseStatisticsRepository.AddRangeAsync(setsToAdd, cancellationToken);
 
-                IEnumerable<ExerciseSet> addedSets = await _exerciseStatisticsRepository.AddRangeAsync(setsToAdd, cancellationToken);
-
-                foreach (ExerciseSet addedSet in addedSets)
-                {
-                    _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(addedSet, true));
+                    foreach (ExerciseSet addedSet in addedSets)
+                    {
+                        _eventsService.RaiseEvent(new ExerciseSetAddedEventArgs(addedSet, CreationSource.Import));
+                    }
                 }
             }
         }

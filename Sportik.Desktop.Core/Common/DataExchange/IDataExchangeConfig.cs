@@ -8,6 +8,6 @@ namespace Sportik.Desktop.Core.Common.DataExchange
 
         string Description { get; }
 
-        IDataExchanger CreateExchanger();
+        IDataExchanger CreateExchanger(DataExchangeMode mode);
     }
 }

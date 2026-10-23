@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Sportik.Desktop.UI.Views.Internal.AppSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -19,6 +19,7 @@
         <converters:BoolToInvertedVisibilityConverter x:Name="BoolToInvertedVisibilityConverter" />
         <converters:DataExchangeOptionToStringConverter x:Name="DataExchangeOptionToStringConverter" />
         <converters:EnumTargetValueToVisibilityConverter x:Name="EnumTargetValueToVisibilityConverter" />
+        <converters:EnumFlagsToVisibilityConverter x:Name="EnumFlagsToVisibilityConverter" />
     </Page.Resources>
 
     <Grid>
@@ -228,13 +229,13 @@
                     <TextBlock Text="Exercises sheet name"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 5"
-                               Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}" />
+                               Visibility="{Binding Scope, Converter={StaticResource EnumFlagsToVisibilityConverter}, ConverterParameter='Exercises'}" />
 
                     <ComboBox HorizontalAlignment="Stretch"
                               Margin="0 0 0 15"
                               ItemsSource="{Binding SheetNames}"
                               SelectedItem="{Binding SelectedExercisesSheetOption, Mode=TwoWay}"
-                              Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Exercises,ExercisesAndSets'}">
+                              Visibility="{Binding Scope, Converter={StaticResource EnumFlagsToVisibilityConverter}, ConverterParameter='Exercises'}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}"/>
@@ -245,13 +246,13 @@
                     <TextBlock Text="Sets sheet name"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="0 0 0 5"
-                               Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Sets,ExercisesAndSets'}" />
+                               Visibility="{Binding Scope, Converter={StaticResource EnumFlagsToVisibilityConverter}, ConverterParameter='Sets'}" />
 
                     <ComboBox HorizontalAlignment="Stretch"
                               Margin="0 0 0 15"
                               ItemsSource="{Binding SheetNames}"
                               SelectedItem="{Binding SelectedSetsSheetOption, Mode=TwoWay}"
-                              Visibility="{Binding Scope, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Sets,ExercisesAndSets'}">
+                              Visibility="{Binding Scope, Converter={StaticResource EnumFlagsToVisibilityConverter}, ConverterParameter='Sets'}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}"/>

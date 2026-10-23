@@ -1,8 +1,10 @@
+using Sportik.Desktop.Core.Common.DataExchange;
+
 namespace Sportik.Desktop.UI.Models
 {
     internal sealed class ImportExportCache
     {
-        public ImportExportScope LastImportScope { get; set; }
+        public DataExchangeScope LastImportScope { get; set; }
 
         public string LastImportGoogleSheetUrlOrId { get; set; }
 
@@ -10,7 +12,7 @@ namespace Sportik.Desktop.UI.Models
 
         public string LastImportSetsSheetName { get; set; }
 
-        public ImportExportScope LastExportScope { get; set; }
+        public DataExchangeScope LastExportScope { get; set; }
 
         public string LastExportGoogleSheetUrlOrId { get; set; }
 

@@ -38,9 +38,9 @@ namespace Sportik.Desktop.Core.Common.Import
             ValidateDuplicates = validateDuplicates;
         }
 
-        public IDataExchanger CreateExchanger()
+        public IDataExchanger CreateExchanger(DataExchangeMode mode)
         {
-            return new GoogleSheetStatisticsImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, ValidateDuplicates);
+            return new GoogleSheetStatisticsAllImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, ValidateDuplicates);
         }
     }
 }

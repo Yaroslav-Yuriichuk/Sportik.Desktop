@@ -55,14 +55,14 @@ namespace Sportik.Desktop.Core.Services.Implementations
             _exerciseStatisticsRepositoryFactory = exerciseStatisticsRepositoryFactory;
         }
 
-        public async Task<OperationResult> ExchangeAsync(IDataExchanger exchanger, CancellationToken cancellationToken = default)
+        public async Task<OperationResult> ExchangeAsync(IDataExchanger exchanger, DataExchangeContext context = null, CancellationToken cancellationToken = default)
         {
             await _semaphore.WaitAsync(cancellationToken);
 
             try
             {
                 exchanger.Initialize(ExercisesRepository, ExerciseStatisticsRepository, _eventsService);
-                await exchanger.ExchangeAsync(cancellationToken);
+                await exchanger.ExchangeAsync(context, cancellationToken);
 
                 return OperationResult.Success();
             }

@@ -55,9 +55,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             }
         }
 
-        private ImportExportScope _scope;
+        private DataExchangeScope _scope;
 
-        public ImportExportScope Scope
+        public DataExchangeScope Scope
         {
             get => _scope;
             private set => SetField(ref _scope, value);
@@ -118,9 +118,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         {
             ScopeOptions = new ObservableCollection<ImportExportScopeOption>
             {
-                new ImportExportScopeOption("Exercises and Sets", ImportExportScope.ExercisesAndSets),
-                new ImportExportScopeOption("Exercises only", ImportExportScope.Exercises),
-                new ImportExportScopeOption("Sets only", ImportExportScope.Sets)
+                new ImportExportScopeOption("Exercises and Sets", DataExchangeScope.ExercisesAndSets),
+                new ImportExportScopeOption("Exercises only", DataExchangeScope.Exercises),
+                new ImportExportScopeOption("Sets only", DataExchangeScope.Sets)
             };
 
             ExportCommand = new ReactiveRelayCommand(Export);
@@ -192,10 +192,10 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ExportCommand.IsExecutable = false;
             CloseCommand.IsExecutable = false;
 
-            ImportExportScope scope = Scope;
+            DataExchangeScope scope = Scope;
             string googleSheetUrlOrId = GoogleSheetUrlOrId;
-            string exercisesSheetName = SelectedExercisesSheetOption?.Name;
-            string setsSheetName = SelectedSetsSheetOption?.Name;
+            string exercisesSheetName = scope.HasFlag(DataExchangeScope.Exercises) ? SelectedExercisesSheetOption?.Name : null;
+            string setsSheetName = scope.HasFlag(DataExchangeScope.Sets) ? SelectedSetsSheetOption?.Name : null;
 
             if (string.IsNullOrWhiteSpace(googleSheetUrlOrId))
             {
@@ -215,13 +215,13 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             IDataExchanger exporter = scope switch
             {
-                ImportExportScope.Exercises => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, exercisesSheetName, null),
-                ImportExportScope.Sets => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, null, setsSheetName),
-                ImportExportScope.ExercisesAndSets => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName),
-                _ => throw new ArgumentOutOfRangeException(nameof(Scope), Scope, "Invalid import/export scope.")
+                DataExchangeScope.Exercises => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, exercisesSheetName, null),
+                DataExchangeScope.Sets => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, null, setsSheetName),
+                DataExchangeScope.ExercisesAndSets => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName),
+                _ => throw new ArgumentOutOfRangeException(nameof(scope), scope, "Invalid export scope.")
             };
 
-            OperationResult result = await DataExchangeService.ExchangeAsync(exporter, cancellationToken);
+            OperationResult result = await DataExchangeService.ExchangeAsync(exporter, null, cancellationToken);
 
             ExportCommand.IsExecutable = true;
             CloseCommand.IsExecutable = true;
@@ -233,12 +233,12 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 importExportCache.LastExportScope = scope;
                 importExportCache.LastExportGoogleSheetUrlOrId = googleSheetUrlOrId;
 
-                if (scope == ImportExportScope.Exercises || scope == ImportExportScope.ExercisesAndSets)
+                if (scope.HasFlag(DataExchangeScope.Exercises))
                 {
                     importExportCache.LastExportExercisesSheetName = exercisesSheetName;
                 }
 
-                if (scope == ImportExportScope.Sets || scope == ImportExportScope.ExercisesAndSets)
+                if (scope.HasFlag(DataExchangeScope.Sets))
                 {
                     importExportCache.LastExportSetsSheetName = setsSheetName;
                 }

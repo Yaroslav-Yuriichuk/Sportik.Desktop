@@ -122,7 +122,7 @@ namespace Sportik.Desktop.Core.Common.Import
             foreach (IList<object> row in response.Values ?? Enumerable.Empty<IList<object>>())
             {
                 string exerciseName = row[0].ToString();
-                DateTimeOffset loggedAt = DateTimeOffset.Parse(row[1].ToString());
+                DateTimeOffset loggedAt = DateTimeOffset.Parse(row[1].ToString(), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
                 int repetitions = int.Parse(row[2].ToString());
 
                 importExercises.Add(new ImportSet(exerciseName, loggedAt, repetitions));

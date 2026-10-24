@@ -8,7 +8,6 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models.ImportExport;
 
@@ -19,22 +18,24 @@ namespace Sportik.Desktop.Core.Common.Export
         private readonly string _sheetUrlOrId;
         private readonly string _exercisesSheetName;
         private readonly string _setsSheetName;
+        private readonly string _weekGoalsSheetName;
 
-        public GoogleSheetStatisticsAllExporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
+        public GoogleSheetStatisticsAllExporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName)
         {
             if (string.IsNullOrWhiteSpace(sheetUrlOrId))
             {
                 throw new InvalidOperationException("Sheet url or id cannot be empty.");
             }
 
-            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName))
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName) && string.IsNullOrWhiteSpace(weekGoalsSheetName))
             {
-                throw new InvalidOperationException("Exercises and sets sheet name cannot be empty.");
+                throw new InvalidOperationException("Exercises, sets, and week goals sheet names cannot be empty.");
             }
 
             _sheetUrlOrId = sheetUrlOrId;
             _exercisesSheetName = exercisesSheetName;
             _setsSheetName = setsSheetName;
+            _weekGoalsSheetName = weekGoalsSheetName;
         }
 
         protected override bool ToExportExercises()
@@ -45,6 +46,11 @@ namespace Sportik.Desktop.Core.Common.Export
         protected override bool ToExportSets()
         {
             return !string.IsNullOrWhiteSpace(_setsSheetName);
+        }
+
+        protected override bool ToExportWeekGoals()
+        {
+            return !string.IsNullOrWhiteSpace(_weekGoalsSheetName);
         }
 
         protected override async Task WriteExercisesAsync(IList<ExportExercise> exercises, CancellationToken cancellationToken)
@@ -142,6 +148,64 @@ namespace Sportik.Desktop.Core.Common.Export
                     set.Name,
                     set.LoggedAt.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture),
                     set.Repetitions,
+                })
+                .ToList();
+
+            if (values.Count == 0)
+            {
+                return;
+            }
+
+            ValueRange updateBody = new ValueRange
+            {
+                Values = values,
+            };
+
+            SpreadsheetsResource.ValuesResource.UpdateRequest updateRequest =
+                sheetsService.Spreadsheets.Values.Update(updateBody, sheetId, writeRange);
+
+            updateRequest.ValueInputOption =
+                SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
+
+            await updateRequest.ExecuteAsync(cancellationToken);
+        }
+
+        protected override async Task WriteWeekGoalsAsync(IList<ExportExerciseGoal> weekGoals, CancellationToken cancellationToken)
+        {
+            if (!GoogleSheetsHelper.TryParseSheetId(_sheetUrlOrId, out string sheetId))
+            {
+                throw new InvalidOperationException("Invalid sheet url or id.");
+            }
+
+            string serviceAccountJson = GoogleSheetsHelper.LoadServiceAccountJson("google-service-account.json");
+
+            GoogleCredential credential = GoogleCredential
+                .FromJson(serviceAccountJson)
+                .CreateScoped(SheetsService.Scope.Spreadsheets);
+
+            using SheetsService sheetsService = new SheetsService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Sportik.Desktop"
+            });
+
+            string escapedWeekGoalsSheetName = GoogleSheetsHelper.EscapeSheetName(_weekGoalsSheetName);
+            string clearRange = $"{escapedWeekGoalsSheetName}!A:C";
+            string writeRange = $"{escapedWeekGoalsSheetName}!A1";
+
+            ClearValuesRequest clearValuesBody = new ClearValuesRequest();
+
+            SpreadsheetsResource.ValuesResource.ClearRequest clearRequest =
+                sheetsService.Spreadsheets.Values.Clear(clearValuesBody, sheetId, clearRange);
+
+            await clearRequest.ExecuteAsync(cancellationToken);
+
+            List<IList<object>> values = weekGoals
+                .Select(weekGoal => (IList<object>)new List<object>
+                {
+                    weekGoal.ExerciseName,
+                    weekGoal.FirstWeekDayDate.ToString("O", CultureInfo.InvariantCulture),
+                    weekGoal.Repetitions,
                 })
                 .ToList();
 

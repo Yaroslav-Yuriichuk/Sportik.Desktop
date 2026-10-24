@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Sportik.Desktop.Core.Models;
+using Sportik.Desktop.Core.Models.Goal;
 
 namespace Sportik.Desktop.Core.Common.DataExchange
 {
@@ -11,11 +12,14 @@ namespace Sportik.Desktop.Core.Common.DataExchange
 
         public IEnumerable<ExerciseSet> Sets { get; }
 
-        public DataExchangeContext(DataExchangeScope scope, IEnumerable<Exercise> exercises = null, IEnumerable<ExerciseSet> sets = null)
+        public IEnumerable<WeekGoal> WeekGoals { get; }
+
+        public DataExchangeContext(DataExchangeScope scope, IEnumerable<Exercise> exercises = null, IEnumerable<ExerciseSet> sets = null, IEnumerable<WeekGoal> weekGoals = null)
         {
             Scope = scope;
             Exercises = exercises;
             Sets = sets;
+            WeekGoals = weekGoals;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Sportik.Desktop.Core.Helpers
             return $"'{sheetName.Replace("'", "''")}'";
         }
 
-        public static string BuildDescription(string sheetUrlOrId, string exercisesSheetName, string setsSheetName)
+        public static string BuildDescription(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName)
         {
             List<string> parts = new List<string>();
 
@@ -52,6 +52,11 @@ namespace Sportik.Desktop.Core.Helpers
             if (!string.IsNullOrWhiteSpace(setsSheetName))
             {
                 parts.Add($"Sets sheet: {setsSheetName}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(weekGoalsSheetName))
+            {
+                parts.Add($"Week goals sheet: {weekGoalsSheetName}");
             }
 
             return string.Join(", ", parts);

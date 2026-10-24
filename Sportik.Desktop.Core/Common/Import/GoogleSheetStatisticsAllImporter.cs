@@ -18,8 +18,9 @@ namespace Sportik.Desktop.Core.Common.Import
         private readonly string _sheetUrlOrId;
         private readonly string _exercisesSheetName;
         private readonly string _setsSheetName;
+        private readonly string _weekGoalsSheetName;
 
-        public GoogleSheetStatisticsAllImporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, bool validateDuplicates)
+        public GoogleSheetStatisticsAllImporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName, bool validateDuplicates)
             : base(validateDuplicates)
         {
             if (string.IsNullOrWhiteSpace(sheetUrlOrId))
@@ -27,14 +28,15 @@ namespace Sportik.Desktop.Core.Common.Import
                 throw new InvalidOperationException("Sheet url or id cannot be empty.");
             }
 
-            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName))
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName) && string.IsNullOrWhiteSpace(weekGoalsSheetName))
             {
-                throw new InvalidOperationException("Exercises and sets sheet name cannot be empty.");
+                throw new InvalidOperationException("Exercises, sets, and week goals sheet names cannot be empty.");
             }
 
             _sheetUrlOrId = sheetUrlOrId;
             _exercisesSheetName = exercisesSheetName;
             _setsSheetName = setsSheetName;
+            _weekGoalsSheetName = weekGoalsSheetName;
         }
 
         protected override bool ToImportExercises()
@@ -45,6 +47,11 @@ namespace Sportik.Desktop.Core.Common.Import
         protected override bool ToImportSets()
         {
             return !string.IsNullOrWhiteSpace(_setsSheetName);
+        }
+
+        protected override bool ToImportWeekGoals()
+        {
+            return !string.IsNullOrWhiteSpace(_weekGoalsSheetName);
         }
 
         protected override async Task<IList<ImportExercise>> GetExercisesAsync(CancellationToken cancellationToken)
@@ -128,6 +135,47 @@ namespace Sportik.Desktop.Core.Common.Import
             }
 
             return importExercises;
+        }
+
+        protected override async Task<IList<ImportExerciseGoal>> GetWeekGoalsAsync(CancellationToken cancellationToken)
+        {
+            if (!GoogleSheetsHelper.TryParseSheetId(_sheetUrlOrId, out string sheetId))
+            {
+                throw new InvalidOperationException("Invalid sheet url or id.");
+            }
+
+            string serviceAccountJson = GoogleSheetsHelper.LoadServiceAccountJson("google-service-account.json");
+
+            GoogleCredential credential = GoogleCredential
+                .FromJson(serviceAccountJson)
+                .CreateScoped(SheetsService.Scope.Spreadsheets);
+
+            using SheetsService sheetsService = new SheetsService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Sportik.Desktop"
+            });
+
+            string escapedWeekGoalsSheetName = GoogleSheetsHelper.EscapeSheetName(_weekGoalsSheetName);
+            string readRange = $"{escapedWeekGoalsSheetName}!A:C";
+
+            SpreadsheetsResource.ValuesResource.GetRequest request =
+                sheetsService.Spreadsheets.Values.Get(sheetId, readRange);
+
+            ValueRange response = await request.ExecuteAsync(cancellationToken);
+
+            List<ImportExerciseGoal> importWeekGoals = new List<ImportExerciseGoal>();
+
+            foreach (IList<object> row in response.Values ?? Enumerable.Empty<IList<object>>())
+            {
+                string exerciseName = row[0].ToString();
+                DateTime firstWeekDayDate = DateTime.Parse(row[1].ToString(), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                int repetitions = int.Parse(row[2].ToString());
+
+                importWeekGoals.Add(new ImportExerciseGoal(exerciseName, firstWeekDayDate, repetitions));
+            }
+
+            return importWeekGoals;
         }
     }
 }

@@ -12,6 +12,8 @@ namespace Sportik.Desktop.UI.Models
 
         public string LastImportSetsSheetName { get; set; }
 
+        public string LastImportWeekGoalsSheetName { get; set; }
+
         public DataExchangeScope LastExportScope { get; set; }
 
         public string LastExportGoogleSheetUrlOrId { get; set; }
@@ -19,5 +21,7 @@ namespace Sportik.Desktop.UI.Models
         public string LastExportExercisesSheetName { get; set; }
 
         public string LastExportSetsSheetName { get; set; }
+
+        public string LastExportWeekGoalsSheetName { get; set; }
     }
 }

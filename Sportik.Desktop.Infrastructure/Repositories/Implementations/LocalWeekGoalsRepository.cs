@@ -44,7 +44,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
 
             DateTimeOffset firstWeekDayDateOffset = new DateTimeOffset(firstWeekDayDate, offset).ToUniversalTime();
-            DateTimeOffset lastWeekDayDateOffset = new DateTimeOffset(lastWeekDayDate, offset).ToUniversalTime();
+            DateTimeOffset lastWeekDayDateOffset = new DateTimeOffset(lastWeekDayDate, offset).AddDays(1).AddTicks(-1).ToUniversalTime();
 
             Dictionary<Guid, int> completedRepetitions = await _dbContext.Sets
                 .AsNoTracking()
@@ -65,6 +65,55 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                 enabledExercisesCache.IncludesExercise(g.ExerciseId))).ToList();
 
             return new WeekGoal(firstWeekDayDate, exerciseGoals);
+        }
+
+        public async Task<IEnumerable<WeekGoal>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            List<UserExerciseGoal> goals = await _dbContext.ExerciseGoals
+                .AsNoTracking()
+                .Include(g => g.Exercise)
+                .ThenInclude(e => e.Settings)
+                .OrderBy(g => g.FirstWeekDayDate)
+                .ToListAsync(cancellationToken);
+
+            if (goals.Count == 0)
+            {
+                return new List<WeekGoal>();
+            }
+
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            List<WeekGoal> weekGoals = new List<WeekGoal>();
+
+            foreach (IGrouping<DateTime, UserExerciseGoal> group in goals.GroupBy(g => g.FirstWeekDayDate))
+            {
+                DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(group.Key);
+                DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(group.Key);
+
+                DateTimeOffset firstWeekDayDateOffset = new DateTimeOffset(firstWeekDayDate, offset).ToUniversalTime();
+                DateTimeOffset lastWeekDayDateOffset = new DateTimeOffset(lastWeekDayDate, offset).AddDays(1).AddTicks(-1).ToUniversalTime();
+
+                Dictionary<Guid, int> completedRepetitions = await _dbContext.Sets
+                    .AsNoTracking()
+                    .Where(s => s.LoggedAt >= firstWeekDayDateOffset && s.LoggedAt <= lastWeekDayDateOffset)
+                    .GroupBy(s => s.ExerciseId)
+                    .Select(g => new
+                    {
+                        ExerciseId = g.Key,
+                        CompletedRepetitions = g.Sum(s => s.Repetitions)
+                    })
+                    .ToDictionaryAsync(x => x.ExerciseId, x => x.CompletedRepetitions, cancellationToken);
+
+                List<ExerciseGoal> exerciseGoals = goals.Select(g => ExerciseGoalMapper.ToDomain(
+                    g,
+                    completedRepetitions.GetValueOrDefault(g.ExerciseId, 0),
+                    enabledExercisesCache.IncludesExercise(g.ExerciseId))).ToList();
+
+                weekGoals.Add(new WeekGoal(firstWeekDayDate, exerciseGoals));
+            }
+
+            return weekGoals;
         }
 
         public async Task<ExerciseGoal> AddGoalAsync(AddExerciseGoalModel addModel, CancellationToken cancellationToken = default)
@@ -104,7 +153,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
 
             DateTimeOffset firstWeekDayDateOffset = new DateTimeOffset(firstWeekDayDate, offset).ToUniversalTime();
-            DateTimeOffset lastWeekDayDateOffset = new DateTimeOffset(lastWeekDayDate, offset).ToUniversalTime();
+            DateTimeOffset lastWeekDayDateOffset = new DateTimeOffset(lastWeekDayDate, offset).AddDays(1).AddTicks(-1).ToUniversalTime();
 
             int completedRepetitions = await _dbContext.Sets
                 .AsNoTracking()

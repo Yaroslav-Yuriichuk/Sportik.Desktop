@@ -68,6 +68,7 @@ namespace Sportik.Desktop.Core.Helpers
                     { "SheetUrlOrId", googleSheetsImporterConfig.SheetUrlOrId },
                     { "ExercisesSheetName", googleSheetsImporterConfig.ExercisesSheetName },
                     { "SetsSheetName", googleSheetsImporterConfig.SetsSheetName },
+                    { "WeekGoalsSheetName", googleSheetsImporterConfig.WeekGoalsSheetName },
                     { "ValidateDuplicates", googleSheetsImporterConfig.ValidateDuplicates.ToString() }
                 };
 
@@ -87,7 +88,8 @@ namespace Sportik.Desktop.Core.Helpers
                     { "Option", googleSheetsExporterConfig.Option.ToString() },
                     { "SheetUrlOrId", googleSheetsExporterConfig.SheetUrlOrId },
                     { "ExercisesSheetName", googleSheetsExporterConfig.ExercisesSheetName },
-                    { "SetsSheetName", googleSheetsExporterConfig.SetsSheetName }
+                    { "SetsSheetName", googleSheetsExporterConfig.SetsSheetName },
+                    { "WeekGoalsSheetName", googleSheetsExporterConfig.WeekGoalsSheetName }
                 };
 
                 return JsonConvert.SerializeObject(values);
@@ -106,6 +108,7 @@ namespace Sportik.Desktop.Core.Helpers
                         values["SheetUrlOrId"],
                         values["ExercisesSheetName"],
                         values["SetsSheetName"],
+                        values["WeekGoalsSheetName"],
                         bool.Parse(values["ValidateDuplicates"])),
                     _ => throw new NotSupportedException($"Data exchange option '{option}' is not supported for import deserialization.")
                 };
@@ -123,7 +126,8 @@ namespace Sportik.Desktop.Core.Helpers
                     DataExchangeOption.GoogleSheets => new GoogleSheetsExporterConfig(
                         values["SheetUrlOrId"],
                         values["ExercisesSheetName"],
-                        values["SetsSheetName"]),
+                        values["SetsSheetName"],
+                        values["WeekGoalsSheetName"]),
                     _ => throw new NotSupportedException($"Data exchange option '{option}' is not supported for export deserialization.")
                 };
             }

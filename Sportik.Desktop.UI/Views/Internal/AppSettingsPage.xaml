@@ -260,6 +260,23 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
+                    <TextBlock Text="Week goals sheet name"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Margin="0 0 0 5"
+                               Visibility="{Binding Scope, Converter={StaticResource EnumFlagsToVisibilityConverter}, ConverterParameter='WeekGoals'}" />
+
+                    <ComboBox HorizontalAlignment="Stretch"
+                              Margin="0 0 0 15"
+                              ItemsSource="{Binding SheetNames}"
+                              SelectedItem="{Binding SelectedWeekGoalsSheetOption, Mode=TwoWay}"
+                              Visibility="{Binding Scope, Converter={StaticResource EnumFlagsToVisibilityConverter}, ConverterParameter='WeekGoals'}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
                     <CheckBox Content="Validate duplicates"
                               Margin="0 0 0 15"
                               IsChecked="{Binding ValidateDuplicates, Mode=TwoWay}"

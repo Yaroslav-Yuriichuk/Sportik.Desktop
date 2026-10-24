@@ -16,31 +16,34 @@ namespace Sportik.Desktop.Core.Common.Import
 
         public string SetsSheetName { get; }
 
+        public string WeekGoalsSheetName { get; }
+
         public bool ValidateDuplicates { get; }
 
-        public string Description => GoogleSheetsHelper.BuildDescription(SheetUrlOrId, ExercisesSheetName, SetsSheetName);
+        public string Description => GoogleSheetsHelper.BuildDescription(SheetUrlOrId, ExercisesSheetName, SetsSheetName, WeekGoalsSheetName);
 
-        public GoogleSheetsImporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, bool validateDuplicates)
+        public GoogleSheetsImporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName, bool validateDuplicates)
         {
             if (string.IsNullOrWhiteSpace(sheetUrlOrId))
             {
                 throw new InvalidOperationException("Sheet url or id cannot be empty.");
             }
 
-            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName))
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName) && string.IsNullOrWhiteSpace(weekGoalsSheetName))
             {
-                throw new InvalidOperationException("Exercises and sets sheet name cannot be empty.");
+                throw new InvalidOperationException("Exercises, sets, and week goals sheet names cannot be empty.");
             }
 
             SheetUrlOrId = sheetUrlOrId;
             ExercisesSheetName = exercisesSheetName;
             SetsSheetName = setsSheetName;
+            WeekGoalsSheetName = weekGoalsSheetName;
             ValidateDuplicates = validateDuplicates;
         }
 
         public IDataExchanger CreateExchanger(DataExchangeMode mode)
         {
-            return new GoogleSheetStatisticsAllImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, ValidateDuplicates);
+            return new GoogleSheetStatisticsAllImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, WeekGoalsSheetName, ValidateDuplicates);
         }
     }
 }

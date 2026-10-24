@@ -61,7 +61,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             try
             {
                 ExerciseGoal exerciseGoal = await WeekGoalsRepository.AddGoalAsync(addModel, cancellationToken);
-                _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal));
+                _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.User));
 
                 return OperationResult<ExerciseGoal>.Success(exerciseGoal);
             }

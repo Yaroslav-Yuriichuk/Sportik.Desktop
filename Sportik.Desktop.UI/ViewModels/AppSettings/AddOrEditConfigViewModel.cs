@@ -133,6 +133,14 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             set => SetField(ref _selectedSetsSheetOption, value);
         }
 
+        private SheetOption _selectedWeekGoalsSheetOption;
+
+        public SheetOption SelectedWeekGoalsSheetOption
+        {
+            get => _selectedWeekGoalsSheetOption;
+            set => SetField(ref _selectedWeekGoalsSheetOption, value);
+        }
+
         private bool _validateDuplicates = true;
 
         public bool ValidateDuplicates
@@ -165,6 +173,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
         private IDataExchangeConfig _editedConfig;
         private string _editedExercisesSheetName;
         private string _editedSetsSheetName;
+        private string _editedWeekGoalsSheetName;
 
         public AddOrEditConfigViewModel()
         {
@@ -176,7 +185,9 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
 
             ScopeOptions = new ObservableCollection<ImportExportScopeOption>
             {
+                new ImportExportScopeOption("Exercises, Sets, and Week Goals", DataExchangeScope.All),
                 new ImportExportScopeOption("Exercises and Sets", DataExchangeScope.ExercisesAndSets),
+                new ImportExportScopeOption("Week Goals only", DataExchangeScope.WeekGoals),
                 new ImportExportScopeOption("Exercises only", DataExchangeScope.Exercises),
                 new ImportExportScopeOption("Sets only", DataExchangeScope.Sets)
             };
@@ -207,6 +218,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             string sheetUrlOrId = null;
             string exercisesSheetName = null;
             string setsSheetName = null;
+            string weekGoalsSheetName = null;
             bool validateDuplicates = true;
 
             if (config is GoogleSheetsImporterConfig importerConfig)
@@ -214,6 +226,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
                 sheetUrlOrId = importerConfig.SheetUrlOrId;
                 exercisesSheetName = importerConfig.ExercisesSheetName;
                 setsSheetName = importerConfig.SetsSheetName;
+                weekGoalsSheetName = importerConfig.WeekGoalsSheetName;
                 validateDuplicates = importerConfig.ValidateDuplicates;
             }
             else if (config is GoogleSheetsExporterConfig exporterConfig)
@@ -221,14 +234,16 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
                 sheetUrlOrId = exporterConfig.SheetUrlOrId;
                 exercisesSheetName = exporterConfig.ExercisesSheetName;
                 setsSheetName = exporterConfig.SetsSheetName;
+                weekGoalsSheetName = exporterConfig.WeekGoalsSheetName;
             }
 
             _editedConfig = config;
             _editedExercisesSheetName = exercisesSheetName;
             _editedSetsSheetName = setsSheetName;
+            _editedWeekGoalsSheetName = weekGoalsSheetName;
 
             SelectedTypeOption = TypeOptions.FirstOrDefault(option => option.Type == config.Type) ?? TypeOptions[0];
-            SelectedScopeOption = ScopeOptions.FirstOrDefault(option => option.Scope == GetScope(_editedExercisesSheetName, _editedSetsSheetName)) ?? ScopeOptions[0];
+            SelectedScopeOption = ScopeOptions.FirstOrDefault(option => option.Scope == GetScope(_editedExercisesSheetName, _editedSetsSheetName, _editedWeekGoalsSheetName)) ?? ScopeOptions[0];
             GoogleSheetUrlOrId = sheetUrlOrId;
             ValidateDuplicates = validateDuplicates;
 
@@ -238,11 +253,21 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             Open();
         }
 
-        private static DataExchangeScope GetScope(string exercisesSheetName, string setsSheetName)
+        private static DataExchangeScope GetScope(string exercisesSheetName, string setsSheetName, string weekGoalsSheetName)
         {
+            if (!string.IsNullOrWhiteSpace(exercisesSheetName) && !string.IsNullOrWhiteSpace(setsSheetName) && !string.IsNullOrWhiteSpace(weekGoalsSheetName))
+            {
+                return DataExchangeScope.All;
+            }
+
             if (!string.IsNullOrWhiteSpace(exercisesSheetName) && !string.IsNullOrWhiteSpace(setsSheetName))
             {
                 return DataExchangeScope.ExercisesAndSets;
+            }
+
+            if (!string.IsNullOrWhiteSpace(weekGoalsSheetName))
+            {
+                return DataExchangeScope.WeekGoals;
             }
 
             if (!string.IsNullOrWhiteSpace(exercisesSheetName))
@@ -265,6 +290,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
                 SheetNames = new ObservableCollection<SheetOption>();
                 SelectedExercisesSheetOption = null;
                 SelectedSetsSheetOption = null;
+                SelectedWeekGoalsSheetOption = null;
                 return;
             }
 
@@ -276,6 +302,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
 
                 SelectedExercisesSheetOption = SheetNames.FirstOrDefault(o => o.Name == _editedExercisesSheetName) ?? SheetNames[0];
                 SelectedSetsSheetOption = SheetNames.FirstOrDefault(o => o.Name == _editedSetsSheetName) ?? SheetNames[0];
+                SelectedWeekGoalsSheetOption = SheetNames.FirstOrDefault(o => o.Name == _editedWeekGoalsSheetName) ?? SheetNames[0];
             }, cancellationToken: cancellationToken);
         }
 
@@ -286,21 +313,22 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             string googleSheetUrlOrId = GoogleSheetUrlOrId;
             string exercisesSheetName = scope.HasFlag(DataExchangeScope.Exercises) ? SelectedExercisesSheetOption?.Name : null;
             string setsSheetName = scope.HasFlag(DataExchangeScope.Sets) ? SelectedSetsSheetOption?.Name : null;
+            string weekGoalsSheetName = scope.HasFlag(DataExchangeScope.WeekGoals) ? SelectedWeekGoalsSheetOption?.Name : null;
 
             if (string.IsNullOrWhiteSpace(googleSheetUrlOrId))
             {
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName))
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName) && string.IsNullOrWhiteSpace(weekGoalsSheetName))
             {
                 return;
             }
 
             IDataExchangeConfig config = type switch
             {
-                DataExchangeType.Import => new GoogleSheetsImporterConfig(googleSheetUrlOrId, exercisesSheetName, setsSheetName, ValidateDuplicates),
-                DataExchangeType.Export => new GoogleSheetsExporterConfig(googleSheetUrlOrId, exercisesSheetName, setsSheetName),
+                DataExchangeType.Import => new GoogleSheetsImporterConfig(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName, ValidateDuplicates),
+                DataExchangeType.Export => new GoogleSheetsExporterConfig(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName),
                 _ => throw new ArgumentOutOfRangeException(nameof(Type), Type, "Invalid data exchange type.")
             };
 

@@ -180,6 +180,7 @@ namespace Sportik.Desktop.Core.States.App
                 foreach (IDataExchangeConfig config in exportConfigs)
                 {
                     IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.Append);
+
                     DataExchangeContext context = new DataExchangeContext(
                         DataExchangeScope.Sets,
                         sets: [args.Set]);

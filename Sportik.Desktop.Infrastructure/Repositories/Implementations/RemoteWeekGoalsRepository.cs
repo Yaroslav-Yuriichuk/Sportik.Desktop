@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Models.Goal;
@@ -9,6 +10,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
     internal sealed class RemoteWeekGoalsRepository : IWeekGoalsRepository
     {
         public async Task<WeekGoal> GetCurrentWeekGoalAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException("Week goals are not supported in the remote repository.");
+        }
+
+        public async Task<IEnumerable<WeekGoal>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException("Week goals are not supported in the remote repository.");
         }

@@ -10,8 +10,9 @@ namespace Sportik.Desktop.Core.Common.DataExchange
         internal void Initialize(
             IExercisesRepository exercisesRepository,
             IExerciseStatisticsRepository exerciseStatisticsRepository,
+            IWeekGoalsRepository weekGoalsRepository,
             IEventsService eventsService);
 
-        Task ExchangeAsync(CancellationToken cancellationToken);
+        Task ExchangeAsync(DataExchangeContext context, CancellationToken cancellationToken);
     }
 }

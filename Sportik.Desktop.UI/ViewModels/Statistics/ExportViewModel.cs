@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
@@ -8,7 +9,9 @@ using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Export;
 using Sportik.Desktop.Core.Extensions;
+using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.UI.Helpers;
 using Sportik.Desktop.UI.Models;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
@@ -52,9 +55,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             }
         }
 
-        private ImportExportScope _scope;
+        private DataExchangeScope _scope;
 
-        public ImportExportScope Scope
+        public DataExchangeScope Scope
         {
             get => _scope;
             private set => SetField(ref _scope, value);
@@ -65,23 +68,48 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         public string GoogleSheetUrlOrId
         {
             get => _googleSheetUrlOrId;
-            set => SetField(ref _googleSheetUrlOrId, value);
+            set
+            {
+                if (SetField(ref _googleSheetUrlOrId, value))
+                {
+                    _loadSheetNamesCts?.Cancel();
+                    _loadSheetNamesCts = new CancellationTokenSource();
+
+                    _ = LoadSheetNamesAsync(value, _loadSheetNamesCts.Token);
+                }
+            }
         }
 
-        private string _exercisesSheetName;
+        private ObservableCollection<SheetOption> _sheetNames;
 
-        public string ExercisesSheetName
+        public ObservableCollection<SheetOption> SheetNames
         {
-            get => _exercisesSheetName;
-            set => SetField(ref _exercisesSheetName, value);
+            get => _sheetNames;
+            private set => SetField(ref _sheetNames, value);
         }
 
-        private string _setsSetsSheetName;
+        private SheetOption _selectedExercisesSheetOption;
 
-        public string SetsSheetName
+        public SheetOption SelectedExercisesSheetOption
         {
-            get => _setsSetsSheetName;
-            set => SetField(ref _setsSetsSheetName, value);
+            get => _selectedExercisesSheetOption;
+            set => SetField(ref _selectedExercisesSheetOption, value);
+        }
+
+        private SheetOption _selectedSetsSheetOption;
+
+        public SheetOption SelectedSetsSheetOption
+        {
+            get => _selectedSetsSheetOption;
+            set => SetField(ref _selectedSetsSheetOption, value);
+        }
+
+        private SheetOption _selectedWeekGoalsSheetOption;
+
+        public SheetOption SelectedWeekGoalsSheetOption
+        {
+            get => _selectedWeekGoalsSheetOption;
+            set => SetField(ref _selectedWeekGoalsSheetOption, value);
         }
 
         public ReactiveRelayCommand ExportCommand { get; }
@@ -92,13 +120,17 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         private readonly CancellationTokenSource _exportCts = new CancellationTokenSource();
 
+        private CancellationTokenSource _loadSheetNamesCts;
+
         public ExportViewModel()
         {
             ScopeOptions = new ObservableCollection<ImportExportScopeOption>
             {
-                new ImportExportScopeOption("Exercises and Sets", ImportExportScope.ExercisesAndSets),
-                new ImportExportScopeOption("Exercises only", ImportExportScope.Exercises),
-                new ImportExportScopeOption("Sets only", ImportExportScope.Sets)
+                new ImportExportScopeOption("Exercises, Sets, and Week Goals", DataExchangeScope.All),
+                new ImportExportScopeOption("Exercises and Sets", DataExchangeScope.ExercisesAndSets),
+                new ImportExportScopeOption("Week Goals only", DataExchangeScope.WeekGoals),
+                new ImportExportScopeOption("Exercises only", DataExchangeScope.Exercises),
+                new ImportExportScopeOption("Sets only", DataExchangeScope.Sets)
             };
 
             ExportCommand = new ReactiveRelayCommand(Export);
@@ -115,8 +147,6 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 }
 
                 GoogleSheetUrlOrId = importExportCache.LastExportGoogleSheetUrlOrId;
-                ExercisesSheetName = importExportCache.LastExportExercisesSheetName;
-                SetsSheetName = importExportCache.LastExportSetsSheetName;
             }
         }
 
@@ -124,6 +154,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
         {
             _exportCts.Cancel();
             _exportCts.Dispose();
+
+            _loadSheetNamesCts?.Cancel();
+            _loadSheetNamesCts?.Dispose();
         }
 
         public void Open()
@@ -141,25 +174,69 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             IsOpen = false;
         }
 
+        private async Task LoadSheetNamesAsync(string sheetUrlOrId, CancellationToken cancellationToken = default)
+        {
+            if (!GoogleSheetsHelper.TryParseSheetId(sheetUrlOrId, out _))
+            {
+                SheetNames = new ObservableCollection<SheetOption>();
+                SelectedExercisesSheetOption = null;
+                SelectedSetsSheetOption = null;
+                SelectedWeekGoalsSheetOption = null;
+                return;
+            }
+
+            IReadOnlyList<string> names = await GoogleSheetsHelper.GetSheetNamesAsync(sheetUrlOrId, cancellationToken);
+
+            ImportExportCache importExportCache = PersistentCacheService.GetOrNew<ImportExportCache>();
+
+            await UIThreadHelper.RunOnUIThreadAsync(() =>
+            {
+                SheetNames = new ObservableCollection<SheetOption>(names.Select(n => new SheetOption(n)));
+
+                SelectedExercisesSheetOption = SheetNames.FirstOrDefault(o => o.Name == importExportCache.LastExportExercisesSheetName) ?? SheetNames[0];
+                SelectedSetsSheetOption = SheetNames.FirstOrDefault(o => o.Name == importExportCache.LastExportSetsSheetName) ?? SheetNames[0];
+                SelectedWeekGoalsSheetOption = SheetNames.FirstOrDefault(o => o.Name == importExportCache.LastExportWeekGoalsSheetName) ?? SheetNames[0];
+            }, cancellationToken: cancellationToken);
+        }
+
         private async Task ExportAsync(CancellationToken cancellationToken)
         {
             ExportCommand.IsExecutable = false;
             CloseCommand.IsExecutable = false;
 
-            ImportExportScope scope = Scope;
+            DataExchangeScope scope = Scope;
             string googleSheetUrlOrId = GoogleSheetUrlOrId;
-            string exercisesSheetName = ExercisesSheetName;
-            string setsSheetName = SetsSheetName;
+            string exercisesSheetName = scope.HasFlag(DataExchangeScope.Exercises) ? SelectedExercisesSheetOption?.Name : null;
+            string setsSheetName = scope.HasFlag(DataExchangeScope.Sets) ? SelectedSetsSheetOption?.Name : null;
+            string weekGoalsSheetName = scope.HasFlag(DataExchangeScope.WeekGoals) ? SelectedWeekGoalsSheetOption?.Name : null;
+
+            if (string.IsNullOrWhiteSpace(googleSheetUrlOrId))
+            {
+                ExportCommand.IsExecutable = true;
+                CloseCommand.IsExecutable = true;
+
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName) && string.IsNullOrWhiteSpace(weekGoalsSheetName))
+            {
+                ExportCommand.IsExecutable = true;
+                CloseCommand.IsExecutable = true;
+
+                return;
+            }
 
             IDataExchanger exporter = scope switch
             {
-                ImportExportScope.Exercises => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, exercisesSheetName, null),
-                ImportExportScope.Sets => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, null, setsSheetName),
-                ImportExportScope.ExercisesAndSets => new GoogleSheetStatisticsExporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName),
-                _ => throw new ArgumentOutOfRangeException(nameof(Scope), Scope, "Invalid import/export scope.")
+                DataExchangeScope.Exercises => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, exercisesSheetName, null, null),
+                DataExchangeScope.Sets => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, null, setsSheetName, null),
+                DataExchangeScope.WeekGoals => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, null, null, weekGoalsSheetName),
+                DataExchangeScope.ExercisesAndSets => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName, null),
+                DataExchangeScope.All => new GoogleSheetStatisticsAllExporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName),
+                _ => throw new ArgumentOutOfRangeException(nameof(scope), scope, "Invalid export scope.")
             };
 
-            OperationResult result = await DataExchangeService.ExchangeAsync(exporter, cancellationToken);
+            OperationResult result = await DataExchangeService.ExchangeAsync(exporter, null, cancellationToken);
 
             ExportCommand.IsExecutable = true;
             CloseCommand.IsExecutable = true;
@@ -171,14 +248,19 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 importExportCache.LastExportScope = scope;
                 importExportCache.LastExportGoogleSheetUrlOrId = googleSheetUrlOrId;
 
-                if (scope == ImportExportScope.Exercises || scope == ImportExportScope.ExercisesAndSets)
+                if (scope.HasFlag(DataExchangeScope.Exercises))
                 {
                     importExportCache.LastExportExercisesSheetName = exercisesSheetName;
                 }
 
-                if (scope == ImportExportScope.Sets || scope == ImportExportScope.ExercisesAndSets)
+                if (scope.HasFlag(DataExchangeScope.Sets))
                 {
                     importExportCache.LastExportSetsSheetName = setsSheetName;
+                }
+
+                if (scope.HasFlag(DataExchangeScope.WeekGoals))
+                {
+                    importExportCache.LastExportWeekGoalsSheetName = weekGoalsSheetName;
                 }
 
                 PersistentCacheService.Set(importExportCache);

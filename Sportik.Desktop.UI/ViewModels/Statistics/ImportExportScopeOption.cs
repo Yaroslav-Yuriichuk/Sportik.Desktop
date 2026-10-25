@@ -1,4 +1,4 @@
-﻿using Sportik.Desktop.UI.Models;
+﻿using Sportik.Desktop.Core.Common.DataExchange;
 
 namespace Sportik.Desktop.UI.ViewModels.Statistics
 {
@@ -6,9 +6,9 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
     {
         public string Name { get; }
 
-        public ImportExportScope Scope { get; }
+        public DataExchangeScope Scope { get; }
 
-        public ImportExportScopeOption(string name, ImportExportScope scope)
+        public ImportExportScopeOption(string name, DataExchangeScope scope)
         {
             Name = name;
             Scope = scope;

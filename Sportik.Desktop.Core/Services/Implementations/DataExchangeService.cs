@@ -15,6 +15,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IEventsService _eventsService;
         private readonly Func<DataSource, IExercisesRepository> _exercisesRepositoryFactory;
         private readonly Func<DataSource, IExerciseStatisticsRepository> _exerciseStatisticsRepositoryFactory;
+        private readonly Func<DataSource, IWeekGoalsRepository> _weekGoalsRepositoryFactory;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         private IExercisesRepository ExercisesRepository
@@ -43,26 +44,43 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        private IWeekGoalsRepository WeekGoalsRepository
+        {
+            get
+            {
+                if (!_runtimeCacheService.TryGet(out AppModeCache appModeCache))
+                {
+                    return _weekGoalsRepositoryFactory(DataSource.Local);
+                }
+
+                return _weekGoalsRepositoryFactory(appModeCache.IsGuest ? DataSource.Local : DataSource.Remote);
+            }
+        }
+
         public DataExchangeService(
             IRuntimeCacheService runtimeCacheService,
             IEventsService eventsService,
             Func<DataSource, IExercisesRepository> exercisesRepositoryFactory,
-            Func<DataSource, IExerciseStatisticsRepository> exerciseStatisticsRepositoryFactory)
+            Func<DataSource, IExerciseStatisticsRepository> exerciseStatisticsRepositoryFactory,
+            Func<DataSource, IWeekGoalsRepository> weekGoalsRepositoryFactory)
         {
             _runtimeCacheService = runtimeCacheService;
             _eventsService = eventsService;
             _exercisesRepositoryFactory = exercisesRepositoryFactory;
             _exerciseStatisticsRepositoryFactory = exerciseStatisticsRepositoryFactory;
+            _weekGoalsRepositoryFactory = weekGoalsRepositoryFactory;
         }
 
-        public async Task<OperationResult> ExchangeAsync(IDataExchanger exchanger, CancellationToken cancellationToken = default)
+        public async Task<OperationResult> ExchangeAsync(IDataExchanger exchanger, DataExchangeContext context = null, CancellationToken cancellationToken = default)
         {
             await _semaphore.WaitAsync(cancellationToken);
 
             try
             {
-                exchanger.Initialize(ExercisesRepository, ExerciseStatisticsRepository, _eventsService);
-                await exchanger.ExchangeAsync(cancellationToken);
+                context ??= new DataExchangeContext(DataExchangeScope.All);
+
+                exchanger.Initialize(ExercisesRepository, ExerciseStatisticsRepository, WeekGoalsRepository, _eventsService);
+                await exchanger.ExchangeAsync(context, cancellationToken);
 
                 return OperationResult.Success();
             }

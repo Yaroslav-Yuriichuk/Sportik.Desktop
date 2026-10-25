@@ -1,4 +1,5 @@
-﻿using Sportik.Desktop.Core.Common.DataExchange;
+﻿using System;
+using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Helpers;
 
 namespace Sportik.Desktop.Core.Common.Import
@@ -15,21 +16,34 @@ namespace Sportik.Desktop.Core.Common.Import
 
         public string SetsSheetName { get; }
 
+        public string WeekGoalsSheetName { get; }
+
         public bool ValidateDuplicates { get; }
 
-        public string Description => GoogleSheetsHelper.BuildDescription(SheetUrlOrId, ExercisesSheetName, SetsSheetName);
+        public string Description => GoogleSheetsHelper.BuildDescription(SheetUrlOrId, ExercisesSheetName, SetsSheetName, WeekGoalsSheetName);
 
-        public GoogleSheetsImporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, bool validateDuplicates)
+        public GoogleSheetsImporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName, bool validateDuplicates)
         {
+            if (string.IsNullOrWhiteSpace(sheetUrlOrId))
+            {
+                throw new InvalidOperationException("Sheet url or id cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercisesSheetName) && string.IsNullOrWhiteSpace(setsSheetName) && string.IsNullOrWhiteSpace(weekGoalsSheetName))
+            {
+                throw new InvalidOperationException("Exercises, sets, and week goals sheet names cannot be empty.");
+            }
+
             SheetUrlOrId = sheetUrlOrId;
             ExercisesSheetName = exercisesSheetName;
             SetsSheetName = setsSheetName;
+            WeekGoalsSheetName = weekGoalsSheetName;
             ValidateDuplicates = validateDuplicates;
         }
 
-        public IDataExchanger CreateExchanger()
+        public IDataExchanger CreateExchanger(DataExchangeMode mode)
         {
-            return new GoogleSheetStatisticsImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, ValidateDuplicates);
+            return new GoogleSheetStatisticsAllImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, WeekGoalsSheetName, ValidateDuplicates);
         }
     }
 }

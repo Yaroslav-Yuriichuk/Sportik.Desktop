@@ -156,12 +156,25 @@
 
                 </ListView>
 
-                <Button Grid.Row="2"
-                        Content="Add"
-                        HorizontalAlignment="Right"
-                        Margin="0 12 0 0"
-                        Command="{Binding ShowAddConfigCommand}"
-                        Style="{ThemeResource AccentButtonStyle}" />
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            Margin="0 12 0 0"
+                            HorizontalAlignment="Right">
+
+                    <TextBlock Text="Running all configs..."
+                               VerticalAlignment="Center"
+                               Margin="0 0 12 0"
+                               Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                    <Button Content="Run All"
+                            Margin="0 0 12 0"
+                            Command="{Binding RunAllCommand}" />
+
+                    <Button Content="Add"
+                            Margin="0 0 0 0"
+                            Command="{Binding ShowAddConfigCommand}"
+                            Style="{ThemeResource AccentButtonStyle}" />
+                </StackPanel>
 
             </Grid>
 

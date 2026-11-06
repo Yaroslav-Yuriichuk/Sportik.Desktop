@@ -19,6 +19,7 @@ namespace Sportik.Desktop.Core.States.App
     internal sealed class AuthenticatedAppState : AppState
     {
         private readonly IEventsService _eventsService;
+        private readonly Func<IInternalNotificationService> _internalNotificationServiceFactory;
         private readonly IReminderService _reminderService;
         private readonly IPersistentCacheService _persistentCacheService;
         private readonly IRuntimeCacheService _runtimeCacheService;
@@ -40,9 +41,11 @@ namespace Sportik.Desktop.Core.States.App
             Func<ISynchronizationService> synchronizationServiceFactory,
             ITrainingService trainingService,
             IDataExchangeService dataExchangeService,
-            Func<IAppSettingsService> appSettingsServiceFactory) : base(context)
+            Func<IAppSettingsService> appSettingsServiceFactory,
+            Func<IInternalNotificationService> internalNotificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
+            _internalNotificationServiceFactory = internalNotificationServiceFactory;
             _reminderService = reminderService;
             _persistentCacheService = persistentCacheService;
             _runtimeCacheService = runtimeCacheService;
@@ -174,6 +177,14 @@ namespace Sportik.Desktop.Core.States.App
 
         private void EventsService_Event(ExerciseCreatedEventArgs args)
         {
+            IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
+
+            internalNotificationService.Show(new GeneralNotification
+            {
+                Title = "Exercise created",
+                Message = $"Exercise '{args.Exercise.Name}' created.",
+            });
+
             _reminderService.AddExercise(args.Exercise.Id);
 
             if (args.CreationSource != CreationSource.Synchronization)

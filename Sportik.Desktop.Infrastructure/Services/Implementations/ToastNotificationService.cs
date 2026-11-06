@@ -9,7 +9,7 @@ using Sportik.Desktop.Core.Services.Interfaces;
 
 namespace Sportik.Desktop.Infrastructure.Services.Implementations
 {
-    internal sealed class ToastNotificationService : INotificationService
+    internal sealed class ToastNotificationService : IExternalNotificationService
     {
         private readonly IEventsService _eventsService;
 

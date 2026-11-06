@@ -17,6 +17,7 @@ namespace Sportik.Desktop.Core.States.App
     internal sealed class GuestAppState : AppState
     {
         private readonly IEventsService _eventsService;
+        private readonly Func<IInternalNotificationService> _internalNotificationServiceFactory;
         private readonly IReminderService _reminderService;
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly IPersistentCacheService _persistentCacheService;
@@ -36,9 +37,11 @@ namespace Sportik.Desktop.Core.States.App
             Func<IExercisesService> exercisesServiceFactory,
             IDataExchangeService dataExchangeService,
             ITrainingService trainingService,
-            Func<IAppSettingsService> appSettingsServiceFactory) : base(context)
+            Func<IAppSettingsService> appSettingsServiceFactory,
+            Func<IInternalNotificationService> internalNotificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
+            _internalNotificationServiceFactory = internalNotificationServiceFactory;
             _reminderService = reminderService;
             _runtimeCacheService = runtimeCacheService;
             _persistentCacheService = persistentCacheService;
@@ -164,6 +167,14 @@ namespace Sportik.Desktop.Core.States.App
                     await _dataExchangeService.ExchangeAsync(dataExchanger, context, ActiveCancellationToken);
                 }
             });
+
+            IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
+
+            internalNotificationService.Show(new GeneralNotification
+            {
+                Title = "Exercise created",
+                Message = $"Exercise '{args.Exercise.Name}' created.",
+            });
         }
 
         private void EventsService_Event(ExerciseSetAddedEventArgs args)
@@ -187,6 +198,14 @@ namespace Sportik.Desktop.Core.States.App
 
                     await _dataExchangeService.ExchangeAsync(dataExchanger, context, ActiveCancellationToken);
                 }
+            });
+
+            IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
+
+            internalNotificationService.Show(new GeneralNotification
+            {
+                Title = "Set logged",
+                Message = $"{args.Set.Repetitions} repetition(s) successfully logged.",
             });
         }
 

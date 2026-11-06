@@ -40,7 +40,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Sequential
             IRuntimeCacheService runtimeCacheService,
             Func<IExercisesService> exercisesServiceFactory,
             Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
-            Func<INotificationService> notificationServiceFactory)
+            Func<IExternalNotificationService> notificationServiceFactory)
         {
             _getContextCallback = getContextCallback;
             _eventsService = eventsService;

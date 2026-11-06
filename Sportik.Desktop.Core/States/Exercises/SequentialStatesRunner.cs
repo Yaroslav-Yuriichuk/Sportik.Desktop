@@ -16,7 +16,7 @@ namespace Sportik.Desktop.Core.States.Exercises
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
-        private readonly Func<INotificationService> _notificationServiceFactory;
+        private readonly Func<IExternalNotificationService> _notificationServiceFactory;
 
         private readonly List<SequentialExercisesStatesContext> _contexts = new List<SequentialExercisesStatesContext>();
 
@@ -26,7 +26,7 @@ namespace Sportik.Desktop.Core.States.Exercises
             IRuntimeCacheService runtimeCacheService,
             Func<IExercisesService> exercisesServiceFactory,
             Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
-            Func<INotificationService> notificationServiceFactory)
+            Func<IExternalNotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;

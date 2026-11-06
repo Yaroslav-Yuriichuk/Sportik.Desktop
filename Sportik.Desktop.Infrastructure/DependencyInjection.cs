@@ -23,7 +23,7 @@ namespace Sportik.Desktop.Infrastructure
 
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile(Path.Combine(assemblyName, "appsettings.json"), optional: false, reloadOnChange: true);
+                .AddJsonFile(Path.Combine(assemblyName!, "appsettings.json"), optional: false, reloadOnChange: true);
 
             IConfigurationRoot configuration = configurationBuilder.Build();
 
@@ -39,7 +39,8 @@ namespace Sportik.Desktop.Infrastructure
                 options.UseSqlite(ResolveDatabasePath(configuration));
             }, ServiceLifetime.Transient);
 
-            services.AddTransient<INotificationService, ToastNotificationService>();
+            services.AddTransient<IInternalNotificationService, InternalNotificationService>();
+            services.AddTransient<IExternalNotificationService, ToastNotificationService>();
             services.AddTransient<ISoundService, SoundService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUsersService, UsersService>();

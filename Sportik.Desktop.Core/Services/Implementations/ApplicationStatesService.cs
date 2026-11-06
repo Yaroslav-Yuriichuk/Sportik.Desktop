@@ -22,6 +22,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly ITrainingService _trainingService;
         private readonly IDataExchangeService _dataExchangeService;
         private readonly Func<IAppSettingsService> _appSettingsServiceFactory;
+        private readonly Func<IInternalNotificationService> _internalNotificationServiceFactory;
 
         private AppStatesContext _appStatesContext;
 
@@ -35,7 +36,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
             Func<ISynchronizationService> synchronizationServiceFactory,
             ITrainingService trainingService,
             IDataExchangeService dataExchangeService,
-            Func<IAppSettingsService> appSettingsServiceFactory)
+            Func<IAppSettingsService> appSettingsServiceFactory,
+            Func<IInternalNotificationService> internalNotificationServiceFactory)
         {
             _eventsService = eventsService;
             _reminderService = reminderService;
@@ -47,6 +49,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             _trainingService = trainingService;
             _dataExchangeService = dataExchangeService;
             _appSettingsServiceFactory = appSettingsServiceFactory;
+            _internalNotificationServiceFactory = internalNotificationServiceFactory;
         }
 
         public void Start()
@@ -66,7 +69,8 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 _synchronizationServiceFactory,
                 _trainingService,
                 _dataExchangeService,
-                _appSettingsServiceFactory);
+                _appSettingsServiceFactory,
+                _internalNotificationServiceFactory);
         }
 
         public void Stop()

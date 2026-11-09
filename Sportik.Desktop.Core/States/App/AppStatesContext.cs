@@ -32,15 +32,16 @@ namespace Sportik.Desktop.Core.States.App
             ITrainingService trainingService,
             IDataExchangeService dataExchangeService,
             Func<IAppSettingsService> appSettingsServiceFactory,
-            Func<IInternalNotificationService> internalNotificationServiceFactory)
+            Func<IInternalNotificationService> internalNotificationServiceFactory,
+            Func<IWeekGoalsService> weekGoalsServiceFactory)
         {
             _eventsService = eventsService;
 
             DeterminingAppState = new DeterminingAppState(this, persistentCacheService, authServiceFactory);
-            AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, runtimeCacheService, exercisesServiceFactory, synchronizationServiceFactory, trainingService, dataExchangeService, appSettingsServiceFactory, internalNotificationServiceFactory);
+            AuthenticatedAppState = new AuthenticatedAppState(this, eventsService, reminderService, persistentCacheService, runtimeCacheService, exercisesServiceFactory, synchronizationServiceFactory, trainingService, dataExchangeService, appSettingsServiceFactory, internalNotificationServiceFactory, weekGoalsServiceFactory);
             LoginAppState = new LoginAppState(this, eventsService);
             RegistrationAppState = new RegistrationAppState(this, eventsService);
-            GuestAppState = new GuestAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory, dataExchangeService, trainingService, appSettingsServiceFactory, internalNotificationServiceFactory);
+            GuestAppState = new GuestAppState(this, eventsService, reminderService, runtimeCacheService, persistentCacheService, exercisesServiceFactory, dataExchangeService, trainingService, appSettingsServiceFactory, internalNotificationServiceFactory, weekGoalsServiceFactory);
 
             Switch(DeterminingAppState);
         }

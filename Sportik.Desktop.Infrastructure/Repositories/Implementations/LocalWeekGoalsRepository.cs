@@ -67,6 +67,39 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return new WeekGoal(firstWeekDayDate, exerciseGoals);
         }
 
+        public async Task<ExerciseGoal> GetCurrentWeekExerciseGoalAsync(Guid exerciseId, CancellationToken cancellationToken = default)
+        {
+            DateTime currentDate = DateTimeOffset.Now.Date;
+
+            DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(currentDate);
+            DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(currentDate);
+
+            UserExerciseGoal goal = await _dbContext.ExerciseGoals
+                .AsNoTracking()
+                .Include(g => g.Exercise)
+                .ThenInclude(e => e.Settings)
+                .FirstOrDefaultAsync(g => g.ExerciseId == exerciseId && g.FirstWeekDayDate == firstWeekDayDate, cancellationToken);
+
+            if (goal is null)
+            {
+                return null;
+            }
+
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            DateTimeOffset firstWeekDayDateOffset = new DateTimeOffset(firstWeekDayDate, offset).ToUniversalTime();
+            DateTimeOffset lastWeekDayDateOffset = new DateTimeOffset(lastWeekDayDate, offset).AddDays(1).AddTicks(-1).ToUniversalTime();
+
+            int completedRepetitions = await _dbContext.Sets
+                .AsNoTracking()
+                .Where(s => s.ExerciseId == exerciseId && s.LoggedAt >= firstWeekDayDateOffset && s.LoggedAt <= lastWeekDayDateOffset)
+                .SumAsync(r => (int?)r.Repetitions, cancellationToken) ?? 0;
+
+            EnabledExercisesCache enabledExercisesCache = _persistentCacheService.GetOrNew<EnabledExercisesCache>();
+
+            return ExerciseGoalMapper.ToDomain(goal, completedRepetitions, enabledExercisesCache.IncludesExercise(goal.ExerciseId));
+        }
+
         public async Task<IEnumerable<WeekGoal>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             List<UserExerciseGoal> goals = await _dbContext.ExerciseGoals

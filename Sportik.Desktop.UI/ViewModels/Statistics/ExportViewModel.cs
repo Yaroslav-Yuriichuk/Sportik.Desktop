@@ -10,6 +10,7 @@ using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Common.Export;
 using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Helpers;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
 using Sportik.Desktop.UI.Helpers;
 using Sportik.Desktop.UI.Models;
@@ -117,6 +118,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         private IDataExchangeService DataExchangeService => App.ServiceProvider.GetRequiredService<IDataExchangeService>();
         private IPersistentCacheService PersistentCacheService => App.ServiceProvider.GetRequiredService<IPersistentCacheService>();
+        private IInternalNotificationService InternalNotificationService => App.ServiceProvider.GetService<IInternalNotificationService>();
 
         private readonly CancellationTokenSource _exportCts = new CancellationTokenSource();
 
@@ -264,6 +266,12 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
                 }
 
                 PersistentCacheService.Set(importExportCache);
+
+                InternalNotificationService.Show(new GeneralNotification
+                {
+                    Title = "Export completed",
+                    Message = "Data exported successfully.",
+                });
 
                 Close();
             }

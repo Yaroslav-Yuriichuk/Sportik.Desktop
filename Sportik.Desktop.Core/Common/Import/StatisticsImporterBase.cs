@@ -90,7 +90,8 @@ namespace Sportik.Desktop.Core.Common.Import
                     {
                         ExerciseGoal exerciseGoal = await _weekGoalsRepository.AddGoalAsync(addModel, cancellationToken);
 
-                        _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.Import));
+                        bool wasCompleted = exerciseGoal.CompletedRepetitions >= exerciseGoal.TargetRepetitions;
+                        _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.Import, wasCompleted));
                     }
                 }
             }

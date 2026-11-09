@@ -28,6 +28,7 @@ namespace Sportik.Desktop.Core.States.App
         private readonly ITrainingService _trainingService;
         private readonly IDataExchangeService _dataExchangeService;
         private readonly Func<IAppSettingsService> _appSettingsServiceFactory;
+        private readonly Func<IWeekGoalsService> _weekGoalsServiceFactory;
 
         public override ApplicationState ApplicationState => ApplicationState.Authenticated;
 
@@ -42,7 +43,8 @@ namespace Sportik.Desktop.Core.States.App
             ITrainingService trainingService,
             IDataExchangeService dataExchangeService,
             Func<IAppSettingsService> appSettingsServiceFactory,
-            Func<IInternalNotificationService> internalNotificationServiceFactory) : base(context)
+            Func<IInternalNotificationService> internalNotificationServiceFactory,
+            Func<IWeekGoalsService> weekGoalsServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _internalNotificationServiceFactory = internalNotificationServiceFactory;
@@ -54,6 +56,7 @@ namespace Sportik.Desktop.Core.States.App
             _trainingService = trainingService;
             _dataExchangeService = dataExchangeService;
             _appSettingsServiceFactory = appSettingsServiceFactory;
+            _weekGoalsServiceFactory = weekGoalsServiceFactory;
         }
 
         protected override void HandleEnter()
@@ -118,7 +121,9 @@ namespace Sportik.Desktop.Core.States.App
             IAppSettingsService appSettingsService = _appSettingsServiceFactory();
             AutomaticDataExchangeSettings settings = appSettingsService.GetSettings<AutomaticDataExchangeSettings>();
 
-            IEnumerable<IDataExchangeConfig> configs = settings.Configs.OrderBy(config => config.Type);
+            IReadOnlyList<IDataExchangeConfig> configs = settings.Configs.OrderBy(config => config.Type).ToList();
+
+            IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
 
             Task.Run(async () =>
             {
@@ -127,6 +132,17 @@ namespace Sportik.Desktop.Core.States.App
                     IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.All);
                     await _dataExchangeService.ExchangeAsync(dataExchanger, null, ActiveCancellationToken);
                 }
+
+                if (!configs.Any())
+                {
+                    return;
+                }
+
+                internalNotificationService.Show(new GeneralNotification
+                {
+                    Title = "Auto import/export completed",
+                    Message = $"Data was automatically import/exported.",
+                });
             });
         }
 
@@ -177,14 +193,6 @@ namespace Sportik.Desktop.Core.States.App
 
         private void EventsService_Event(ExerciseCreatedEventArgs args)
         {
-            IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
-
-            internalNotificationService.Show(new GeneralNotification
-            {
-                Title = "Exercise created",
-                Message = $"Exercise '{args.Exercise.Name}' created.",
-            });
-
             _reminderService.AddExercise(args.Exercise.Id);
 
             if (args.CreationSource != CreationSource.Synchronization)
@@ -221,6 +229,14 @@ namespace Sportik.Desktop.Core.States.App
                     }
                 });
             }
+
+            IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
+
+            internalNotificationService.Show(new GeneralNotification
+            {
+                Title = "Exercise created",
+                Message = $"Exercise '{args.Exercise.Name}' created.",
+            });
         }
 
         private void EventsService_Event(ExerciseIsEnabledChangedEventArgs args)
@@ -327,6 +343,41 @@ namespace Sportik.Desktop.Core.States.App
                     }
                 });
             }
+
+            DateTime currentDate = DateTimeOffset.Now.Date;
+            DateTime setDate = args.Set.LoggedAt.Date;
+
+            DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(currentDate);
+            DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(currentDate);
+
+            if (CalendarHelper.IsBetween(setDate, firstWeekDayDate, lastWeekDayDate))
+            {
+                Task.Run(async () =>
+                {
+                    IWeekGoalsService weekGoalsService = _weekGoalsServiceFactory();
+
+                    OperationResult<ExerciseGoal> result = await weekGoalsService.GetCurrentWeekExerciseGoalAsync(args.Set.ExerciseId, ActiveCancellationToken);
+
+                    if (!result.Succeeded || result.Value == null)
+                    {
+                        return;
+                    }
+
+                    ExerciseGoal exerciseGoal = result.Value;
+
+                    if (exerciseGoal.CompletedRepetitions >= exerciseGoal.TargetRepetitions &&
+                        exerciseGoal.CompletedRepetitions - args.Set.Repetitions < exerciseGoal.TargetRepetitions)
+                    {
+                        IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
+
+                        internalNotificationService.Show(new GeneralNotification
+                        {
+                            Title = "Week goal completed",
+                            Message = $"You completed {exerciseGoal.Exercise.Name} goal for this week.",
+                        });
+                    }
+                });
+            }
         }
 
         private void EventsService_Event(ExerciseGoalAddedEventArgs args)
@@ -356,6 +407,17 @@ namespace Sportik.Desktop.Core.States.App
 
                         await _dataExchangeService.ExchangeAsync(dataExchanger, context, ActiveCancellationToken);
                     }
+                });
+            }
+
+            if (args.WasCompleted)
+            {
+                IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
+
+                internalNotificationService.Show(new GeneralNotification
+                {
+                    Title = "Week goal completed",
+                    Message = $"You completed {args.ExerciseGoal.Exercise.Name} goal for this week.",
                 });
             }
         }

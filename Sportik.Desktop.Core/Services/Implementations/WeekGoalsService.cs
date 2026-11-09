@@ -56,12 +56,31 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        public async Task<OperationResult<ExerciseGoal>> GetCurrentWeekExerciseGoalAsync(Guid exerciseId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                ExerciseGoal exerciseGoal = await WeekGoalsRepository.GetCurrentWeekExerciseGoalAsync(exerciseId, cancellationToken);
+                return OperationResult<ExerciseGoal>.Success(exerciseGoal);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<ExerciseGoal>.Failure(new[] { "Failed to retrieve current week goal for this exercise." });
+            }
+        }
+
         public async Task<OperationResult<ExerciseGoal>> AddGoalAsync(AddExerciseGoalModel addModel, CancellationToken cancellationToken = default)
         {
             try
             {
                 ExerciseGoal exerciseGoal = await WeekGoalsRepository.AddGoalAsync(addModel, cancellationToken);
-                _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.User));
+
+                bool wasCompleted = exerciseGoal.CompletedRepetitions >= exerciseGoal.TargetRepetitions;
+                _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.User, wasCompleted));
 
                 return OperationResult<ExerciseGoal>.Success(exerciseGoal);
             }

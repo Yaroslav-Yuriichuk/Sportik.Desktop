@@ -27,6 +27,12 @@ namespace Sportik.Desktop.UI.ViewModels.Notifications
             private set => SetField(ref _isVisible, value);
         }
 
+        public bool HasQueuedNotifications
+        {
+            get => _hasQueuedNotifications;
+            private set => SetField(ref _hasQueuedNotifications, value);
+        }
+
         public ReactiveRelayCommand CloseCommand { get; }
 
         private readonly IInternalNotificationChannel _notificationChannel;
@@ -35,6 +41,7 @@ namespace Sportik.Desktop.UI.ViewModels.Notifications
         private string _title;
         private string _message;
         private bool _isVisible;
+        private bool _hasQueuedNotifications;
 
         public NotificationViewModel()
         {
@@ -61,40 +68,54 @@ namespace Sportik.Desktop.UI.ViewModels.Notifications
             }
         }
 
-        private void NotificationChannelNotificationEnqueued(GeneralNotification notification)
+        private void NotificationChannelNotificationEnqueued()
         {
             _ = UIThreadHelper.RunOnUIThreadAsync(() =>
             {
-                _hideTimer.Stop();
-
-                Title = notification.Title;
-                Message = notification.Message;
-                IsVisible = true;
-                CloseCommand.IsExecutable = true;
-
-                if (notification.DisplayTime > TimeSpan.Zero)
+                if (IsVisible)
                 {
-                    _hideTimer.Interval = notification.DisplayTime;
-                    _hideTimer.Start();
+                    HasQueuedNotifications = _notificationChannel.QueuedCount > 0;
+                    return;
                 }
+
+                TryShowNext();
             });
+        }
+
+        private void TryShowNext()
+        {
+            _hideTimer.Stop();
+
+            if (!_notificationChannel.TryDequeue(out GeneralNotification notification))
+            {
+                IsVisible = false;
+                CloseCommand.IsExecutable = false;
+                HasQueuedNotifications = false;
+
+                return;
+            }
+
+            Title = notification.Title;
+            Message = notification.Message;
+            IsVisible = true;
+            CloseCommand.IsExecutable = true;
+            HasQueuedNotifications = _notificationChannel.QueuedCount > 0;
+
+            if (notification.DisplayTime > TimeSpan.Zero)
+            {
+                _hideTimer.Interval = notification.DisplayTime;
+                _hideTimer.Start();
+            }
         }
 
         private void HideTimerElapsed(object sender, EventArgs e)
         {
-            _ = UIThreadHelper.RunOnUIThreadAsync(() =>
-            {
-                IsVisible = false;
-                CloseCommand.IsExecutable = false;
-            });
+            _ = UIThreadHelper.RunOnUIThreadAsync(TryShowNext);
         }
 
         private void Close()
         {
-            _hideTimer.Stop();
-
-            IsVisible = false;
-            CloseCommand.IsExecutable = false;
+            TryShowNext();
         }
     }
 }

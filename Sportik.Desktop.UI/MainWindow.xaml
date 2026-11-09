@@ -28,61 +28,73 @@
         <Grid Grid.Row="1">
             <Frame x:Name="RootFrame" />
 
-            <Border x:Name="NotificationBar"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top"
-                    Margin="0 10 0 0"
-                    MinWidth="400"
-                    MinHeight="48"
-                    Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
-                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
-                    BorderThickness="1"
-                    Padding="8"
-                    CornerRadius="8"
-                    Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid x:Name="NotificationBar"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Top"
+                  Margin="0 10 0 0"
+                  Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
 
-                <Border.DataContext>
+                <Grid.DataContext>
                     <notifications:NotificationViewModel />
-                </Border.DataContext>
+                </Grid.DataContext>
 
-                <Grid>
+                <Border Margin="10 8 10 0"
+                        Width="380"
+                        Height="48"
+                        Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        VerticalAlignment="Top"
+                        Visibility="{Binding HasQueuedNotifications, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <Border Width="400"
+                        Height="48"
+                        Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Padding="8"
+                        CornerRadius="8"
+                        VerticalAlignment="Top">
 
-                    <Border Grid.Column="0"
-                            Width="6"
-                            Background="{ThemeResource NotificationAccentBrush}"
-                            CornerRadius="3"
-                            VerticalAlignment="Stretch"
-                            Margin="0 0 8 0 " />
+                    <Grid>
 
-                    <StackPanel Grid.Column="1"
-                                VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Title}"
-                                   Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                   FontWeight="SemiBold"
-                                   FontSize="14"
-                                   TextWrapping="Wrap" />
-                        <TextBlock Text="{Binding Message}"
-                                   Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="2"
-                            Content="Close"
-                            Margin="8 0 0 0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Command="{Binding CloseCommand}" />
+                        <Border Grid.Column="0"
+                                Width="6"
+                                Background="{ThemeResource NotificationAccentBrush}"
+                                CornerRadius="3"
+                                VerticalAlignment="Stretch"
+                                Margin="0 0 8 0 " />
 
-                </Grid>
-            </Border>
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Title}"
+                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                       FontWeight="SemiBold"
+                                       FontSize="14"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Message}"
+                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Button Grid.Column="2"
+                                Content="Close"
+                                Margin="8 0 0 0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Command="{Binding CloseCommand}" />
+
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 
 </Window>
-

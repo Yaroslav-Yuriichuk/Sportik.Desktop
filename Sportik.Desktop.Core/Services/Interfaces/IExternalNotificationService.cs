@@ -3,7 +3,7 @@ using Sportik.Desktop.Core.Models;
 
 namespace Sportik.Desktop.Core.Services.Interfaces
 {
-    public interface INotificationService
+    public interface IExternalNotificationService
     {
         void ShowReminder(Guid exerciseId, ReminderNotification reminderNotification);
     }

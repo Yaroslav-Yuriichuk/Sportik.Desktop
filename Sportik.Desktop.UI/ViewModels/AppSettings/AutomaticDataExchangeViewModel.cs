@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.AppSettings;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -33,6 +34,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
         private IAppSettingsService AppSettingsService => App.ServiceProvider.GetRequiredService<IAppSettingsService>();
         private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
         private IDataExchangeService DataExchangeService => App.ServiceProvider.GetRequiredService<IDataExchangeService>();
+        private IInternalNotificationService InternalNotificationService => App.ServiceProvider.GetRequiredService<IInternalNotificationService>();
 
         private ObservableCollection<DataExchangeConfigViewModel> _dataExchangeConfigs;
         private bool _isRunning;
@@ -110,12 +112,21 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             RunAllCommand.IsExecutable = false;
 
             AutomaticDataExchangeSettings settings = AppSettingsService.GetSettings<AutomaticDataExchangeSettings>();
-            IEnumerable<IDataExchangeConfig> configs = settings.Configs.OrderBy(config => config.Type);
+            IReadOnlyList<IDataExchangeConfig> configs = settings.Configs.OrderBy(config => config.Type).ToList();
 
             foreach (IDataExchangeConfig config in configs)
             {
                 IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.All);
                 await DataExchangeService.ExchangeAsync(dataExchanger);
+            }
+
+            if (configs.Any())
+            {
+                InternalNotificationService.Show(new GeneralNotification
+                {
+                    Title = "Run all completed",
+                    Message = "All data import/export completed.",
+                });
             }
 
             IsRunning = false;

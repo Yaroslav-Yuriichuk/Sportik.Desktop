@@ -15,7 +15,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
         private readonly IExerciseTimersService _exerciseTimersService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
-        private readonly Func<INotificationService> _notificationServiceFactory;
+        private readonly Func<IExternalNotificationService> _notificationServiceFactory;
 
         public override Exercises.ParallelExerciseState ExerciseState => Exercises.ParallelExerciseState.Executing;
 
@@ -25,7 +25,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
             IExerciseTimersService exerciseTimersService,
             Func<IExercisesService> exercisesServiceFactory,
             Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
-            Func<INotificationService> notificationServiceFactory) : base(context)
+            Func<IExternalNotificationService> notificationServiceFactory) : base(context)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;
@@ -37,7 +37,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
         protected override void HandleEnter()
         {
             IExercisesService exercisesService = _exercisesServiceFactory();
-            INotificationService notificationService = _notificationServiceFactory();
+            IExternalNotificationService notificationService = _notificationServiceFactory();
 
             _eventsService.AddListener<ExerciseIsEnabledChangedEventArgs>(EventsService_Event);
             _eventsService.AddListener<ExerciseExecutionTimeChangedEventArgs>(EventsService_Event);

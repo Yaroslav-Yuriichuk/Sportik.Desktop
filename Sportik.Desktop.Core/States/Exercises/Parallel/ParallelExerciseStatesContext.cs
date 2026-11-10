@@ -31,7 +31,7 @@ namespace Sportik.Desktop.Core.States.Exercises.Parallel
             IExerciseTimersService exerciseTimersService,
             Func<IExercisesService> exercisesServiceFactory,
             Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
-            Func<INotificationService> notificationServiceFactory)
+            Func<IExternalNotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
 

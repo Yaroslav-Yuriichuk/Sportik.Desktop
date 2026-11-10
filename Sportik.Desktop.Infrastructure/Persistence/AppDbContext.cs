@@ -20,6 +20,10 @@ namespace Sportik.Desktop.Infrastructure.Persistence
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<UserExercise>()
+                .HasIndex(e => e.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<UserExercise>()
                 .HasOne(e => e.Settings)
                 .WithOne()
                 .HasForeignKey<UserExercise>(e => e.SettingsId)

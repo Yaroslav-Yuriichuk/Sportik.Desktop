@@ -10,10 +10,13 @@ namespace Sportik.Desktop.Core.Events
 
         public CreationSource CreationSource { get; }
 
-        public ExerciseGoalAddedEventArgs(ExerciseGoal exerciseGoal, CreationSource creationSource)
+        public bool WasCompleted { get; }
+
+        public ExerciseGoalAddedEventArgs(ExerciseGoal exerciseGoal, CreationSource creationSource, bool wasCompleted)
         {
             ExerciseGoal = exerciseGoal;
             CreationSource = creationSource;
+            WasCompleted = wasCompleted;
         }
     }
 }

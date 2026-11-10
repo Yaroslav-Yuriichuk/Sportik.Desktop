@@ -1,6 +1,7 @@
-﻿using Microsoft.UI.Windowing;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Sportik.Desktop.UI.ViewModels.Notifications;
 using Windows.UI;
 
 namespace Sportik.Desktop.UI
@@ -12,7 +13,7 @@ namespace Sportik.Desktop.UI
             this.InitializeComponent();
 
             ExtendsContentIntoTitleBar = true;
-            SetTitleBar(TitleBarRow);
+            SetTitleBar(TitleBar);
 
             bool isDark = Application.Current.RequestedTheme == ApplicationTheme.Dark;
 
@@ -28,11 +29,21 @@ namespace Sportik.Desktop.UI
             AppWindow.TitleBar.ButtonInactiveForegroundColor = isDark
                 ? Color.FromArgb(0x99, 0xFF, 0xFF, 0xFF)
                 : Color.FromArgb(0x99, 0x00, 0x00, 0x00);
+
+            Closed += MainWindow_Closed;
         }
 
         internal Frame GetRootFrame()
         {
             return RootFrame;
+        }
+
+        private void MainWindow_Closed(object sender, WindowEventArgs e)
+        {
+            if (NotificationBar.DataContext is NotificationViewModel notificationViewModel)
+            {
+                notificationViewModel.Dispose();
+            }
         }
     }
 }

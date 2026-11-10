@@ -2,25 +2,99 @@
     x:Class="Sportik.Desktop.UI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:Sportik.Desktop.UI.Converters"
+    xmlns:notifications="using:Sportik.Desktop.UI.ViewModels.Notifications"
     Title="Sportik Desktop">
 
     <Grid>
+
+        <Grid.Resources>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid x:Name="TitleBarRow"
+        <Grid x:Name="TitleBar"
               Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-              Padding="16,0,0,0">
+              Padding="16 0 0 0">
             <TextBlock Text="Sportik Desktop"
                        VerticalAlignment="Center"
                        FontSize="12" />
         </Grid>
 
-        <Frame x:Name="RootFrame" Grid.Row="1" />
+        <Grid Grid.Row="1">
+            <Frame x:Name="RootFrame" />
 
+            <Grid x:Name="NotificationBar"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Top"
+                  Margin="0 10 0 0"
+                  Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                <Grid.DataContext>
+                    <notifications:NotificationViewModel />
+                </Grid.DataContext>
+
+                <Border Margin="10 8 10 0"
+                        Width="380"
+                        Height="48"
+                        Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        VerticalAlignment="Top"
+                        Visibility="{Binding HasQueuedNotifications, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                <Border Width="400"
+                        Height="48"
+                        Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        Padding="8"
+                        CornerRadius="8"
+                        VerticalAlignment="Top">
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0"
+                                Width="6"
+                                Background="{ThemeResource NotificationAccentBrush}"
+                                CornerRadius="3"
+                                VerticalAlignment="Stretch"
+                                Margin="0 0 8 0 " />
+
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Title}"
+                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                       FontWeight="SemiBold"
+                                       FontSize="14"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Message}"
+                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Button Grid.Column="2"
+                                Content="Close"
+                                Margin="8 0 0 0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Command="{Binding CloseCommand}" />
+
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 
 </Window>
-

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using Sportik.Desktop.Core.Common.Notification;
 using Sportik.Desktop.Core.Models.AppSettings;
 using Sportik.Desktop.Core.Services.Implementations;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -17,6 +18,7 @@ namespace Sportik.Desktop.Core
             services.AddTransient<IWeekGoalsService, WeekGoalsService>();
             services.AddTransient<IAppSettingsService, AppSettingsService>();
 
+            services.AddSingleton<IInternalNotificationChannel, InternalNotificationChannel>();
             services.AddSingleton<IEventsService, EventsService>();
             services.AddSingleton<IExerciseTimersService, ExerciseTimersService>();
             services.AddSingleton<IReminderService, ReminderService>();
@@ -25,10 +27,12 @@ namespace Sportik.Desktop.Core
             services.AddSingleton<IDataExchangeService, DataExchangeService>();
 
             services.AddTransient<Func<IExerciseSettingsService>>(sp => sp.GetRequiredService<IExerciseSettingsService>);
-            services.AddTransient<Func<INotificationService>>(sp => sp.GetRequiredService<INotificationService>);
+            services.AddTransient<Func<IInternalNotificationService>>(sp => sp.GetRequiredService<IInternalNotificationService>);
+            services.AddTransient<Func<IExternalNotificationService>>(sp => sp.GetRequiredService<IExternalNotificationService>);
             services.AddTransient<Func<IExercisesService>>(sp => sp.GetRequiredService<IExercisesService>);
             services.AddTransient<Func<IAuthService>>(sp => sp.GetRequiredService<IAuthService>);
             services.AddTransient<Func<IExerciseStatisticsService>>(sp => sp.GetRequiredService<IExerciseStatisticsService>);
+            services.AddTransient<Func<IWeekGoalsService>>(sp => sp.GetRequiredService<IWeekGoalsService>);
             services.AddTransient<Func<ISynchronizationService>>(sp => sp.GetRequiredService<ISynchronizationService>);
             services.AddTransient<Func<IAppSettingsService>>(sp => sp.GetRequiredService<IAppSettingsService>);
 

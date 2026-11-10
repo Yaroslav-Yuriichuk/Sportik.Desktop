@@ -14,7 +14,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
         private readonly IRuntimeCacheService _runtimeCacheService;
         private readonly Func<IExercisesService> _exercisesServiceFactory;
         private readonly Func<IExerciseStatisticsService> _exerciseStatisticsServiceFactory;
-        private readonly Func<INotificationService> _notificationServiceFactory;
+        private readonly Func<IExternalNotificationService> _notificationServiceFactory;
 
         private readonly HashSet<Guid> _exerciseIds = new HashSet<Guid>();
 
@@ -27,7 +27,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
             IRuntimeCacheService runtimeCacheService,
             Func<IExercisesService> exercisesServiceFactory,
             Func<IExerciseStatisticsService> exerciseStatisticsServiceFactory,
-            Func<INotificationService> notificationServiceFactory)
+            Func<IExternalNotificationService> notificationServiceFactory)
         {
             _eventsService = eventsService;
             _exerciseTimersService = exerciseTimersService;

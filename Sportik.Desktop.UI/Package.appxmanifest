@@ -5,7 +5,9 @@
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap mp rescap">
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  IgnorableNamespaces="uap mp rescap com desktop">
 
   <Identity
     Name="Sportik.Desktop"
@@ -41,6 +43,20 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Logo\Wide310x150Logo.png" Square71x71Logo="Assets\Logo\SmallTile.png" Square310x310Logo="Assets\Logo\LargeTile.png"/>
         <uap:SplashScreen Image="Assets\Logo\SplashScreen.png" />
       </uap:VisualElements>
+
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="Sportik.Desktop.UI.exe" Arguments="----AppNotificationActivated:" DisplayName="Sportik Desktop Toast Activator">
+              <com:Class Id="1F080B7A-4E2B-4C5C-A5E6-F0E3C8B7D9A1" DisplayName="Sportik Desktop Toast Activator" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+
+        <desktop:Extension Category="windows.toastNotificationActivation">
+          <desktop:ToastNotificationActivation ToastActivatorCLSID="1F080B7A-4E2B-4C5C-A5E6-F0E3C8B7D9A1" />
+        </desktop:Extension>
+      </Extensions>
     </Application>
   </Applications>
 

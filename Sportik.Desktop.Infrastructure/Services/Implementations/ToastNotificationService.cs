@@ -1,91 +1,101 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Windows.UI.Notifications;
-using Microsoft.Toolkit.Uwp.Notifications;
+using System;
+using System.Threading;
+using Microsoft.Windows.AppNotifications;
+using Microsoft.Windows.AppNotifications.Builder;
 using Sportik.Desktop.Core.Events;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Infrastructure.Common.Notification;
 
 namespace Sportik.Desktop.Infrastructure.Services.Implementations
 {
     internal sealed class ToastNotificationService : IExternalNotificationService
     {
-        private readonly IEventsService _eventsService;
+        private static long _generatedIntentId = long.MinValue;
 
-        public ToastNotificationService(IEventsService eventsService)
+        private readonly IEventsService _eventsService;
+        private readonly ExternalNotificationChannel _channel;
+        private readonly long _intentId;
+
+        public ToastNotificationService(IEventsService eventsService, ExternalNotificationChannel channel)
         {
             _eventsService = eventsService;
+            _channel = channel;
+            _intentId = Interlocked.Increment(ref _generatedIntentId);
+
+            _channel.NotificationInvoked += OnNotificationInvoked;
         }
 
         public void ShowReminder(Guid exerciseId, ReminderNotification reminderNotification)
         {
-            ToastContentBuilder builder = new ToastContentBuilder()
-                .SetToastScenario(ToastScenario.Reminder)
-                .AddArgument("view")
+            AppNotificationBuilder builder = new AppNotificationBuilder()
+                .SetScenario(AppNotificationScenario.Reminder)
+                .AddArgument("action", "view")
+                .AddArgument("exerciseId", exerciseId.ToString())
+                .AddArgument("intentId", _intentId.ToString())
                 .AddText(reminderNotification.Title)
                 .AddText(string.Join('\n', reminderNotification.Texts))
-                .AddButton(new ToastButton()
-                    .SetContent("Complete")
-                    .AddArgument("complete"))
-                .AddButton(new ToastButton()
-                    .SetContent("Snooze")
-                    .AddArgument("snooze"))
-                .AddButton(new ToastButton()
-                    .SetContent("Skip")
-                    .AddArgument("dismiss"));
+                .AddButton(new AppNotificationButton("Complete")
+                    .AddArgument("action", "complete")
+                    .AddArgument("exerciseId", exerciseId.ToString())
+                    .AddArgument("intentId", _intentId.ToString()))
+                .AddButton(new AppNotificationButton("Snooze")
+                    .AddArgument("action", "snooze")
+                    .AddArgument("exerciseId", exerciseId.ToString())
+                    .AddArgument("intentId", _intentId.ToString()))
+                .AddButton(new AppNotificationButton("Skip")
+                    .AddArgument("action", "dismiss")
+                    .AddArgument("exerciseId", exerciseId.ToString())
+                    .AddArgument("intentId", _intentId.ToString()));
 
-            ToastNotification toast = new ToastNotification(builder.GetToastContent().GetXml())
-            {
-                Priority = ToastNotificationPriority.High,
-                ExpirationTime = DateTimeOffset.Now + reminderNotification.ExpirationTime,
-            };
+            AppNotification notification = builder.BuildNotification();
+            notification.Expiration = DateTimeOffset.Now + reminderNotification.ExpirationTime;
+            notification.Priority = AppNotificationPriority.High;
 
-            toast.Activated += (sender, args) =>
-            {
-                if (args is ToastActivatedEventArgs toastArgs)
-                {
-                    string argument = ParseMajorArgument(toastArgs.Arguments);
-
-                    switch (argument)
-                    {
-                        case "view":
-                            _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exerciseId));
-                            break;
-                        case "complete":
-                            _eventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(exerciseId));
-                            break;
-                        case "snooze":
-                            _eventsService.RaiseEvent(new ReminderNotificationSnoozedEventArgs(exerciseId));
-                            break;
-                        case "dismiss":
-                            _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exerciseId));
-                            break;
-                    }
-                }
-            };
-
-            ToastNotificationManager.CreateToastNotifier().Show(toast);
+            _channel.Show(notification);
 
             _eventsService.RaiseEvent(new ReminderNotificationShownEventArgs(exerciseId));
         }
 
-        private string ParseMajorArgument(string arguments)
+        private void OnNotificationInvoked(object sender, AppNotificationActivatedEventArgs args)
         {
-            List<string> args = arguments.Split(";").ToList();
+            string intentIdStr = GetArgument(args, "intentId");
 
-            if (args.Count == 0 || args.Count > 2)
+            if (!long.TryParse(intentIdStr, out long intentId) || intentId != _intentId)
             {
-                return string.Empty;
+                return;
             }
 
-            if (args.Count == 1)
+            _channel.NotificationInvoked -= OnNotificationInvoked;
+
+            string action = GetArgument(args, "action");
+            string exerciseIdStr = GetArgument(args, "exerciseId");
+
+            if (!Guid.TryParse(exerciseIdStr, out Guid exerciseId))
             {
-                return args[0];
+                return;
             }
 
-            args.Remove("view");
-            return args[0];
+            switch (action)
+            {
+                case "view":
+                    _eventsService.RaiseEvent(new ReminderNotificationAcceptedEventArgs(exerciseId));
+                    break;
+                case "complete":
+                    _eventsService.RaiseEvent(new ExerciseCompleteRequestedEventArgs(exerciseId));
+                    break;
+                case "snooze":
+                    _eventsService.RaiseEvent(new ReminderNotificationSnoozedEventArgs(exerciseId));
+                    break;
+                case "dismiss":
+                    _eventsService.RaiseEvent(new ReminderNotificationDismissedEventArgs(exerciseId));
+                    break;
+            }
+        }
+
+        private static string GetArgument(AppNotificationActivatedEventArgs args, string key)
+        {
+            return args.Arguments.TryGetValue(key, out string value) ? value : string.Empty;
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Repositories.Interfaces;
 using Sportik.Desktop.Core.Services.Interfaces;
+using Sportik.Desktop.Infrastructure.Common.Notification;
 using Sportik.Desktop.Infrastructure.Persistence;
 using Sportik.Desktop.Infrastructure.Repositories.Implementations;
 using Sportik.Desktop.Infrastructure.Services.Implementations;
@@ -45,6 +46,7 @@ namespace Sportik.Desktop.Infrastructure
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUsersService, UsersService>();
 
+            services.AddSingleton<ExternalNotificationChannel>();
             services.AddSingleton<IRuntimeCacheService, RuntimeCacheService>();
             services.AddSingleton<IPersistentCacheService, PersistentCacheService>();
             services.AddSingleton<ISecureCacheService, SecureCacheService>();

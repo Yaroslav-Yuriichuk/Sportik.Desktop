@@ -130,7 +130,7 @@ namespace Sportik.Desktop.Core.Common.Export
                 .Select(set => (IList<object>)new List<object>
                 {
                     set.Name,
-                    set.LoggedAt.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture),
+                    set.LoggedAt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss'.0000000'zzz", CultureInfo.InvariantCulture),
                     set.Repetitions,
                 })
                 .ToList();
@@ -180,7 +180,7 @@ namespace Sportik.Desktop.Core.Common.Export
                 .Select(weekGoal => (IList<object>)new List<object>
                 {
                     weekGoal.ExerciseName,
-                    weekGoal.FirstWeekDayDate.ToString("O", CultureInfo.InvariantCulture),
+                    weekGoal.FirstWeekDayDate.ToString("yyyy-MM-ddTHH:mm:ss'.0000000'zzz", CultureInfo.InvariantCulture),
                     weekGoal.Repetitions,
                 })
                 .ToList();

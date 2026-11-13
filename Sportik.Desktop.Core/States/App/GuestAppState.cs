@@ -163,26 +163,29 @@ namespace Sportik.Desktop.Core.States.App
         {
             _reminderService.AddExercise(args.Exercise.Id);
 
-            IAppSettingsService appSettingsService = _appSettingsServiceFactory();
-            AutomaticDataExchangeSettings settings = appSettingsService.GetSettings<AutomaticDataExchangeSettings>();
-
-            IEnumerable<IDataExchangeConfig> exportConfigs = settings.Configs
-                .Where(config => config.Type == DataExchangeType.Export)
-                .OrderBy(config => config.Option);
-
-            Task.Run(async () =>
+            if (args.CreationSource != CreationSource.Import)
             {
-                foreach (IDataExchangeConfig config in exportConfigs)
+                IAppSettingsService appSettingsService = _appSettingsServiceFactory();
+                AutomaticDataExchangeSettings settings = appSettingsService.GetSettings<AutomaticDataExchangeSettings>();
+
+                IEnumerable<IDataExchangeConfig> exportConfigs = settings.Configs
+                    .Where(config => config.Type == DataExchangeType.Export)
+                    .OrderBy(config => config.Option);
+
+                Task.Run(async () =>
                 {
-                    IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.Append);
+                    foreach (IDataExchangeConfig config in exportConfigs)
+                    {
+                        IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.Append);
 
-                    DataExchangeContext context = new DataExchangeContext(
-                        DataExchangeScope.Exercises,
-                        exercises: [args.Exercise]);
+                        DataExchangeContext context = new DataExchangeContext(
+                            DataExchangeScope.Exercises,
+                            exercises: [args.Exercise]);
 
-                    await _dataExchangeService.ExchangeAsync(dataExchanger, context, ActiveCancellationToken);
-                }
-            });
+                        await _dataExchangeService.ExchangeAsync(dataExchanger, context, ActiveCancellationToken);
+                    }
+                });
+            }
 
             IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
 
@@ -195,34 +198,31 @@ namespace Sportik.Desktop.Core.States.App
 
         private void EventsService_Event(ExerciseSetAddedEventArgs args)
         {
-            IAppSettingsService appSettingsService = _appSettingsServiceFactory();
-            AutomaticDataExchangeSettings settings = appSettingsService.GetSettings<AutomaticDataExchangeSettings>();
-
-            IEnumerable<IDataExchangeConfig> exportConfigs = settings.Configs
-                .Where(config => config.Type == DataExchangeType.Export)
-                .OrderBy(config => config.Option);
-
-            Task.Run(async () =>
+            if (args.CreationSource != CreationSource.Import)
             {
-                foreach (IDataExchangeConfig config in exportConfigs)
+                IAppSettingsService appSettingsService = _appSettingsServiceFactory();
+                AutomaticDataExchangeSettings settings = appSettingsService.GetSettings<AutomaticDataExchangeSettings>();
+
+                IEnumerable<IDataExchangeConfig> exportConfigs = settings.Configs
+                    .Where(config => config.Type == DataExchangeType.Export)
+                    .OrderBy(config => config.Option);
+
+                Task.Run(async () =>
                 {
-                    IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.Append);
+                    foreach (IDataExchangeConfig config in exportConfigs)
+                    {
+                        IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.Append);
 
-                    DataExchangeContext context = new DataExchangeContext(
-                        DataExchangeScope.Sets,
-                        sets: [args.Set]);
+                        DataExchangeContext context = new DataExchangeContext(
+                            DataExchangeScope.Sets,
+                            sets: [args.Set]);
 
-                    await _dataExchangeService.ExchangeAsync(dataExchanger, context, ActiveCancellationToken);
-                }
-            });
+                        await _dataExchangeService.ExchangeAsync(dataExchanger, context, ActiveCancellationToken);
+                    }
+                });
+            }
 
-            DateTime currentDate = DateTimeOffset.Now.Date;
-            DateTime setDate = args.Set.LoggedAt.Date;
-
-            DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(currentDate);
-            DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(currentDate);
-
-            if (CalendarHelper.IsBetween(setDate, firstWeekDayDate, lastWeekDayDate))
+            if (CalendarHelper.AreInSameWeek(args.Set.LoggedAt.Date, DateTime.Now))
             {
                 Task.Run(async () =>
                 {
@@ -282,7 +282,7 @@ namespace Sportik.Desktop.Core.States.App
                 });
             }
 
-            if (args.WasCompleted)
+            if (CalendarHelper.AreInSameWeek(args.FirstWeekDayDate, DateTime.Now) && args.WasCompleted)
             {
                 IInternalNotificationService internalNotificationService = _internalNotificationServiceFactory();
 

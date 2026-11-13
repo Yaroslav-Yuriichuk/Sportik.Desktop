@@ -12,6 +12,8 @@ namespace Sportik.Desktop.Core.Repositories.Interfaces
 
         Task<ExerciseGoal> GetCurrentWeekExerciseGoalAsync(Guid exerciseId, CancellationToken cancellationToken = default);
 
+        Task<int?> GetExerciseGoalRepetitionsAsync(Guid exerciseId, DateTime firstWeekDayDate, CancellationToken cancellationToken = default);
+
         Task<IEnumerable<WeekGoal>> GetAllAsync(CancellationToken cancellationToken = default);
 
         Task<ExerciseGoal> AddGoalAsync(AddExerciseGoalModel addModel, CancellationToken cancellationToken = default);

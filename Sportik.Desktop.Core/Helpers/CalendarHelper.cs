@@ -54,5 +54,13 @@ namespace Sportik.Desktop.Core.Helpers
         {
             return date1 > date2 ? date1 : date2;
         }
+
+        public static bool AreInSameWeek(DateTime date, DateTime other)
+        {
+            DateTime firstDayOfWeek1 = GetFirstDayOfWeek(date);
+            DateTime firstDayOfWeek2 = GetFirstDayOfWeek(other);
+
+            return firstDayOfWeek1 == firstDayOfWeek2;
+        }
     }
 }

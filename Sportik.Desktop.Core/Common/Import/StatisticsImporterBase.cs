@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common.DataExchange;
 using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Goal;
 using Sportik.Desktop.Core.Models.ImportExport;
@@ -91,7 +92,7 @@ namespace Sportik.Desktop.Core.Common.Import
                         ExerciseGoal exerciseGoal = await _weekGoalsRepository.AddGoalAsync(addModel, cancellationToken);
 
                         bool wasCompleted = exerciseGoal.CompletedRepetitions >= exerciseGoal.TargetRepetitions;
-                        _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.Import, wasCompleted));
+                        _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.Import, wasCompleted, CalendarHelper.GetFirstDayOfWeek(addModel.DayInWeek)));
                     }
                 }
             }
@@ -219,7 +220,19 @@ namespace Sportik.Desktop.Core.Common.Import
                     continue;
                 }
 
-                goalsToAdd.Add(new AddExerciseGoalModel(importWeekGoal.Repetitions, importWeekGoal.FirstWeekDayDate, exercise.Id));
+                DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(importWeekGoal.FirstWeekDayDate);
+
+                int? existingRepetitions = await _weekGoalsRepository.GetExerciseGoalRepetitionsAsync(
+                    exercise.Id,
+                    firstWeekDayDate,
+                    cancellationToken);
+
+                if (existingRepetitions.HasValue && importWeekGoal.Repetitions <= existingRepetitions.Value)
+                {
+                    continue;
+                }
+
+                goalsToAdd.Add(new AddExerciseGoalModel(importWeekGoal.Repetitions, firstWeekDayDate, exercise.Id));
             }
 
             return goalsToAdd;

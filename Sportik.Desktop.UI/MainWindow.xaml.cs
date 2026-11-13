@@ -1,6 +1,7 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Sportik.Desktop.UI.Behaviors;
 using Sportik.Desktop.UI.ViewModels.Notifications;
 using Windows.UI;
 
@@ -8,6 +9,8 @@ namespace Sportik.Desktop.UI
 {
     internal sealed partial class MainWindow : Window
     {
+        private readonly NotificationBorderHeightSyncBehavior _notificationBorderHeightSyncBehavior;
+
         public MainWindow()
         {
             this.InitializeComponent();
@@ -31,6 +34,9 @@ namespace Sportik.Desktop.UI
                 : Color.FromArgb(0x99, 0x00, 0x00, 0x00);
 
             Closed += MainWindow_Closed;
+
+            _notificationBorderHeightSyncBehavior = new NotificationBorderHeightSyncBehavior(
+                NotificationBorder, ExtraNotificationsBorder);
         }
 
         internal Frame GetRootFrame()
@@ -44,6 +50,8 @@ namespace Sportik.Desktop.UI
             {
                 notificationViewModel.Dispose();
             }
+
+            _notificationBorderHeightSyncBehavior?.Dispose();
         }
     }
 }

@@ -38,9 +38,10 @@
                     <notifications:NotificationViewModel />
                 </Grid.DataContext>
 
-                <Border Margin="10 8 10 0"
+                <Border x:Name="ExtraNotificationsBorder"
+                        Margin="10 8 10 0"
                         Width="380"
-                        Height="48"
+                        MinHeight="48"
                         Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
                         BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                         BorderThickness="1"
@@ -48,8 +49,9 @@
                         VerticalAlignment="Top"
                         Visibility="{Binding HasQueuedNotifications, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                <Border Width="400"
-                        Height="48"
+                <Border x:Name="NotificationBorder"
+                        Width="400"
+                        MinHeight="48"
                         Background="{ThemeResource SolidBackgroundFillColorBaseBrush}"
                         BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                         BorderThickness="1"

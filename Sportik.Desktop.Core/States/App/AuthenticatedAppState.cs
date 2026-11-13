@@ -344,13 +344,7 @@ namespace Sportik.Desktop.Core.States.App
                 });
             }
 
-            DateTime currentDate = DateTimeOffset.Now.Date;
-            DateTime setDate = args.Set.LoggedAt.Date;
-
-            DateTime firstWeekDayDate = CalendarHelper.GetFirstDayOfWeek(currentDate);
-            DateTime lastWeekDayDate = CalendarHelper.GetLastDayOfWeek(currentDate);
-
-            if (CalendarHelper.IsBetween(setDate, firstWeekDayDate, lastWeekDayDate))
+            if (CalendarHelper.AreInSameWeek(args.Set.LoggedAt.Date, DateTime.Now))
             {
                 Task.Run(async () =>
                 {

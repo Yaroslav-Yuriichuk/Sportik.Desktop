@@ -100,6 +100,15 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return ExerciseGoalMapper.ToDomain(goal, completedRepetitions, enabledExercisesCache.IncludesExercise(goal.ExerciseId));
         }
 
+        public async Task<int?> GetExerciseGoalRepetitionsAsync(Guid exerciseId, DateTime firstWeekDayDate, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.ExerciseGoals
+                .AsNoTracking()
+                .Where(g => g.ExerciseId == exerciseId && g.FirstWeekDayDate == firstWeekDayDate)
+                .Select(g => (int?)g.TargetRepetitions)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<IEnumerable<WeekGoal>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             List<UserExerciseGoal> goals = await _dbContext.ExerciseGoals

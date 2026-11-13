@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models;
 using Sportik.Desktop.Core.Models.Goal;
 using Sportik.Desktop.Core.Repositories.Interfaces;
@@ -80,7 +81,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
                 ExerciseGoal exerciseGoal = await WeekGoalsRepository.AddGoalAsync(addModel, cancellationToken);
 
                 bool wasCompleted = exerciseGoal.CompletedRepetitions >= exerciseGoal.TargetRepetitions;
-                _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.User, wasCompleted));
+                _eventsService.RaiseEvent(new ExerciseGoalAddedEventArgs(exerciseGoal, CreationSource.User, wasCompleted, CalendarHelper.GetFirstDayOfWeek(addModel.DayInWeek)));
 
                 return OperationResult<ExerciseGoal>.Success(exerciseGoal);
             }

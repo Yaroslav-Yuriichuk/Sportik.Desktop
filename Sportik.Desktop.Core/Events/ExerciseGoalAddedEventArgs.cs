@@ -12,11 +12,14 @@ namespace Sportik.Desktop.Core.Events
 
         public bool WasCompleted { get; }
 
-        public ExerciseGoalAddedEventArgs(ExerciseGoal exerciseGoal, CreationSource creationSource, bool wasCompleted)
+        public DateTime FirstWeekDayDate { get; }
+
+        public ExerciseGoalAddedEventArgs(ExerciseGoal exerciseGoal, CreationSource creationSource, bool wasCompleted, DateTime firstWeekDayDate)
         {
             ExerciseGoal = exerciseGoal;
             CreationSource = creationSource;
             WasCompleted = wasCompleted;
+            FirstWeekDayDate = firstWeekDayDate;
         }
     }
 }

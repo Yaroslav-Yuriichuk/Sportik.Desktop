@@ -180,7 +180,7 @@ namespace Sportik.Desktop.Core.Common.Export
                 .Select(weekGoal => (IList<object>)new List<object>
                 {
                     weekGoal.ExerciseName,
-                    weekGoal.FirstWeekDayDate.ToString("yyyy-MM-ddTHH:mm:ss'.0000000'zzz", CultureInfo.InvariantCulture),
+                    weekGoal.FirstWeekDayDate.ToString("yyyy-MM-ddTHH:mm:ss'.0000000'", CultureInfo.InvariantCulture),
                     weekGoal.Repetitions,
                 })
                 .ToList();

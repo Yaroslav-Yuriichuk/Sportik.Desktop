@@ -19,6 +19,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             throw new NotSupportedException("Week goals are not supported in the remote repository.");
         }
 
+        public Task<int?> GetExerciseGoalRepetitionsAsync(Guid exerciseId, DateTime firstWeekDayDate, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException("Week goals are not supported in the remote repository.");
+        }
+
         public async Task<IEnumerable<WeekGoal>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException("Week goals are not supported in the remote repository.");

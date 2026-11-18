@@ -382,6 +382,31 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             return aggregatedStatistics;
         }
 
+        public async Task<IEnumerable<AggregatedSetsDayOfYearStatistics>> GetAggregatedDayOfYearSetsAsync(int year, CancellationToken cancellationToken = default)
+        {
+            IEnumerable<UserSet> sets = await _dbContext.Sets
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.UtcNow);
+
+            Dictionary<DateTime, int> setsPerDate = sets
+                .Select(s => s.LoggedAt.ToOffset(offset).Date)
+                .Where(date => date.Year == year)
+                .GroupBy(date => date)
+                .ToDictionary(group => group.Key, group => group.Count());
+
+            List<AggregatedSetsDayOfYearStatistics> aggregatedStatistics = new List<AggregatedSetsDayOfYearStatistics>();
+
+            for (DateTime date = new DateTime(year, 1, 1); date.Year == year; date = date.AddDays(1))
+            {
+                setsPerDate.TryGetValue(date, out int totalSets);
+                aggregatedStatistics.Add(new AggregatedSetsDayOfYearStatistics(date, totalSets));
+            }
+
+            return aggregatedStatistics;
+        }
+
         public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             List<UserSet> setEntities = await _dbContext.Sets

@@ -25,6 +25,8 @@ namespace Sportik.Desktop.Core.Services.Interfaces
 
         Task<OperationResult<IEnumerable<AggregatedSetsMonthStatistics>>> GetAggregatedMonthSetsAsync(int year, CancellationToken cancellationToken = default);
 
+        Task<OperationResult<IEnumerable<AggregatedSetsDayOfYearStatistics>>> GetAggregatedDayOfYearSetsAsync(int year, CancellationToken cancellationToken = default);
+
         Task<OperationResult<ExerciseSet>> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default);
     }
 }

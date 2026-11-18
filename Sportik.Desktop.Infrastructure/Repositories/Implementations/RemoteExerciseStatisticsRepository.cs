@@ -81,6 +81,11 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
             throw new NotSupportedException("Aggregated month sets statistics are not supported in the remote repository.");
         }
 
+        public async Task<IEnumerable<AggregatedSetsDayOfYearStatistics>> GetAggregatedDayOfYearSetsAsync(int year, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException("Aggregated day of year sets statistics are not supported in the remote repository.");
+        }
+
         public async Task<IEnumerable<ExerciseSet>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             OperationResult<string> authResult = await _authService.GetTokenAsync(cancellationToken);

@@ -65,6 +65,7 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 if (SetField(ref _selectedGroupingOption, value))
                 {
                     TargetOptions = new ObservableCollection<DashboardTargetOption>(SelectedGroupingOption.TargetOptions);
+                    OnPropertyChanged(nameof(IsCompactBarChart));
 
                     DashboardCache dashboardCache = PersistentCacheService.GetOrNew<DashboardCache>();
 
@@ -80,6 +81,8 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 }
             }
         }
+
+        public bool IsCompactBarChart => SelectedGroupingOption?.Grouping == DashboardGrouping.DayOfYear;
 
         private ObservableCollection<DashboardTargetOption> _targetOptions;
 
@@ -147,7 +150,9 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
             {
                 if (SetField(ref _selectedYearOption, value))
                 {
-                    if (value == null || SelectedGroupingOption?.Grouping != DashboardGrouping.Month)
+                    if (value == null ||
+                        (SelectedGroupingOption?.Grouping != DashboardGrouping.Month &&
+                         SelectedGroupingOption?.Grouping != DashboardGrouping.DayOfYear))
                     {
                         return;
                     }
@@ -192,11 +197,17 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 new DashboardTargetOption("Sets", DashboardTarget.Sets),
             };
 
+            List<DashboardTargetOption> dayOfYearTargetOptions = new List<DashboardTargetOption>
+            {
+                new DashboardTargetOption("Sets", DashboardTarget.Sets),
+            };
+
             List<DashboardGroupingOption> groupingOptions = new List<DashboardGroupingOption>
             {
                 new DashboardGroupingOption("Exercise", DashboardGrouping.Exercise, exerciseTargetOptions),
                 new DashboardGroupingOption("Day of Week", DashboardGrouping.Day, dayTargetOptions),
                 new DashboardGroupingOption("Month", DashboardGrouping.Month, monthTargetOptions),
+                new DashboardGroupingOption("Day of Year", DashboardGrouping.DayOfYear, dayOfYearTargetOptions),
             };
 
             List<DashboardYearOption> yearOptions = DashboardConstants.Years
@@ -249,6 +260,7 @@ namespace Sportik.Desktop.UI.ViewModels.Dashboard
                 DashboardGrouping.Exercise when target == DashboardTarget.Sets => new ExerciseSetsBarChartLoader(ExerciseStatisticsService),
                 DashboardGrouping.Day when target == DashboardTarget.Sets => new DaySetsBarChartLoader(ExerciseStatisticsService),
                 DashboardGrouping.Month when target == DashboardTarget.Sets => new MonthSetsBarChartLoader(ExerciseStatisticsService, SelectedYearOption.Year),
+                DashboardGrouping.DayOfYear when target == DashboardTarget.Sets => new DayOfYearSetsBarChartLoader(ExerciseStatisticsService, SelectedYearOption.Year),
                 _ => throw new ArgumentOutOfRangeException(nameof(grouping), grouping, null)
             };
 

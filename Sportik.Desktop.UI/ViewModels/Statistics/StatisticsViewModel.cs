@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Sportik.Desktop.Core.Common;
 using Sportik.Desktop.Core.Events;
+using Sportik.Desktop.Core.Extensions;
 using Sportik.Desktop.Core.Helpers;
 using Sportik.Desktop.Core.Models.Statistics;
 using Sportik.Desktop.Core.Services.Interfaces;
@@ -72,6 +73,17 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             {
                 if (SetField(ref _selectedGroupingOption, value))
                 {
+                    if (value == null)
+                    {
+                        return;
+                    }
+
+                    StatisticsCache statisticsCache = PersistentCacheService.GetOrNew<StatisticsCache>();
+
+                    statisticsCache.LastGrouping = SelectedGroupingOption.Grouping;
+
+                    PersistentCacheService.Set(statisticsCache);
+
                     _ = LoadStatisticsAsync(SelectedGroupingOption.Grouping, _loadCts.Token);
                 }
             }
@@ -87,6 +99,7 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
         private IExerciseStatisticsService ExerciseStatisticsService => App.ServiceProvider.GetRequiredService<IExerciseStatisticsService>();
         private IEventsService EventsService => App.ServiceProvider.GetRequiredService<IEventsService>();
+        private IPersistentCacheService PersistentCacheService => App.ServiceProvider.GetRequiredService<IPersistentCacheService>();
 
         private readonly CancellationTokenSource _loadCts = new CancellationTokenSource();
 
@@ -95,12 +108,23 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             ShowImportCommand = new ReactiveRelayCommand(OpenImport);
             ShowExportCommand = new ReactiveRelayCommand(OpenExport);
 
-            GroupingOptions = new ObservableCollection<StatisticsGroupingOption>
+            List<StatisticsGroupingOption> groupingOptions = new List<StatisticsGroupingOption>
             {
                 new StatisticsGroupingOption("Week", StatisticsGrouping.Week),
                 new StatisticsGroupingOption("Month", StatisticsGrouping.Month),
                 new StatisticsGroupingOption("Year", StatisticsGrouping.Year),
             };
+
+            StatisticsGroupingOption selectedGroupingOption = groupingOptions[0];
+
+            if (PersistentCacheService.TryGet(out StatisticsCache statisticsCache))
+            {
+                StatisticsGroupingOption lastSelectedGroupingOption = groupingOptions.FirstOrDefault(go => go.Grouping == statisticsCache.LastGrouping);
+                selectedGroupingOption = lastSelectedGroupingOption ?? selectedGroupingOption;
+            }
+
+            SetField(ref _groupingOptions, new ObservableCollection<StatisticsGroupingOption>(groupingOptions), nameof(GroupingOptions));
+            SetField(ref _selectedGroupingOption, selectedGroupingOption, nameof(SelectedGroupingOption));
 
             _ = LoadTodayStatisticsAsync(_loadCts.Token);
             _ = LoadStatisticsAsync(SelectedGroupingOption.Grouping, _loadCts.Token);

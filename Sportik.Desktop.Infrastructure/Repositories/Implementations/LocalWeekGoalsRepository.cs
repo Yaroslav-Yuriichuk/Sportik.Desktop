@@ -147,7 +147,7 @@ namespace Sportik.Desktop.Infrastructure.Repositories.Implementations
                     })
                     .ToDictionaryAsync(x => x.ExerciseId, x => x.CompletedRepetitions, cancellationToken);
 
-                List<ExerciseGoal> exerciseGoals = goals.Select(g => ExerciseGoalMapper.ToDomain(
+                List<ExerciseGoal> exerciseGoals = group.Select(g => ExerciseGoalMapper.ToDomain(
                     g,
                     completedRepetitions.GetValueOrDefault(g.ExerciseId, 0),
                     enabledExercisesCache.IncludesExercise(g.ExerciseId))).ToList();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Sportik.Desktop.Core.Services.Interfaces;
 
@@ -6,7 +7,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
 {
     internal sealed class RuntimeCacheService : IRuntimeCacheService
     {
-        private readonly Dictionary<Type, object> _cache = new Dictionary<Type, object>();
+        private readonly ConcurrentDictionary<Type, object> _cache = new ConcurrentDictionary<Type, object>();
 
         public T Get<T>()
         {
@@ -37,7 +38,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
 
         public void Remove<T>()
         {
-            _cache.Remove(typeof(T));
+            _cache.TryRemove(typeof(T), out _);
         }
     }
 }

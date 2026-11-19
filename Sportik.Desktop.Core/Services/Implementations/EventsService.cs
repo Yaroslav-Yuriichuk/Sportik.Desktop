@@ -7,6 +7,7 @@ namespace Sportik.Desktop.Core.Services.Implementations
     internal sealed class EventsService : IEventsService
     {
         private readonly Dictionary<Type, Delegate> _eventListeners = new Dictionary<Type, Delegate>();
+        private readonly object _lock = new object();
 
         public void AddListener<TEventArgs>(Action<TEventArgs> callback) where TEventArgs : EventArgs
         {
@@ -17,13 +18,16 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
             Type eventType = typeof(TEventArgs);
 
-            if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
+            lock (_lock)
             {
-                _eventListeners[eventType] = Delegate.Combine(existingDelegate, callback);
-            }
-            else
-            {
-                _eventListeners[eventType] = callback;
+                if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
+                {
+                    _eventListeners[eventType] = Delegate.Combine(existingDelegate, callback);
+                }
+                else
+                {
+                    _eventListeners[eventType] = callback;
+                }
             }
         }
 
@@ -36,17 +40,20 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
             Type eventType = typeof(TEventArgs);
 
-            if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
+            lock (_lock)
             {
-                Delegate newDelegate = Delegate.Remove(existingDelegate, callback);
+                if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
+                {
+                    Delegate newDelegate = Delegate.Remove(existingDelegate, callback);
 
-                if (newDelegate == null)
-                {
-                    _eventListeners.Remove(eventType);
-                }
-                else
-                {
-                    _eventListeners[eventType] = newDelegate;
+                    if (newDelegate == null)
+                    {
+                        _eventListeners.Remove(eventType);
+                    }
+                    else
+                    {
+                        _eventListeners[eventType] = newDelegate;
+                    }
                 }
             }
         }
@@ -60,12 +67,18 @@ namespace Sportik.Desktop.Core.Services.Implementations
 
             Type eventType = typeof(TEventArgs);
 
-            if (_eventListeners.TryGetValue(eventType, out Delegate existingDelegate))
+            Delegate existingDelegate;
+
+            lock (_lock)
             {
-                if (existingDelegate is Action<TEventArgs> action)
-                {
-                    action.Invoke(args);
-                }
+                _eventListeners.TryGetValue(eventType, out existingDelegate);
+            }
+
+            // Delegates are immutable, so invoking the snapshot outside the lock is safe
+            // and allows listeners to add/remove listeners without deadlocking.
+            if (existingDelegate is Action<TEventArgs> action)
+            {
+                action.Invoke(args);
             }
         }
     }

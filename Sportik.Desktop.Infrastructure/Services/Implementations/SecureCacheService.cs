@@ -9,6 +9,7 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
         private const string ResourceName = "Sportik Desktop";
 
         private readonly PasswordVault _vault = new PasswordVault();
+        private readonly object _lock = new object();
 
         public T Get<T>()
         {
@@ -44,31 +45,37 @@ namespace Sportik.Desktop.Infrastructure.Services.Implementations
             string key = $"{typeof(T).Assembly.FullName}.{typeof(T).FullName}";
             string json = JsonConvert.SerializeObject(value);
 
-            try
+            lock (_lock)
             {
-                PasswordCredential credential = _vault.Retrieve(ResourceName, key);
-                _vault.Remove(credential);
-            }
-            catch
-            {
-                // Ignored.
-            }
+                try
+                {
+                    PasswordCredential credential = _vault.Retrieve(ResourceName, key);
+                    _vault.Remove(credential);
+                }
+                catch
+                {
+                    // Ignored.
+                }
 
-            _vault.Add(new PasswordCredential(ResourceName, key, json));
+                _vault.Add(new PasswordCredential(ResourceName, key, json));
+            }
         }
 
         public void Remove<T>()
         {
             string key = $"{typeof(T).Assembly.FullName}.{typeof(T).FullName}";
 
-            try
+            lock (_lock)
             {
-                PasswordCredential credential = _vault.Retrieve(ResourceName, key);
-                _vault.Remove(credential);
-            }
-            catch
-            {
-                // Ignored.
+                try
+                {
+                    PasswordCredential credential = _vault.Retrieve(ResourceName, key);
+                    _vault.Remove(credential);
+                }
+                catch
+                {
+                    // Ignored.
+                }
             }
         }
     }

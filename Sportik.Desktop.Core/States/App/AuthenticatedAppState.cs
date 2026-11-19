@@ -392,7 +392,7 @@ namespace Sportik.Desktop.Core.States.App
                         IDataExchanger dataExchanger = config.CreateExchanger(DataExchangeMode.Append);
 
                         WeekGoal weekGoal = new WeekGoal(
-                            CalendarHelper.GetFirstDayOfWeek(DateTime.Now),
+                            args.FirstWeekDayDate,
                             new List<ExerciseGoal> { args.ExerciseGoal, });
 
                         DataExchangeContext context = new DataExchangeContext(

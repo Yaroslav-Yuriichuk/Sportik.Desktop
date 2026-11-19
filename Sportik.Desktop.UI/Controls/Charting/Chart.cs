@@ -113,6 +113,16 @@ namespace Sportik.Desktop.UI.Controls.Charting
                 _labelsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             }
 
+            bool isCompact = columnSeries.IsCompact;
+
+            List<string> labels = items
+                .Select(item => GetPathValue(item, columnSeries.IndependentValuePath)?.ToString() ?? string.Empty)
+                .ToList();
+
+            List<int> labelledIndexes = Enumerable.Range(0, items.Count)
+                .Where(index => labels[index].Length > 0)
+                .ToList();
+
             for (int i = 0; i < items.Count; i++)
             {
                 object item = items[i];
@@ -129,14 +139,13 @@ namespace Sportik.Desktop.UI.Controls.Charting
                 column.RowDefinitions.Add(new RowDefinition { Height = new GridLength(upperWeight, GridUnitType.Star) });
                 column.RowDefinitions.Add(new RowDefinition { Height = new GridLength(lowerWeight, GridUnitType.Star) });
 
-                object independentValue = GetPathValue(item, columnSeries.IndependentValuePath);
                 object dependentValue = GetPathValue(item, columnSeries.DependentValuePath);
 
                 ColumnDataPoint dataPoint = new ColumnDataPoint
                 {
                     Style = columnSeries.DataPointStyle,
-                    FormattedDependentValue = dependentValue?.ToString(),
-                    Margin = new Thickness(16, 0, 16, 0),
+                    FormattedDependentValue = isCompact ? null : dependentValue?.ToString(),
+                    Margin = isCompact ? new Thickness(0.5, 0, 0.5, 0) : new Thickness(16, 0, 16, 0),
                 };
 
                 dataPoint.Loaded += DataPoint_Loaded;
@@ -147,16 +156,35 @@ namespace Sportik.Desktop.UI.Controls.Charting
                 Grid.SetColumn(column, i);
                 _plotGrid.Children.Add(column);
 
+                if (labels[i].Length == 0)
+                {
+                    continue;
+                }
+
                 TextBlock label = new TextBlock
                 {
-                    Text = independentValue?.ToString() ?? string.Empty,
+                    Text = labels[i],
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Top,
                     Margin = new Thickness(4, 4, 4, 0),
                     TextTrimming = TextTrimming.CharacterEllipsis,
                 };
 
-                Grid.SetColumn(label, i);
+                int labelColumn = i;
+                int labelColumnSpan = 1;
+
+                if (isCompact)
+                {
+                    int labelPosition = labelledIndexes.IndexOf(i);
+                    int nextIndex = labelPosition == labelledIndexes.Count - 1 ? items.Count : labelledIndexes[labelPosition + 1];
+
+                    labelColumnSpan = nextIndex - i;
+                    label.HorizontalAlignment = HorizontalAlignment.Left;
+                }
+
+                Grid.SetColumn(label, labelColumn);
+                Grid.SetColumnSpan(label, labelColumnSpan);
+
                 _labelsGrid.Children.Add(label);
             }
         }

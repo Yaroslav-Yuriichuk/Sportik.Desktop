@@ -176,6 +176,23 @@ namespace Sportik.Desktop.Core.Services.Implementations
             }
         }
 
+        public async Task<OperationResult<IEnumerable<AggregatedSetsDayOfYearStatistics>>> GetAggregatedDayOfYearSetsAsync(int year, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                IEnumerable<AggregatedSetsDayOfYearStatistics> aggregatedDayOfYearSets = await ExerciseStatisticsRepository.GetAggregatedDayOfYearSetsAsync(year, cancellationToken);
+                return OperationResult<IEnumerable<AggregatedSetsDayOfYearStatistics>>.Success(aggregatedDayOfYearSets);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                return OperationResult<IEnumerable<AggregatedSetsDayOfYearStatistics>>.Failure(new[] { "Failed to retrieve aggregated day of year sets exercise statistics." });
+            }
+        }
+
         public async Task<OperationResult<ExerciseSet>> AddSetAsync(AddExerciseSetModel addModel, CancellationToken cancellationToken = default)
         {
             try

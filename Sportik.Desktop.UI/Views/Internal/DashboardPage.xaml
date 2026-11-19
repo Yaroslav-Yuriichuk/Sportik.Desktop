@@ -128,7 +128,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="0 15 15 0"
-                    Visibility="{Binding SelectedGroupingOption.Grouping, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter=Month}">
+                    Visibility="{Binding SelectedGroupingOption.Grouping, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Month,DayOfYear'}">
 
             <TextBlock Text="Year:"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -217,6 +217,7 @@
 
                         <charting:ColumnSeries IndependentValuePath="Key"
                                                DependentValuePath="Value"
+                                               IsCompact="{Binding IsCompactBarChart, Mode=OneWay}"
                                                DataPointStyle="{StaticResource RoundedColumnDataPointStyle}"
                                                ItemsSource="{Binding BarChartData, Mode=OneWay}" />
 

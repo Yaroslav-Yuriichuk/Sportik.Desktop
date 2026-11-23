@@ -8,10 +8,12 @@ namespace Sportik.Desktop.Infrastructure.Persistence.Mappers
     {
         public static UserSet ToEntity(AddExerciseSetModel addModel)
         {
+            DateTimeOffset loggedAt = DateTimeOffset.FromUnixTimeMilliseconds(addModel.LoggedAt.ToUnixTimeMilliseconds());
+
             return new UserSet(
                 addModel.Id ?? Guid.NewGuid(),
                 addModel.Repetitions,
-                addModel.LoggedAt.ToUniversalTime(),
+                loggedAt,
                 addModel.ExerciseId);
         }
 

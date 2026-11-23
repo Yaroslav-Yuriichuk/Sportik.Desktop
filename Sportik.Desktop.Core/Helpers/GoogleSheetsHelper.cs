@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,11 +9,40 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Newtonsoft.Json.Linq;
 
 namespace Sportik.Desktop.Core.Helpers
 {
     public static class GoogleSheetsHelper
     {
+        private const string SetTimestampFormat = "yyyy-MM-ddTHH:mm:ss.fffffffzzz";
+
+        public static string FormatSetTimestamp(DateTimeOffset value)
+        {
+            return value.ToUniversalTime().ToString(SetTimestampFormat, CultureInfo.InvariantCulture);
+        }
+
+        public static DateTimeOffset ParseSetTimestamp(object cellValue)
+        {
+            if (cellValue is JValue jValue)
+            {
+                cellValue = jValue.Value;
+            }
+
+            return cellValue switch
+            {
+                DateTimeOffset dateTimeOffset => dateTimeOffset,
+                DateTime dateTime => dateTime.Kind == DateTimeKind.Unspecified ? new DateTimeOffset(DateTime.SpecifyKind(dateTime, DateTimeKind.Utc)) : new DateTimeOffset(dateTime),
+                null => throw new FormatException("Timestamp cell is empty."),
+                _ => DateTimeOffset.Parse(Convert.ToString(cellValue, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
+            };
+        }
+
+        public static DateTime ParseDate(object cellValue)
+        {
+            return ParseSetTimestamp(cellValue).DateTime;
+        }
+
         public static string LoadServiceAccountJson(string fileName)
         {
             string assemblyName = typeof(GoogleSheetsHelper).Assembly.GetName().Name;

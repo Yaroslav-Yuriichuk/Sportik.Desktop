@@ -113,14 +113,6 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
             set => SetField(ref _selectedWeekGoalsSheetOption, value);
         }
 
-        private bool _validateDuplicates = true;
-
-        public bool ValidateDuplicates
-        {
-            get => _validateDuplicates;
-            set => SetField(ref _validateDuplicates, value);
-        }
-
         public ReactiveRelayCommand ImportCommand { get; }
         public ReactiveRelayCommand CloseCommand { get; }
 
@@ -238,11 +230,11 @@ namespace Sportik.Desktop.UI.ViewModels.Statistics
 
             IDataExchanger importer = scope switch
             {
-                DataExchangeScope.Exercises => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, exercisesSheetName, null, null, ValidateDuplicates),
-                DataExchangeScope.Sets => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, null, setsSheetName, null, ValidateDuplicates),
-                DataExchangeScope.WeekGoals => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, null, null, weekGoalsSheetName, ValidateDuplicates),
-                DataExchangeScope.ExercisesAndSets => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName, null, ValidateDuplicates),
-                DataExchangeScope.All => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName, ValidateDuplicates),
+                DataExchangeScope.Exercises => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, exercisesSheetName, null, null),
+                DataExchangeScope.Sets => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, null, setsSheetName, null),
+                DataExchangeScope.WeekGoals => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, null, null, weekGoalsSheetName),
+                DataExchangeScope.ExercisesAndSets => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName, null),
+                DataExchangeScope.All => new GoogleSheetStatisticsAllImporter(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName),
                 _ => throw new ArgumentOutOfRangeException(nameof(Scope), Scope, "Invalid import/export scope.")
             };
 

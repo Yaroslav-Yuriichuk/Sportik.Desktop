@@ -290,11 +290,6 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <CheckBox Content="Validate duplicates"
-                              Margin="0 0 0 15"
-                              IsChecked="{Binding ValidateDuplicates, Mode=TwoWay}"
-                              Visibility="{Binding Type, Converter={StaticResource EnumTargetValueToVisibilityConverter}, ConverterParameter='Import'}" />
-
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right">
 

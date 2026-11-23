@@ -20,8 +20,7 @@ namespace Sportik.Desktop.Core.Common.Import
         private readonly string _setsSheetName;
         private readonly string _weekGoalsSheetName;
 
-        public GoogleSheetStatisticsAllImporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName, bool validateDuplicates)
-            : base(validateDuplicates)
+        public GoogleSheetStatisticsAllImporter(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName)
         {
             if (string.IsNullOrWhiteSpace(sheetUrlOrId))
             {

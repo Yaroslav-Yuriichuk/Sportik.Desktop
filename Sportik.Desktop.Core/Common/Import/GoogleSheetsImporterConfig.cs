@@ -18,11 +18,9 @@ namespace Sportik.Desktop.Core.Common.Import
 
         public string WeekGoalsSheetName { get; }
 
-        public bool ValidateDuplicates { get; }
-
         public string Description => GoogleSheetsHelper.BuildDescription(SheetUrlOrId, ExercisesSheetName, SetsSheetName, WeekGoalsSheetName);
 
-        public GoogleSheetsImporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName, bool validateDuplicates)
+        public GoogleSheetsImporterConfig(string sheetUrlOrId, string exercisesSheetName, string setsSheetName, string weekGoalsSheetName)
         {
             if (string.IsNullOrWhiteSpace(sheetUrlOrId))
             {
@@ -38,12 +36,11 @@ namespace Sportik.Desktop.Core.Common.Import
             ExercisesSheetName = exercisesSheetName;
             SetsSheetName = setsSheetName;
             WeekGoalsSheetName = weekGoalsSheetName;
-            ValidateDuplicates = validateDuplicates;
         }
 
         public IDataExchanger CreateExchanger(DataExchangeMode mode)
         {
-            return new GoogleSheetStatisticsAllImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, WeekGoalsSheetName, ValidateDuplicates);
+            return new GoogleSheetStatisticsAllImporter(SheetUrlOrId, ExercisesSheetName, SetsSheetName, WeekGoalsSheetName);
         }
     }
 }

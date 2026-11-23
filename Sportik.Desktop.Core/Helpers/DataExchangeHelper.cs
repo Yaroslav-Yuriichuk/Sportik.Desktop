@@ -68,8 +68,7 @@ namespace Sportik.Desktop.Core.Helpers
                     { "SheetUrlOrId", googleSheetsImporterConfig.SheetUrlOrId },
                     { "ExercisesSheetName", googleSheetsImporterConfig.ExercisesSheetName },
                     { "SetsSheetName", googleSheetsImporterConfig.SetsSheetName },
-                    { "WeekGoalsSheetName", googleSheetsImporterConfig.WeekGoalsSheetName },
-                    { "ValidateDuplicates", googleSheetsImporterConfig.ValidateDuplicates.ToString() }
+                    { "WeekGoalsSheetName", googleSheetsImporterConfig.WeekGoalsSheetName }
                 };
 
                 return JsonConvert.SerializeObject(values);
@@ -108,8 +107,7 @@ namespace Sportik.Desktop.Core.Helpers
                         values["SheetUrlOrId"],
                         values["ExercisesSheetName"],
                         values["SetsSheetName"],
-                        values["WeekGoalsSheetName"],
-                        bool.Parse(values["ValidateDuplicates"])),
+                        values["WeekGoalsSheetName"]),
                     _ => throw new NotSupportedException($"Data exchange option '{option}' is not supported for import deserialization.")
                 };
             }

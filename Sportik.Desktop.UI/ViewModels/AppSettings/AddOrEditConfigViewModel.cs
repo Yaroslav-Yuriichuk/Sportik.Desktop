@@ -141,14 +141,6 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             set => SetField(ref _selectedWeekGoalsSheetOption, value);
         }
 
-        private bool _validateDuplicates = true;
-
-        public bool ValidateDuplicates
-        {
-            get => _validateDuplicates;
-            set => SetField(ref _validateDuplicates, value);
-        }
-
         private string _title = "Add configuration";
 
         public string Title
@@ -219,7 +211,6 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             string exercisesSheetName = null;
             string setsSheetName = null;
             string weekGoalsSheetName = null;
-            bool validateDuplicates = true;
 
             if (config is GoogleSheetsImporterConfig importerConfig)
             {
@@ -227,7 +218,6 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
                 exercisesSheetName = importerConfig.ExercisesSheetName;
                 setsSheetName = importerConfig.SetsSheetName;
                 weekGoalsSheetName = importerConfig.WeekGoalsSheetName;
-                validateDuplicates = importerConfig.ValidateDuplicates;
             }
             else if (config is GoogleSheetsExporterConfig exporterConfig)
             {
@@ -245,7 +235,6 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
             SelectedTypeOption = TypeOptions.FirstOrDefault(option => option.Type == config.Type) ?? TypeOptions[0];
             SelectedScopeOption = ScopeOptions.FirstOrDefault(option => option.Scope == GetScope(_editedExercisesSheetName, _editedSetsSheetName, _editedWeekGoalsSheetName)) ?? ScopeOptions[0];
             GoogleSheetUrlOrId = sheetUrlOrId;
-            ValidateDuplicates = validateDuplicates;
 
             Title = "Edit configuration";
             SubmitText = "Save";
@@ -327,7 +316,7 @@ namespace Sportik.Desktop.UI.ViewModels.AppSettings
 
             IDataExchangeConfig config = type switch
             {
-                DataExchangeType.Import => new GoogleSheetsImporterConfig(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName, ValidateDuplicates),
+                DataExchangeType.Import => new GoogleSheetsImporterConfig(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName),
                 DataExchangeType.Export => new GoogleSheetsExporterConfig(googleSheetUrlOrId, exercisesSheetName, setsSheetName, weekGoalsSheetName),
                 _ => throw new ArgumentOutOfRangeException(nameof(Type), Type, "Invalid data exchange type.")
             };

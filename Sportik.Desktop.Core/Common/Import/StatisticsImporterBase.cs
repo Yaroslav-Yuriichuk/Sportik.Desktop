@@ -17,17 +17,10 @@ namespace Sportik.Desktop.Core.Common.Import
 {
     public abstract class StatisticsImporterBase : IDataExchanger
     {
-        private readonly bool _validateDuplicates;
-
         private IExercisesRepository _exercisesRepository;
         private IExerciseStatisticsRepository _exerciseStatisticsRepository;
         private IWeekGoalsRepository _weekGoalsRepository;
         private IEventsService _eventsService;
-
-        protected StatisticsImporterBase(bool validateDuplicates)
-        {
-            _validateDuplicates = validateDuplicates;
-        }
 
         void IDataExchanger.Initialize(
             IExercisesRepository exercisesRepository,
@@ -182,12 +175,9 @@ namespace Sportik.Desktop.Core.Common.Import
 
                 SetImportKey key = new SetImportKey(importSet.Name, importSet.Repetitions, importSet.LoggedAt);
 
-                if (_validateDuplicates)
+                if (existingKeys.Contains(key) || incomingKeys.Contains(key))
                 {
-                    if (existingKeys.Contains(key) || incomingKeys.Contains(key))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 incomingKeys.Add(key);

@@ -130,7 +130,7 @@ namespace Sportik.Desktop.Core.Common.Export
                 .Select(set => (IList<object>)new List<object>
                 {
                     set.Name,
-                    set.LoggedAt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss'.0000000'zzz", CultureInfo.InvariantCulture),
+                    GoogleSheetsHelper.FormatSetTimestamp(set.LoggedAt),
                     set.Repetitions,
                 })
                 .ToList();
